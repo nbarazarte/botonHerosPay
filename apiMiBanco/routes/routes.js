@@ -6,9 +6,7 @@ let tokens = [];
 // Crear un nuevo token
 router.post('/', (req, res) => {
 
-  ///......
-
-
+  ///...... procesos del banco.....
 
   const nuevotoken = {
     code: "ACCP",

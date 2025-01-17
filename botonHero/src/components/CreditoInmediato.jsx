@@ -14,6 +14,7 @@ const CreditoInmediato = () => {
     const [concepto, setConcepto] = useState('Pago de Servicio');
     const [token, setToken] = useState(null);
     const [error, setError] = useState('');
+    const [errorPago, setErrorPago] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const bankOptions = [
         { code: '0102', name: 'Banco de Venezuela, S.A. Banco Universal' },
@@ -55,7 +56,10 @@ const CreditoInmediato = () => {
     };
 
     const handleChangeCedula = (e) => {
-        setCedula(e.target.value);
+        const value = e.target.value;
+        // Permitir solo números (0-9) 
+        const onlyNumbers = value.replace(/[^0-9]/g, '');
+        setCedula(onlyNumbers);
         setNacionalidadCedula(selectedNacionalidad + e.target.value)
     };
 
@@ -65,7 +69,10 @@ const CreditoInmediato = () => {
     };
 
     const handleChangeTelefono = (e) => {
-        setTelefono(e.target.value);
+        const value = e.target.value;
+        // Permitir solo números (0-9) 
+        const onlyNumbers = value.replace(/[^0-9]/g, '');
+        setTelefono(onlyNumbers);
         setNumTelefono(selectedCodigoArea + e.target.value);
     };
 
@@ -80,6 +87,12 @@ const CreditoInmediato = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!selectedBank) { setError('Seleccione un banco'); return; }
+        if (!selectedNacionalidad || !cedula) { setError('Seleccione una nacionalidad y llene la cédula'); return; }
+        if (!selectedCodigoArea || !telefono) { setError('Seleccione un código de área y llene el teléfono'); return; }
+        //if (!monto || monto <= 0) { setError('El monto debe ser mayor a cero'); return; }
+        //if (!concepto) { setError('Debe ingresar un concepto'); return; }
+
         try {
             const postData = {
                 Banco: selectedBank,
@@ -89,28 +102,31 @@ const CreditoInmediato = () => {
                 Concepto: concepto
             };
 
-            // Primera petición POST
+            // Primera petición POST: Api de Mi Banco
             const response = await axios.post('http://localhost:3001/CreditoInmediato', postData);
-            setToken(response.data);
+            //setToken(response.data);
             setError('');
 
             if (response.data.code === 'ACCP') {
                 try {
-                    // Segunda petición GET
+                    // Segunda petición GET: Api de Heros Technology
                     const secondResponse = await axios.get('http://localhost:3000/tokens/1');
                     setToken(secondResponse.data);
                     setError('');
                 } catch (err) {
-                    setError('token no encontrado');
+                    setError(err);
                     setToken(null);
                 }
+
+            } else {
+                setErrorPago("Ha ocurrido un error con el pago");
             }
+
         } catch (err) {
             setError('error');
             setToken(null);
         }
     };
-
 
     return (
         <div className="container">
@@ -174,12 +190,15 @@ const CreditoInmediato = () => {
                 <button type="submit">Enviar</button>
             </form>
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            {token && (
+            {token ? (
                 <div>
                     <h3>Pago Aprobado</h3>
                     <p>Token: {token.token}</p>
                 </div>
+            ) : (
+                <h3>{errorPago}</h3>
             )}
+
         </div>
     );
 };
