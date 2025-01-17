@@ -1,0 +1,70 @@
+.container {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+label {
+    margin-bottom: 5px;
+}
+
+input,
+select,
+button {
+    width: 100%;
+    /* Ajusta el ancho de los inputs y selects */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+}
+
+button {
+    margin-top: 20px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+
+/* Nuevas reglas para disposición horizontal */
+.form-group-horizontal {
+    display: flex;
+    align-items: center;
+
+}
+
+.form-group-horizontal label {
+    margin-right: 20px;
+
+}
+
+.form-group-horizontal select,
+.form-group-horizontal input {
+    margin-right: 10px;
+    margin-bottom: .5em;
+
+}
