@@ -102,6 +102,8 @@ const CreditoInmediato = () => {
                 Concepto: concepto
             };
 
+            //console.log(postData);
+
             // Primera petición POST: Api de Mi Banco
             const response = await axios.post('http://localhost:3001/CreditoInmediato', postData);
             //setToken(response.data);
@@ -114,7 +116,8 @@ const CreditoInmediato = () => {
                     setToken(secondResponse.data);
                     setError('');
                 } catch (err) {
-                    setError(err);
+                    //setError(err);
+                    setErrorPago("Ha ocurrido un error con el token");
                     setToken(null);
                 }
 
