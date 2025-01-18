@@ -1,45 +1,77 @@
 const express = require('express');
 const router = express.Router();
+const pool = require('../db'); // Asegúrate de importar la configuración de tu conexión
 
-let tokens = [
-    { id: 1, token: 'abcd' },
-    { id: 2, token: 'efgh' },
-];
+
+// Obtener todos los bancos
+router.get('/bancos', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM banco');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
 
 // Obtener todos los tokens
-router.get('/', (req, res) => {
-    res.json(tokens);
+router.get('/', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM tokens where used = false');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
 });
 
 // Obtener un token por ID
-router.get('/:id', (req, res) => {
-    const token = tokens.find(u => u.id === parseInt(req.params.id));
-    if (!token) return res.status(404).send('Token no encontrado');
-    res.json(token);
+router.get('/:id', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM tokens WHERE id = $1', [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).send('Token no encontrado');
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
 });
 
 // Crear un nuevo token
-router.post('/', (req, res) => {
-    const nuevotoken = {
-        id: tokens.length + 1,
-        token: req.body.token,
-    };
-    tokens.push(nuevotoken);
-    res.status(201).json(nuevotoken);
+router.post('/', async (req, res) => {
+    try {
+        const { token } = req.body;
+        const result = await pool.query('INSERT INTO tokens (token) VALUES ($1) RETURNING *', [token]);
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
 });
 
 // Actualizar un token
-router.put('/:id', (req, res) => {
-    const token = tokens.find(u => u.id === parseInt(req.params.id));
-    if (!token) return res.status(404).send('token no encontrado');
-    token.token = req.body.token;
-    res.json(token);
+router.put('/:id', async (req, res) => {
+    try {
+        const { token } = req.body;
+        const result = await pool.query('UPDATE tokens SET token = $1 WHERE id = $2 RETURNING *', [token, req.params.id]);
+        if (result.rows.length === 0) return res.status(404).send('Token no encontrado');
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
 });
 
 // Eliminar un token
-router.delete('/:id', (req, res) => {
-    tokens = tokens.filter(u => u.id !== parseInt(req.params.id));
-    res.status(204).send();
+router.delete('/:id', async (req, res) => {
+    try {
+        const result = await pool.query('DELETE FROM tokens WHERE id = $1 RETURNING *', [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).send('Token no encontrado');
+        res.status(204).send();
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
 });
 
 module.exports = router;
