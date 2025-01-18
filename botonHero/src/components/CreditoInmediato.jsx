@@ -11,7 +11,7 @@ const CreditoInmediato = () => {
     const [telefono, setTelefono] = useState('');
     const [numTelefono, setNumTelefono] = useState('');
     const [monto, setMonto] = useState('1.00');
-    const [concepto, setConcepto] = useState('Pago de Servicio');
+    const [concepto, setConcepto] = useState('Pago de Internet');
     const [token, setToken] = useState(null);
     const [error, setError] = useState('');
     const [errorPago, setErrorPago] = useState('');
@@ -133,6 +133,7 @@ const CreditoInmediato = () => {
 
     return (
         <div className="container">
+            <h3>Crédito Inmediato</h3>
             <form onSubmit={handleSubmit}> {/* Cambia a handleSubmit */}
                 <div className="form-group-horizontal">
                     <select value={selectedBank} onChange={handleSelectChange}>
@@ -173,7 +174,7 @@ const CreditoInmediato = () => {
 
                     <input
                         type="text"
-                        value={`$ ${monto}`}
+                        value={`Valor: $ ${monto}`}
                         onChange={handleChangeMonto}
                         maxLength={1}
                         readOnly
@@ -184,9 +185,9 @@ const CreditoInmediato = () => {
 
                     <input
                         type="text"
-                        value={concepto}
+                        value={`Concepto: ${concepto}`}
                         onChange={handleChangeConcepto}
-                        placeholder="Pago de Servicio"
+                        placeholder="Concepto"
                     />
                 </div>
 
