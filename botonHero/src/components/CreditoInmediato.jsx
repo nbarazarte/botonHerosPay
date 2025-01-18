@@ -31,7 +31,7 @@ const CreditoInmediato = () => {
         // Permitir solo números (0-9)
         const onlyNumbers = value.replace(/[^0-9]/g, '');
         setCedula(onlyNumbers);
-        setNacionalidadCedula(selectedNacionalidad + e.target.value);
+        setNacionalidadCedula(selectedNacionalidad + onlyNumbers);
     };
 
     const handleSelectChangeCodigoArea = (e) => {
@@ -44,7 +44,7 @@ const CreditoInmediato = () => {
         // Permitir solo números (0-9)
         const onlyNumbers = value.replace(/[^0-9]/g, '');
         setTelefono(onlyNumbers);
-        setNumTelefono(selectedCodigoArea + e.target.value);
+        setNumTelefono(selectedCodigoArea + onlyNumbers);
     };
 
     const handleChangeConcepto = (e) => {
@@ -115,7 +115,7 @@ const CreditoInmediato = () => {
                 <div className="form-group-horizontal">
                     <select value={selectedBank} onChange={handleSelectChange}>
                         <option value="" disabled>Bancos</option>
-                        {bankOptions.map((bank) => (<option key={bank.codigoban} value={bank.codigoban}>{bank.nombreban}</option>))}
+                        {bankOptions.map((bank) => (<option key={bank.codigoban} value={bank.codigoban}>{`${bank.codigoban} - ${bank.nombreban}`}</option>))}
                     </select>
                 </div>
 

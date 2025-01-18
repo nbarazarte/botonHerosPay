@@ -6,7 +6,7 @@ const pool = require('../db'); // Asegúrate de importar la configuración de tu
 // Obtener todos los bancos
 router.get('/bancos', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM banco');
+        const result = await pool.query('SELECT * FROM banco order by codigoban asc');
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);

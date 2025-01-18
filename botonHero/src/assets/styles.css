@@ -49,22 +49,27 @@ button:hover {
     background-color: #0056b3;
 }
 
-
 /* Nuevas reglas para disposición horizontal */
 .form-group-horizontal {
     display: flex;
     align-items: center;
-
 }
 
 .form-group-horizontal label {
     margin-right: 20px;
-
 }
 
 .form-group-horizontal select,
 .form-group-horizontal input {
     margin-right: 10px;
     margin-bottom: .5em;
+}
 
+.form-group-horizontal select {
+    text-align: center;
+    text-align-last: center;
+}
+
+.form-group-horizontal option {
+    text-align: left;
 }
