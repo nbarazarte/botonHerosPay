@@ -73,8 +73,8 @@ const CreditoInmediato = () => {
         e.preventDefault();
 
         if (!selectedBank) { setError('Seleccione un banco'); return; }
-        if (!selectedNacionalidad || !cedula) { setError('Seleccione una nacionalidad y llene la cédula'); return; }
-        if (!selectedCodigoArea || !telefono) { setError('Seleccione un código de área y llene el teléfono'); return; }
+        if (!selectedNacionalidad || !cedula) { setError('Indíque nacionalidad y cédula'); return; }
+        if (!selectedCodigoArea || !telefono) { setError('Indíque código y teléfono'); return; }
 
         try {
             const postData = {
@@ -114,9 +114,20 @@ const CreditoInmediato = () => {
         <div className="p-8 flex-1">
             <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden shadow-xl">
                 <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
-                    <h1 className="text-2xl font-semibold text-gray-900">Credito Inmediato</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
 
-                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {error && (
+                        <div className="flex justify-center items-center">
+                            <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
+                                <div className="flex justify-center items-center text-center">
+                                    <div>
+                                        <p className="text-sm">{error}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    )}
                     {token ? (
                         <div>
                             <h3>Pago Aprobado</h3>
@@ -139,8 +150,8 @@ const CreditoInmediato = () => {
                         <div className="mt-10 flex flex-row items-start space-x-4">
                             <div className="relative flex-1">
                                 <label htmlFor="nacionalidad" className="block">
-                                    <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="nacionalidad">
-                                        {/* <option value="" disabled>Nacionalidad</option> */}
+                                    <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad} className="block mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="nacionalidad">
+                                        <option value="" disabled>Nac.</option>
                                         {nacionalidad.map((nacio, index) => (
                                             <option key={index} value={nacio}>{nacio}</option>
                                         ))}
@@ -153,7 +164,7 @@ const CreditoInmediato = () => {
                                     value={cedula}
                                     placeholder="Cédula"
                                     onChange={handleChangeCedula}
-                                    maxLength={8} className="peer w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                    maxLength={8} className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                 <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula</label>
                             </div>
                         </div>
@@ -161,7 +172,7 @@ const CreditoInmediato = () => {
                         <div className="mt-1 flex flex-row items-start space-x-4">
                             <div className="mt-10 relative">
                                 <label htmlFor="telefono" className="block">
-                                    <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="telefono">
+                                    <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea} className="block  mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="telefono">
                                         <option value="" disabled>Cód.</option>
                                         {codigosArea.map((codigoArea, index) => (
                                             <option key={index} value={codigoArea}>{codigoArea}</option>
@@ -175,7 +186,7 @@ const CreditoInmediato = () => {
                                     value={telefono}
                                     placeholder="Teléfono"
                                     onChange={handleChangeTelefono}
-                                    maxLength={7} className="peer w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                    maxLength={7} className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                 <label htmlFor="telefono" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Teléfono</label>
                             </div>
 
