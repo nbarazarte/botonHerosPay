@@ -3,6 +3,8 @@ import axios from 'axios';
 //import '../assets/styles.css'; // Importa el archivo CSS
 import copy from "copy-to-clipboard";
 import Swal from 'sweetalert2'
+import Lottie from "lottie-react";
+import paySuccess from "../assets/LottieFiles/Animation - 1737313569676.json";
 
 const CreditoInmediato = () => {
 
@@ -69,19 +71,19 @@ const CreditoInmediato = () => {
         setMonto(e.target.value);
     };
 
-    // Use useEffect to fetch bank options from the API when the component mounts
+    // Llamo a la lista de los bancos nacionales
     useEffect(() => {
         const fetchBanks = async () => {
             try {
                 const response = await axios.get('http://localhost:3000/tokens/bancos');
                 setBankOptions(response.data);
             } catch (error) {
-                console.error('Error fetching banks:', error);
+                console.error(error);
             }
         };
 
         fetchBanks();
-    }, []); // Empty dependency array means this effect runs once when the component mounts
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -131,7 +133,7 @@ const CreditoInmediato = () => {
             Swal.fire({
                 position: "center",
                 icon: "success",
-                title: `El token: ${token.token} se ha copiado!`,
+                title: `Token: ${token.token} copiado!`,
                 showConfirmButton: false,
                 timer: 1500
             });
@@ -158,10 +160,13 @@ const CreditoInmediato = () => {
                     {token ? (
                         <div>
                             <div className="flex justify-center items-center">
-                                <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-3 shadow-md w-full" role="alert">
+                                <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
                                     <div className="flex justify-center items-center text-center">
-                                        <div>
-                                            <p className="text-sm">Pago Aprobado</p>
+                                        <div className='items-center'>
+                                            <div class="flex flex-row items-center gap-0">
+                                                <Lottie animationData={paySuccess} loop={true} style={{ width: '50px', height: '50px' }} />
+                                                <p className="text-sm">¡Aprobado!</p>
+                                            </div>
                                             <p className="text-sm">Token: <span className='font-bold'>{token.token}</span></p>
                                         </div>
                                     </div>
