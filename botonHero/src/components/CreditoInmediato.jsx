@@ -4,7 +4,7 @@ import axios from 'axios';
 import copy from "copy-to-clipboard";
 import Swal from 'sweetalert2'
 import Lottie from "lottie-react";
-import paySuccess from "../assets/LottieFiles/Animation - 1737313569676.json";
+import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const CreditoInmediato = () => {
@@ -29,6 +29,7 @@ const CreditoInmediato = () => {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
+        //console.log('copiando');
         copy(token.token, {
             debug: true,
             message: "Press #{key} to copy"
@@ -144,7 +145,7 @@ const CreditoInmediato = () => {
 
     return (
         <div className="p-8 flex-1">
-            <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden shadow-xl">
+            <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden shadow-xl"> {/* shadow-xl */}
                 <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
                     <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
                     {error && (
@@ -162,20 +163,28 @@ const CreditoInmediato = () => {
                         <div>
                             <div className="flex justify-center items-center">
                                 <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
+
                                     <div className="flex justify-center items-center text-center">
-                                        <div className='items-center'>
-                                            <div className="flex flex-row items-center gap-0">
-                                                <Lottie animationData={paySuccess} loop={true} style={{ width: '50px', height: '50px' }} />
+                                        <div className='justify-center items-center' >
+
+                                            <div className="flex flex-row justify-center items-center gap-1">
+                                                <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
                                                 <p className="text-sm">¡Aprobado!</p>
                                             </div>
-                                            <div className="flex flex-row items-center gap-1">
-                                                <p className="text-sm">
-                                                    Token: <span className='font-bold'>{token.token}</span>
+
+                                            <div className="flex flex-row justify-center items-center gap-1">
+                                                <p className="text-sm justify-center items-center">
+                                                    Su token de acceso es: <span className='font-bold'>{token.token}</span>
                                                 </p>
-                                                <FontAwesomeIcon icon="fa-regular fa-copy" />
+
+                                                <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
+                                                    <FontAwesomeIcon icon="fa-regular fa-copy" />
+                                                </button>
                                             </div>
+
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -267,7 +276,7 @@ const CreditoInmediato = () => {
                             <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
                         </div>
 
-                        <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">Enviar</button>
+                        <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">Verificar</button>
                     </form>
                 </div>
             </div>
