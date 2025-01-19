@@ -286,6 +286,22 @@ const CreditoInmediato = () => {
                         {token ? (
                             <div className='mt-10 px-4 py-2 '>
                                 Aparece el otro formulario para pegar el token
+
+                                <iframe
+                                    width="100%"
+                                    height="200"
+                                    frameborder="0"
+                                    class=""
+                                    srcdoc='
+                                        <div class="mt-10 relative">
+                                            <input id="token" type="text"
+                                                value=""
+                                                onChange=""
+                                                />
+                                        </div>'
+                                ></iframe>
+
+
                             </div>
                         ) : (
 
