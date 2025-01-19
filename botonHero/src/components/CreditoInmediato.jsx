@@ -112,10 +112,15 @@ const CreditoInmediato = () => {
 
             if (response.data.code === 'ACCP') {
                 try {
-                    // Segunda petición GET: Api de Heros Technology
-                    const secondResponse = await axios.get('http://localhost:3000/tokens/1');
+                    // Api de Heros Technology Segunda petición GET: Solicita un token para asignarlo
+                    const secondResponse = await axios.get('http://localhost:3000/tokens');
+                    //console.log(secondResponse.data);
                     setToken(secondResponse.data);
                     setError('');
+
+                    // Api de Heros Technology Tercera petición PUT: Actualiza el token para marcarlo como usado 
+                    await axios.put(`http://localhost:3000/tokens/${secondResponse.data.id}`, { used: true });
+
                 } catch (err) {
                     setErrorPago("Ha ocurrido un error con el token");
                     setToken(null);
@@ -145,7 +150,7 @@ const CreditoInmediato = () => {
 
     return (
         <div className="p-8 flex-1">
-            <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden shadow-xl"> {/* shadow-xl */}
+            <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
                 <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
                     <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
                     {error && (
@@ -215,10 +220,11 @@ const CreditoInmediato = () => {
                             </select>
                         </label>
 
-                        <div className="mt-10 flex flex-row items-start space-x-4">
+                        <div className="mt-10 flex flex-row justify-between gap-1">
+
                             <div className="relative flex-1">
                                 <label htmlFor="nacionalidad" className="block">
-                                    <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad} className="block mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="nacionalidad">
+                                    <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad} className="block border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="nacionalidad">
                                         <option value="" disabled>Nac.</option>
                                         {nacionalidad.map((nacio, index) => (
                                             <option key={index} value={nacio}>{nacio}</option>
@@ -237,10 +243,11 @@ const CreditoInmediato = () => {
                             </div>
                         </div>
 
-                        <div className="mt-1 flex flex-row items-start space-x-4">
+                        <div className="mt-1 flex flex-row justify-between gap-1">
+
                             <div className="mt-10 relative">
                                 <label htmlFor="telefono" className="block">
-                                    <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea} className="block  mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="telefono">
+                                    <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea} className="block border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="telefono">
                                         <option value="" disabled>Cód.</option>
                                         {codigosArea.map((codigoArea, index) => (
                                             <option key={index} value={codigoArea}>{codigoArea}</option>
@@ -276,7 +283,17 @@ const CreditoInmediato = () => {
                             <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
                         </div>
 
-                        <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">Verificar</button>
+                        {token ? (
+                            <div className='mt-10 px-4 py-2 '>
+                                Aparece el otro formulario para pegar el token
+                            </div>
+                        ) : (
+
+                            <>
+                                <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">Verificar</button>
+                            </>
+                        )}
+
                     </form>
                 </div>
             </div>
