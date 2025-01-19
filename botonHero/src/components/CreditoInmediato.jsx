@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 //import '../assets/styles.css'; // Importa el archivo CSS
+import copy from "copy-to-clipboard";
+import Swal from 'sweetalert2'
 
 const CreditoInmediato = () => {
+
     const [selectedNacionalidad, setSelectedNacionalidad] = useState('');
     const [cedula, setCedula] = useState('');
     const [nacionalidadCedula, setNacionalidadCedula] = useState('');
@@ -18,6 +21,17 @@ const CreditoInmediato = () => {
     const [bankOptions, setBankOptions] = useState([]);
     const nacionalidad = ['V', 'E'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
+    const [text, setText] = useState("Hello, world!");
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+        copy(token.token, {
+            debug: true,
+            message: "Press #{key} to copy"
+        });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 3000); // Reset after 3 seconds
+    };
 
     const handleSelectChange = (event) => { setSelectedBank(event.target.value); };
 
@@ -94,7 +108,7 @@ const CreditoInmediato = () => {
             if (response.data.code === 'ACCP') {
                 try {
                     // Segunda petición GET: Api de Heros Technology
-                    const secondResponse = await axios.get('http://localhost:3000/tokens/1');
+                    const secondResponse = await axios.get('http://localhost:3000/tokens/18');
                     setToken(secondResponse.data);
                     setError('');
                 } catch (err) {
@@ -109,6 +123,20 @@ const CreditoInmediato = () => {
             setToken(null);
         }
     };
+
+    useEffect(() => {
+        if (token) {
+            setText(token.token);
+            handleCopy();
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: `El token: ${token.token} se ha copiado!`,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    }, [token]);
 
     return (
         <div className="p-8 flex-1">
@@ -130,8 +158,16 @@ const CreditoInmediato = () => {
                     )}
                     {token ? (
                         <div>
-                            <h3>Pago Aprobado</h3>
-                            <p>Token: {token.token}</p>
+                            <div className="flex justify-center items-center">
+                                <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-3 shadow-md w-full" role="alert">
+                                    <div className="flex justify-center items-center text-center">
+                                        <div>
+                                            <p className="text-sm">Pago Aprobado</p>
+                                            <p className="text-sm">Token: {token.token}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     ) : (
                         <h3>{errorPago}</h3>
@@ -213,9 +249,7 @@ const CreditoInmediato = () => {
                 </div>
             </div>
         </div>
-
     )
-
 };
 
 export default CreditoInmediato;
