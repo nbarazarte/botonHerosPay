@@ -108,7 +108,7 @@ const CreditoInmediato = () => {
             if (response.data.code === 'ACCP') {
                 try {
                     // Segunda petición GET: Api de Heros Technology
-                    const secondResponse = await axios.get('http://localhost:3000/tokens/18');
+                    const secondResponse = await axios.get('http://localhost:3000/tokens/1');
                     setToken(secondResponse.data);
                     setError('');
                 } catch (err) {
@@ -154,7 +154,6 @@ const CreditoInmediato = () => {
                                 </div>
                             </div>
                         </div>
-
                     )}
                     {token ? (
                         <div>
@@ -163,14 +162,27 @@ const CreditoInmediato = () => {
                                     <div className="flex justify-center items-center text-center">
                                         <div>
                                             <p className="text-sm">Pago Aprobado</p>
-                                            <p className="text-sm">Token: {token.token}</p>
+                                            <p className="text-sm">Token: <span className='font-bold'>{token.token}</span></p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        <h3>{errorPago}</h3>
+
+                        <>
+                            {errorPago && (
+                                <div className="flex justify-center items-center">
+                                    <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
+                                        <div className="flex justify-center items-center text-center">
+                                            <div>
+                                                <p className="text-sm">{errorPago}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
 
                     <form className="mt-12" onSubmit={handleSubmit}>
