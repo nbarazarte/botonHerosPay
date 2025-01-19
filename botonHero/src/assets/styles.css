@@ -1,4 +1,4 @@
-.container {
+/* .container {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
@@ -27,8 +27,7 @@ label {
 input,
 select,
 button {
-    width: 100%;
-    /* Ajusta el ancho de los inputs y selects */
+    width: 100%;    
     padding: 10px;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -49,7 +48,7 @@ button:hover {
     background-color: #0056b3;
 }
 
-/* Nuevas reglas para disposición horizontal */
+
 .form-group-horizontal {
     display: flex;
     align-items: center;
@@ -72,4 +71,4 @@ button:hover {
 
 .form-group-horizontal option {
     text-align: left;
-}
+} */

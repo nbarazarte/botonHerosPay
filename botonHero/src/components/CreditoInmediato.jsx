@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../assets/styles.css'; // Importa el archivo CSS
+//import '../assets/styles.css'; // Importa el archivo CSS
 
 const CreditoInmediato = () => {
     const [selectedNacionalidad, setSelectedNacionalidad] = useState('');
@@ -85,6 +85,8 @@ const CreditoInmediato = () => {
                 Concepto: concepto
             };
 
+            console.log(postData);
+
             // Primera petición POST: Api de Mi Banco
             const response = await axios.post('http://localhost:3001/CreditoInmediato', postData);
             setError('');
@@ -109,76 +111,100 @@ const CreditoInmediato = () => {
     };
 
     return (
-        <div className="container">
-            <h3>Crédito Inmediato</h3>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group-horizontal">
-                    <select value={selectedBank} onChange={handleSelectChange}>
-                        <option value="" disabled>Bancos</option>
-                        {bankOptions.map((bank) => (<option key={bank.codigoban} value={bank.codigoban}>{`${bank.codigoban} - ${bank.nombreban}`}</option>))}
-                    </select>
-                </div>
+        <div className="p-8 flex-1">
+            <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden shadow-xl">
+                <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
+                    <h1 className="text-2xl font-semibold text-gray-900">Credito Inmediato</h1>
 
-                <div className="form-group-horizontal">
-                    <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}>
-                        <option value="" disabled>Nac.</option>
-                        {nacionalidad.map((nacio, index) => (<option key={index} value={nacio}>{nacio}</option>))}
-                    </select>
-                    <input
-                        type="text"
-                        value={cedula}
-                        placeholder="Cédula"
-                        onChange={handleChangeCedula}
-                        maxLength={8}
-                    />
-                </div>
+                    {error && <p style={{ color: 'red' }}>{error}</p>}
+                    {token ? (
+                        <div>
+                            <h3>Pago Aprobado</h3>
+                            <p>Token: {token.token}</p>
+                        </div>
+                    ) : (
+                        <h3>{errorPago}</h3>
+                    )}
 
-                <div className="form-group-horizontal">
-                    <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea}>
-                        <option value="" disabled>Cód. Área</option>
-                        {codigosArea.map((codigoArea, index) => (<option key={index} value={codigoArea}>{codigoArea}</option>))}
-                    </select>
-                    <input
-                        type="text"
-                        value={telefono}
-                        placeholder="Teléfono"
-                        onChange={handleChangeTelefono}
-                        maxLength={7}
-                    />
-                </div>
+                    <form className="mt-12" onSubmit={handleSubmit}>
+                        <label htmlFor="bank" className="block">
+                            <select value={selectedBank} onChange={handleSelectChange} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="bank">
+                                <option value="" disabled>Bancos</option>
+                                {bankOptions.map((bank) => (
+                                    <option key={bank.codigoban} value={bank.codigoban}>{`${bank.codigoban} - ${bank.nombreban}`}</option>
+                                ))}
+                            </select>
+                        </label>
 
-                <div className="form-group-horizontal">
-                    <input
-                        type="text"
-                        value={`Valor: $ ${monto}`}
-                        onChange={handleChangeMonto}
-                        maxLength={1}
-                        readOnly
-                    />
-                </div>
+                        <div className="mt-10 flex flex-row items-start space-x-4">
+                            <div className="relative flex-1">
+                                <label htmlFor="nacionalidad" className="block">
+                                    <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="nacionalidad">
+                                        {/* <option value="" disabled>Nacionalidad</option> */}
+                                        {nacionalidad.map((nacio, index) => (
+                                            <option key={index} value={nacio}>{nacio}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
 
-                <div className="form-group-horizontal">
-                    <input
-                        type="text"
-                        value={`Concepto: ${concepto}`}
-                        onChange={handleChangeConcepto}
-                        placeholder="Concepto"
-                    />
-                </div>
+                            <div className="relative flex-1">
+                                <input id="cedula" type="text"
+                                    value={cedula}
+                                    placeholder="Cédula"
+                                    onChange={handleChangeCedula}
+                                    maxLength={8} className="peer w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula</label>
+                            </div>
+                        </div>
 
-                <button type="submit">Enviar</button>
-            </form>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {token ? (
-                <div>
-                    <h3>Pago Aprobado</h3>
-                    <p>Token: {token.token}</p>
+                        <div className="mt-1 flex flex-row items-start space-x-4">
+                            <div className="mt-10 relative">
+                                <label htmlFor="telefono" className="block">
+                                    <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="telefono">
+                                        <option value="" disabled>Cód.</option>
+                                        {codigosArea.map((codigoArea, index) => (
+                                            <option key={index} value={codigoArea}>{codigoArea}</option>
+                                        ))}
+                                    </select>
+                                </label>
+                            </div>
+
+                            <div className="mt-10 relative">
+                                <input id="telefono" type="text"
+                                    value={telefono}
+                                    placeholder="Teléfono"
+                                    onChange={handleChangeTelefono}
+                                    maxLength={7} className="peer w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                <label htmlFor="telefono" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Teléfono</label>
+                            </div>
+
+                        </div>
+
+                        <div className="mt-10 relative">
+                            <input id="monto" type="text"
+                                value={`$${monto}`}
+                                onChange={handleChangeMonto}
+                                readOnly className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                            <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
+                        </div>
+
+                        <div className="mt-10 relative">
+                            <input id="concepto" type="text"
+                                value={concepto}
+                                onChange={handleChangeConcepto}
+                                placeholder="Concepto" className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                            <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
+                        </div>
+
+                        <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">Enviar</button>
+                    </form>
                 </div>
-            ) : (
-                <h3>{errorPago}</h3>
-            )}
+            </div>
         </div>
-    );
+
+    )
+
 };
 
 export default CreditoInmediato;
