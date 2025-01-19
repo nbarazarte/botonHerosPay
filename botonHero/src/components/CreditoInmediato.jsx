@@ -5,6 +5,7 @@ import copy from "copy-to-clipboard";
 import Swal from 'sweetalert2'
 import Lottie from "lottie-react";
 import paySuccess from "../assets/LottieFiles/Animation - 1737313569676.json";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const CreditoInmediato = () => {
 
@@ -23,7 +24,8 @@ const CreditoInmediato = () => {
     const [bankOptions, setBankOptions] = useState([]);
     const nacionalidad = ['V', 'E'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
-    const [text, setText] = useState("Hello, world!");
+
+    const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
 
     const handleCopy = () => {
@@ -145,7 +147,6 @@ const CreditoInmediato = () => {
             <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden shadow-xl">
                 <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
                     <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
-
                     {error && (
                         <div className="flex justify-center items-center">
                             <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
@@ -163,11 +164,16 @@ const CreditoInmediato = () => {
                                 <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
                                     <div className="flex justify-center items-center text-center">
                                         <div className='items-center'>
-                                            <div class="flex flex-row items-center gap-0">
+                                            <div className="flex flex-row items-center gap-0">
                                                 <Lottie animationData={paySuccess} loop={true} style={{ width: '50px', height: '50px' }} />
                                                 <p className="text-sm">¡Aprobado!</p>
                                             </div>
-                                            <p className="text-sm">Token: <span className='font-bold'>{token.token}</span></p>
+                                            <div className="flex flex-row items-center gap-1">
+                                                <p className="text-sm">
+                                                    Token: <span className='font-bold'>{token.token}</span>
+                                                </p>
+                                                <FontAwesomeIcon icon="fa-regular fa-copy" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
