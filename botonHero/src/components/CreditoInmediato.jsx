@@ -130,6 +130,11 @@ const CreditoInmediato = () => {
                     // Api de Heros Technology Tercera petición PUT: Actualiza el token para marcarlo como usado 
                     await axios.put(`http://localhost:3000/tokens/${secondResponse.data.id}`, { used: true });
 
+
+                    console.log(response.data);
+
+                    // ........... aqui va la lógica para el guardar el id del cliente .............
+
                 } catch (err) {
                     setErrorPago("Ha ocurrido un error con el token");
                     setToken(null);
@@ -312,10 +317,9 @@ const CreditoInmediato = () => {
                                 <iframe
                                     width="100%"
                                     height="200"
-                                    frameborder="0"
-                                    class=""
-                                    srcdoc='
-                                        <div class="mt-10 relative">
+                                    className=""
+                                    srcDoc='
+                                        <div className="mt-10 relative">
                                             <input id="token" type="text"
                                                 value=""
                                                 onChange=""
