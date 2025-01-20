@@ -113,7 +113,7 @@ const CreditoInmediato = () => {
             console.log(postData);
 
             // Simula un retraso de 3 segundos
-            //await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 3000));
 
             // Primera petición POST: Api de Mi Banco
             const response = await axios.post('http://localhost:3001/CreditoInmediato', postData);

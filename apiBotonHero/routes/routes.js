@@ -13,7 +13,7 @@ router.get('/bancos', async (req, res) => {
     }
 });
 
-// Obtener todos los tokens
+// Obtener un token
 router.get('/', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM tokens WHERE used = false ORDER BY id DESC LIMIT 1');
