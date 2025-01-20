@@ -5,6 +5,7 @@ import copy from "copy-to-clipboard";
 import Swal from 'sweetalert2'
 import Lottie from "lottie-react";
 import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
+import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const CreditoInmediato = () => {
@@ -178,8 +179,9 @@ const CreditoInmediato = () => {
                                             </div>
 
                                             <div className="flex flex-row justify-center items-center gap-1">
+                                                <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
                                                 <p className="text-sm justify-center items-center">
-                                                    Su token de acceso es: <span className='font-bold'>{token.token}</span>
+                                                    Token de acceso: <span className='font-bold'>{token.token}</span>
                                                 </p>
 
                                                 <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
