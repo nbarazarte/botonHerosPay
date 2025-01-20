@@ -110,7 +110,7 @@ const CreditoInmediato = () => {
                 Concepto: concepto
             };
 
-            console.log(postData);
+            //console.log(postData);
 
             // Simula un retraso de 3 segundos
             await new Promise(resolve => setTimeout(resolve, 3000));
@@ -130,10 +130,16 @@ const CreditoInmediato = () => {
                     // Api de Heros Technology Tercera petición PUT: Actualiza el token para marcarlo como usado 
                     await axios.put(`http://localhost:3000/tokens/${secondResponse.data.id}`, { used: true });
 
-
+                    console.log(postData);
                     console.log(response.data);
 
-                    // ........... aqui va la lógica para el guardar el id del cliente .............
+                    // ........... aqui va la lógica para el guardar los datos de la transaccion del cliente .............
+
+
+
+
+
+
 
                 } catch (err) {
                     setErrorPago("Ha ocurrido un error con el token");
@@ -168,7 +174,7 @@ const CreditoInmediato = () => {
         <div className="p-8 flex-1">
             <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
                 <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
-                    <h1 className="text-2xl font-semibold text-gray-900 p-10">Crédito Inmediato</h1>
+                    <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
 
                     {loading ? (
                         <div className="flex justify-center items-center">
@@ -236,13 +242,13 @@ const CreditoInmediato = () => {
                             )}
                         </>
                     )}
-                    <br></br>
+
                     <form className="mt-8" onSubmit={handleSubmit}>
                         <label htmlFor="bank" className="block">
                             <select value={selectedBank} onChange={handleSelectChange} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="bank">
                                 <option value="" disabled>Bancos</option>
                                 {bankOptions.map((bank) => (
-                                    <option key={bank.codigoban} value={bank.codigoban}>{`${bank.codigoban} - ${bank.nombreban}`}</option>
+                                    <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
                                 ))}
                             </select>
                         </label>

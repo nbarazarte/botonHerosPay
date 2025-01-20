@@ -4,3 +4,12 @@ pg_dump -U postgres -h localhost -F c -b -v -f ./tokendb.backup tokendb
 # Restore
 pg_restore -U postgres -h localhost -d tokendb -v ./tokendb.backup
 /usr/lib/postgresql/16/bin/pg_restore -U postgres -h localhost -d tokendb -v ./tokendb.backup
+
+############### Nueva BD #########################
+
+# Backup
+pg_dump -U postgres -h localhost -F c -b -v -f ./herostokendb.backup herostokendb
+
+# Restore
+pg_restore -U postgres -h localhost -d herostokendb -v ./herostokendb.backup
+/usr/lib/postgresql/16/bin/pg_restore -U postgres -h localhost -d herostokendb -v ./herostokendb.backup
