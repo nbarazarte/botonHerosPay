@@ -231,7 +231,7 @@ const CreditoInmediato = () => {
                             )}
                         </>
                     )}
-
+                    <br></br>
                     <form className="mt-8" onSubmit={handleSubmit}>
                         <label htmlFor="bank" className="block">
                             <select value={selectedBank} onChange={handleSelectChange} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="bank">
