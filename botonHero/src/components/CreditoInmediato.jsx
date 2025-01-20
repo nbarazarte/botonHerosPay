@@ -6,6 +6,7 @@ import Swal from 'sweetalert2'
 import Lottie from "lottie-react";
 import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
 import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
+import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const CreditoInmediato = () => {
@@ -25,6 +26,8 @@ const CreditoInmediato = () => {
     const [bankOptions, setBankOptions] = useState([]);
     const nacionalidad = ['V', 'E'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
+
+    const [loading, setLoading] = useState(false);
 
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
@@ -96,6 +99,8 @@ const CreditoInmediato = () => {
         if (!selectedNacionalidad || !cedula) { setError('Indíque nacionalidad y cédula'); return; }
         if (!selectedCodigoArea || !telefono) { setError('Indíque código y teléfono'); return; }
 
+        setLoading(true);
+
         try {
             const postData = {
                 Banco: selectedBank,
@@ -106,6 +111,9 @@ const CreditoInmediato = () => {
             };
 
             console.log(postData);
+
+            // Simula un retraso de 3 segundos
+            //await new Promise(resolve => setTimeout(resolve, 3000));
 
             // Primera petición POST: Api de Mi Banco
             const response = await axios.post('http://localhost:3001/CreditoInmediato', postData);
@@ -132,6 +140,8 @@ const CreditoInmediato = () => {
         } catch (err) {
             setError('error');
             setToken(null);
+        } finally {
+            setLoading(false); // Oculta el loading
         }
     };
 
@@ -153,66 +163,76 @@ const CreditoInmediato = () => {
         <div className="p-8 flex-1">
             <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
                 <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
-                    <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
-                    {error && (
+                    <h1 className="text-2xl font-semibold text-gray-900 p-10">Crédito Inmediato</h1>
+
+                    {loading ? (
                         <div className="flex justify-center items-center">
-                            <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
-                                <div className="flex justify-center items-center text-center">
-                                    <div>
-                                        <p className="text-sm">{error}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {token ? (
-                        <div>
-                            <div className="flex justify-center items-center">
-                                <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
-
-                                    <div className="flex justify-center items-center text-center">
-                                        <div className='justify-center items-center' >
-
-                                            <div className="flex flex-row justify-center items-center gap-1">
-                                                <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
-                                                <p className="text-sm">¡Aprobado!</p>
-                                            </div>
-
-                                            <div className="flex flex-row justify-center items-center gap-1">
-                                                <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
-                                                <p className="text-sm justify-center items-center">
-                                                    Token de acceso: <span className='font-bold'>{token.token}</span>
-                                                </p>
-
-                                                <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
-                                                    <FontAwesomeIcon icon="fa-regular fa-copy" />
-                                                </button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
+                            <Lottie animationData={loadingLottie} loop={false} style={{ width: '50px', height: '50px' }} />
                         </div>
                     ) : (
 
                         <>
-                            {errorPago && (
+                            {error && (
                                 <div className="flex justify-center items-center">
                                     <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
                                         <div className="flex justify-center items-center text-center">
                                             <div>
-                                                <p className="text-sm">{errorPago}</p>
+                                                <p className="text-sm">{error}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             )}
+
+                            {token ? (
+
+                                <div className="flex justify-center items-center">
+                                    <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
+
+                                        <div className="flex justify-center items-center text-center">
+                                            <div className='justify-center items-center' >
+
+                                                <div className="flex flex-row justify-center items-center gap-1">
+                                                    <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
+                                                    <p className="text-sm">¡Aprobado!</p>
+                                                </div>
+
+                                                <div className="flex flex-row justify-center items-center gap-1">
+                                                    <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
+                                                    <p className="text-sm justify-center items-center">
+                                                        Token de acceso: <span className='font-bold'>{token.token}</span>
+                                                    </p>
+
+                                                    <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
+                                                        <FontAwesomeIcon icon="fa-regular fa-copy" />
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            ) : (
+                                <>
+                                    {errorPago && (
+                                        <div className="flex justify-center items-center">
+                                            <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
+                                                <div className="flex justify-center items-center text-center">
+                                                    <div>
+                                                        <p className="text-sm">{errorPago}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </>
                     )}
 
-                    <form className="mt-12" onSubmit={handleSubmit}>
+                    <form className="mt-8" onSubmit={handleSubmit}>
                         <label htmlFor="bank" className="block">
                             <select value={selectedBank} onChange={handleSelectChange} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="bank">
                                 <option value="" disabled>Bancos</option>
@@ -302,11 +322,8 @@ const CreditoInmediato = () => {
                                                 />
                                         </div>'
                                 ></iframe>
-
-
                             </div>
                         ) : (
-
                             <>
                                 <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">Verificar</button>
                             </>
