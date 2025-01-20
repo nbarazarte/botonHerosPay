@@ -8,7 +8,7 @@ const usuariosRouter = require('./routes/routes.js');
 app.use(cors());
 
 app.use(express.json());
-app.use('/tokens', usuariosRouter);
+app.use('/heros', usuariosRouter);
 
 app.get('/', (req, res) => {
     res.send('API, HEROS TECHNOLOGY!');
