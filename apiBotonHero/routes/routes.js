@@ -1,11 +1,34 @@
+// routes/routes.js
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // Asegúrate de importar la configuración de tu conexión
+const pool = require('../db');
+const autenticarToken = require('../middlewares/autenticarToken'); // Asegúrate de que no use desestructuración
+
+router.use(autenticarToken); // Usa el middleware aqui para proteger todas las rutas
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = process.env.SECRET_KEY;
+
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    const user = {}; // Reemplázalo con la lógica real para buscar el usuario
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (!validPassword) {
+        return res.status(400).send('Contraseña incorrecta.');
+    }
+
+    const token = jwt.sign({ id: user._id, name: user.name }, SECRET_KEY, { expiresIn: '1h' });
+    res.send({ token });
+});
+
 
 // Obtener todos los bancos
 router.get('/bancos', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM bancos order by codigo_banco asc');
+        const result = await pool.query('SELECT * FROM bancos ORDER BY codigo_banco asc');
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
@@ -13,13 +36,12 @@ router.get('/bancos', async (req, res) => {
     }
 });
 
-// Buscar id del banco por codigo:
+// Buscar id del banco por código
 router.get('/buscar_banco', async (req, res) => {
     try {
-        const { codigo } = req.query;  // Extrae 'codigo' desde la consulta de la URL
+        const { codigo } = req.query;
         const result = await pool.query('SELECT id FROM bancos WHERE codigo_banco = $1 ORDER BY id DESC LIMIT 1', [codigo]);
         res.json(result.rows[0]);
-        //res.json(result.rows);  // Esta línea está comentada (opcional)
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
@@ -31,7 +53,6 @@ router.get('/buscar_token', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM tokens WHERE used = false ORDER BY id DESC LIMIT 1');
         res.json(result.rows[0]);
-        //res.json(result.rows);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
@@ -41,7 +62,7 @@ router.get('/buscar_token', async (req, res) => {
 // Actualizar campo used de un token
 router.put('/:id', async (req, res) => {
     try {
-        const { used } = req.body; // Obtenemos el valor de "used" del cuerpo de la solicitud
+        const { used } = req.body;
         const result = await pool.query(
             'UPDATE tokens SET used = $1 WHERE id = $2 RETURNING *',
             [used, req.params.id]
@@ -56,13 +77,12 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Buscar cliente:
+// Buscar cliente
 router.get('/buscar_cliente', async (req, res) => {
     try {
-        const { cedula } = req.query;  // Extrae 'cedula' desde la consulta de la URL
+        const { cedula } = req.query;
         const result = await pool.query('SELECT id FROM clientes WHERE cedula = $1 ORDER BY id DESC LIMIT 1', [cedula]);
         res.json(result.rows[0]);
-        //res.json(result.rows);  // Esta línea está comentada (opcional)
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
@@ -89,7 +109,7 @@ router.post('/cliente_tokens', async (req, res) => {
             'INSERT INTO public.cliente_tokens (cliente_id, token_id, fecha_creacion) VALUES ($1, $2, CURRENT_TIMESTAMP) RETURNING *',
             [cliente_id, token_id]
         );
-        res.status(201).json(result.rows[0]);  // Devuelve el registro insertado
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
@@ -99,12 +119,12 @@ router.post('/cliente_tokens', async (req, res) => {
 // Insertar datos en la tabla transac
 router.post('/crear_transac', async (req, res) => {
     try {
-        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion } = req.body;  // Captura los datos desde el cuerpo de la petición
+        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion } = req.body;
         const result = await pool.query(
             'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *',
             [cliente_token_id, telefono, banco_id, monto, referencia, descripcion]
         );
-        res.status(201).json(result.rows[0]);  // Devuelve el registro insertado
+        res.status(201).json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');

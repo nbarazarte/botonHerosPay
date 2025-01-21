@@ -92,6 +92,18 @@ const CreditoInmediato = () => {
         fetchBanks();
     }, []);
 
+
+    const apiEndpoint = 'http://localhost:3000/heros';
+    const getData = async () => {
+        try {
+            const response = await axios.get(apiEndpoint, { headers: { 'Authorization': `Bearer ${process.env.REACT_APP_SECRET_KEY}` } });
+            console.log(response.data);
+        } catch (error) { console.error('There was an error!', error); }
+    };
+
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
