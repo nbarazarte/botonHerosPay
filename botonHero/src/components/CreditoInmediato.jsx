@@ -80,7 +80,12 @@ const CreditoInmediato = ({ tokenApi }) => {
     /*     useEffect(() => {
             const fetchBanks = async () => {
                 try {
-                    const response = await axios.get('http://localhost:3000/heros/bancos');
+    
+                    const response = await axios.get('http://localhost:3000/heros/bancos', {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
+                    });
                     setBankOptions(response.data);
                 } catch (error) {
                     console.error(error);
@@ -93,7 +98,7 @@ const CreditoInmediato = ({ tokenApi }) => {
     useEffect(() => {
         const fetchBanks = async () => {
             try {
-
+                // Primer intento: `localhost`
                 const response = await axios.get('http://localhost:3000/heros/bancos', {
                     headers: {
                         'Authorization': `Bearer ${tokenApi}`
@@ -101,12 +106,25 @@ const CreditoInmediato = ({ tokenApi }) => {
                 });
                 setBankOptions(response.data);
             } catch (error) {
-                console.error(error);
+                //console.error("Fallo en localhost. Intentando segunda URL...", error);
+
+                try {
+                    // Segundo intento: `192.168.111.210`
+                    const response = await axios.get('http://192.168.111.210/apiBotonHero/heros/bancos', {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
+                    });
+                    setBankOptions(response.data);
+                } catch (error) {
+                    console.error("Fallo en ambas URL:", error);
+                }
             }
         };
 
         fetchBanks();
     }, []);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -138,85 +156,155 @@ const CreditoInmediato = ({ tokenApi }) => {
 
             if (miBanco.data.code === 'ACCP') {
                 try {
-                    // Api de Heros Technology Segunda petición GET: Solicita un token para asignarlo
-                    const token = await axios.get('http://localhost:3000/heros/buscar_token', {
-                        headers: {
-                            'Authorization': `Bearer ${tokenApi}`
-                        }
-                    });
+                    // Intento de obtención del token
+                    let token;
+                    try {
+                        token = await axios.get('http://localhost:3000/heros/buscar_token', {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    } catch (error) {
+                        console.log("Fallo en localhost. Intentando segunda URL...");
+                        token = await axios.get('http://192.168.111.210/apiBotonHero/heros/buscar_token', {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    }
 
                     setToken(token.data);
                     setError('');
 
-                    // Api de Heros Technology Tercera petición PUT: Actualiza el token para marcarlo como usado 
-                    await axios.put(`http://localhost:3000/heros/${token.data.id}`, { used: true }, {
-                        headers: {
-                            'Authorization': `Bearer ${tokenApi}`
-                        }
-                    });
+                    // Actualización del token
+                    try {
+                        await axios.put(`http://localhost:3000/heros/${token.data.id}`, { used: true }, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    } catch (error) {
+                        await axios.put(`http://192.168.111.210/apiBotonHero/heros/${token.data.id}`, { used: true }, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    }
 
                     // Obtener id del banco usando el codigo del banco
-                    const banco = await axios.get(`http://localhost:3000/heros/buscar_banco?codigo=${postData.Banco}`, {
-                        headers: {
-                            'Authorization': `Bearer ${tokenApi}`
-                        }
-                    });
+                    let banco;
+                    try {
+                        banco = await axios.get(`http://localhost:3000/heros/buscar_banco?codigo=${postData.Banco}`, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    } catch (error) {
+                        banco = await axios.get(`http://192.168.111.210/apiBotonHero/heros/buscar_banco?codigo=${postData.Banco}`, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    }
 
                     let cliente = null;
                     let cliente_id = null;
 
                     // Obtener id del cliente usando la cedula
-                    cliente = await axios.get(`http://localhost:3000/heros/buscar_cliente?cedula=${postData.Cedula}`, {
-                        headers: {
-                            'Authorization': `Bearer ${tokenApi}`
-                        }
-                    });
+                    try {
+                        cliente = await axios.get(`http://localhost:3000/heros/buscar_cliente?cedula=${postData.Cedula}`, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    } catch (error) {
+                        cliente = await axios.get(`http://192.168.111.210/apiBotonHero/heros/buscar_cliente?cedula=${postData.Cedula}`, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    }
 
                     if (cliente.data.id) {
                         cliente_id = cliente.data.id;
                     } else {
                         // Guardo al cliente:
-                        cliente = await axios.post('http://localhost:3000/heros/crear_cliente', { cedula: postData.Cedula }, {
-                            headers: {
-                                'Authorization': `Bearer ${tokenApi}`
-                            }
-                        });
+                        try {
+                            cliente = await axios.post('http://localhost:3000/heros/crear_cliente', { cedula: postData.Cedula }, {
+                                headers: {
+                                    'Authorization': `Bearer ${tokenApi}`
+                                }
+                            });
+                        } catch (error) {
+                            cliente = await axios.post('http://192.168.111.210/apiBotonHero/heros/crear_cliente', { cedula: postData.Cedula }, {
+                                headers: {
+                                    'Authorization': `Bearer ${tokenApi}`
+                                }
+                            });
+                        }
                         cliente_id = cliente.data.id;
                     }
 
                     // Guardo el cliente_id y token_id
-                    const cliente_token = await axios.post('http://localhost:3000/heros/cliente_tokens', {
-                        cliente_id: cliente_id,
-                        token_id: token.data.id
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${tokenApi}`
-                        }
-                    });
+                    let cliente_token;
+                    try {
+                        cliente_token = await axios.post('http://localhost:3000/heros/cliente_tokens', {
+                            cliente_id: cliente_id,
+                            token_id: token.data.id
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    } catch (error) {
+                        cliente_token = await axios.post('http://192.168.111.210/apiBotonHero/heros/cliente_tokens', {
+                            cliente_id: cliente_id,
+                            token_id: token.data.id
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    }
                     console.log(cliente_token.data);
 
                     // Guardo la transacción
-                    const transac = await axios.post('http://localhost:3000/heros/crear_transac', {
-                        cliente_token_id: cliente_token.data.id,
-                        telefono: postData.Telefono,
-                        banco_id: banco.data.id,
-                        monto: postData.Monto,
-                        referencia: miBanco.data.reference,
-                        descripcion: ''
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${tokenApi}`
-                        }
-                    });
+                    let transac;
+                    try {
+                        transac = await axios.post('http://localhost:3000/heros/crear_transac', {
+                            cliente_token_id: cliente_token.data.id,
+                            telefono: postData.Telefono,
+                            banco_id: banco.data.id,
+                            monto: postData.Monto,
+                            referencia: miBanco.data.reference,
+                            descripcion: ''
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    } catch (error) {
+                        transac = await axios.post('http://192.168.111.210/apiBotonHero/heros/crear_transac', {
+                            cliente_token_id: cliente_token.data.id,
+                            telefono: postData.Telefono,
+                            banco_id: banco.data.id,
+                            monto: postData.Monto,
+                            referencia: miBanco.data.reference,
+                            descripcion: ''
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                    }
                     console.log(transac.data);
 
                 } catch (err) {
                     setErrorPago("Ha ocurrido un error con el token");
                     setToken(null);
                 }
-            } else {
-                setErrorPago("Ha ocurrido un error con el pago");
             }
+
         } catch (err) {
             setError('error');
             setToken(null);
