@@ -9,7 +9,7 @@ import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const CreditoInmediato = () => {
+const CreditoInmediato = ({ tokenApi }) => {
 
     const [selectedNacionalidad, setSelectedNacionalidad] = useState('');
     const [cedula, setCedula] = useState('');
@@ -26,9 +26,7 @@ const CreditoInmediato = () => {
     const [bankOptions, setBankOptions] = useState([]);
     const nacionalidad = ['V', 'E'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
-
     const [loading, setLoading] = useState(false);
-
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
 
@@ -79,10 +77,28 @@ const CreditoInmediato = () => {
     };
 
     // Llamo a la lista de los bancos nacionales
+    /*     useEffect(() => {
+            const fetchBanks = async () => {
+                try {
+                    const response = await axios.get('http://localhost:3000/heros/bancos');
+                    setBankOptions(response.data);
+                } catch (error) {
+                    console.error(error);
+                }
+            };
+    
+            fetchBanks();
+        }, []); */
+
     useEffect(() => {
         const fetchBanks = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/heros/bancos');
+
+                const response = await axios.get('http://localhost:3000/heros/bancos', {
+                    headers: {
+                        'Authorization': `Bearer ${tokenApi}`
+                    }
+                });
                 setBankOptions(response.data);
             } catch (error) {
                 console.error(error);
@@ -92,26 +108,16 @@ const CreditoInmediato = () => {
         fetchBanks();
     }, []);
 
-
-    const apiEndpoint = 'http://localhost:3000/heros';
-    const getData = async () => {
-        try {
-            const response = await axios.get(apiEndpoint, { headers: { 'Authorization': `Bearer ${process.env.REACT_APP_SECRET_KEY}` } });
-            console.log(response.data);
-        } catch (error) { console.error('There was an error!', error); }
-    };
-
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!selectedBank) { setError('Seleccione un banco'); return; }
-        if (!selectedNacionalidad || !cedula) { setError('Indíque nacionalidad y cédula'); return; }
-        if (!selectedCodigoArea || !telefono) { setError('Indíque código y teléfono'); return; }
+        if (!selectedNacionalidad || !cedula) { setError('Indique nacionalidad y cédula'); return; }
+        if (!selectedCodigoArea || !telefono) { setError('Indique código y teléfono'); return; }
 
         setLoading(true);
+
+        const tokenApi = localStorage.getItem('token'); // Obtener el token de localStorage
 
         try {
             const postData = {
@@ -122,50 +128,70 @@ const CreditoInmediato = () => {
                 Concepto: concepto
             };
 
-            //console.log(postData);
-
-            // Simula un retraso de 3 segundos
-            //await new Promise(resolve => setTimeout(resolve, 3000));
-
             // Primera petición POST: Api de Mi Banco
-            const miBanco = await axios.post('http://localhost:3001/CreditoInmediato', postData);
+            const miBanco = await axios.post('http://localhost:3001/CreditoInmediato', postData, {
+                headers: {
+                    'Authorization': `Bearer ${tokenApi}`
+                }
+            });
             setError('');
 
             if (miBanco.data.code === 'ACCP') {
                 try {
                     // Api de Heros Technology Segunda petición GET: Solicita un token para asignarlo
-                    const token = await axios.get('http://localhost:3000/heros/buscar_token');
+                    const token = await axios.get('http://localhost:3000/heros/buscar_token', {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
+                    });
+
                     setToken(token.data);
                     setError('');
 
                     // Api de Heros Technology Tercera petición PUT: Actualiza el token para marcarlo como usado 
-                    await axios.put(`http://localhost:3000/heros/${token.data.id}`, { used: true });
-
-                    // console.log(postData);
-                    // console.log(postData.Cedula);
-                    // console.log(miBanco.data);
+                    await axios.put(`http://localhost:3000/heros/${token.data.id}`, { used: true }, {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
+                    });
 
                     // Obtener id del banco usando el codigo del banco
-                    const banco = await axios.get(`http://localhost:3000/heros/buscar_banco?codigo=${postData.Banco}`);
+                    const banco = await axios.get(`http://localhost:3000/heros/buscar_banco?codigo=${postData.Banco}`, {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
+                    });
 
                     let cliente = null;
                     let cliente_id = null;
 
                     // Obtener id del cliente usando la cedula
-                    cliente = await axios.get(`http://localhost:3000/heros/buscar_cliente?cedula=${postData.Cedula}`);
+                    cliente = await axios.get(`http://localhost:3000/heros/buscar_cliente?cedula=${postData.Cedula}`, {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
+                    });
 
                     if (cliente.data.id) {
-                        cliente_id = cliente.data.id
+                        cliente_id = cliente.data.id;
                     } else {
                         // Guardo al cliente:
-                        cliente = await axios.post('http://localhost:3000/heros/crear_cliente', { cedula: postData.Cedula });
-                        cliente_id = cliente.data.id
+                        cliente = await axios.post('http://localhost:3000/heros/crear_cliente', { cedula: postData.Cedula }, {
+                            headers: {
+                                'Authorization': `Bearer ${tokenApi}`
+                            }
+                        });
+                        cliente_id = cliente.data.id;
                     }
 
                     // Guardo el cliente_id y token_id
                     const cliente_token = await axios.post('http://localhost:3000/heros/cliente_tokens', {
                         cliente_id: cliente_id,
                         token_id: token.data.id
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
                     });
                     console.log(cliente_token.data);
 
@@ -177,6 +203,10 @@ const CreditoInmediato = () => {
                         monto: postData.Monto,
                         referencia: miBanco.data.reference,
                         descripcion: ''
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${tokenApi}`
+                        }
                     });
                     console.log(transac.data);
 

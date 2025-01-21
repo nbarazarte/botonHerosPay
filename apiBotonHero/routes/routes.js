@@ -3,27 +3,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const autenticarToken = require('../middlewares/autenticarToken'); // Asegúrate de que no use desestructuración
-
 router.use(autenticarToken); // Usa el middleware aqui para proteger todas las rutas
-
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const SECRET_KEY = process.env.SECRET_KEY;
-
-router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-
-    const user = {}; // Reemplázalo con la lógica real para buscar el usuario
-    const validPassword = await bcrypt.compare(password, user.password);
-
-    if (!validPassword) {
-        return res.status(400).send('Contraseña incorrecta.');
-    }
-
-    const token = jwt.sign({ id: user._id, name: user.name }, SECRET_KEY, { expiresIn: '1h' });
-    res.send({ token });
-});
-
 
 // Obtener todos los bancos
 router.get('/bancos', async (req, res) => {
