@@ -116,81 +116,57 @@ const CreditoInmediato = () => {
             //await new Promise(resolve => setTimeout(resolve, 3000));
 
             // Primera petición POST: Api de Mi Banco
-            const response = await axios.post('http://localhost:3001/CreditoInmediato', postData);
+            const miBanco = await axios.post('http://localhost:3001/CreditoInmediato', postData);
             setError('');
 
-            if (response.data.code === 'ACCP') {
+            if (miBanco.data.code === 'ACCP') {
                 try {
                     // Api de Heros Technology Segunda petición GET: Solicita un token para asignarlo
-                    const secondResponse = await axios.get('http://localhost:3000/heros/buscar_token');
-                    //console.log(secondResponse.data);
-                    setToken(secondResponse.data);
+                    const token = await axios.get('http://localhost:3000/heros/buscar_token');
+                    setToken(token.data);
                     setError('');
 
                     // Api de Heros Technology Tercera petición PUT: Actualiza el token para marcarlo como usado 
-                    await axios.put(`http://localhost:3000/heros/${secondResponse.data.id}`, { used: true });
+                    await axios.put(`http://localhost:3000/heros/${token.data.id}`, { used: true });
 
-                    /*                     console.log(postData);
-                                        console.log(postData.Cedula);
-                                        console.log(response.data); */
-
-                    // ........... aqui va la lógica para el guardar los datos de la transaccion del cliente .............
-
-                    // Obtener cliente_id usando la cedula
-                    const clienteResponse = await axios.get(`http://localhost:3000/heros/buscar_cliente?cedula=${postData.Cedula}`);
-                    const cliente_id = clienteResponse.data.id;
-                    //console.log(cliente_id);
+                    // console.log(postData);
+                    // console.log(postData.Cedula);
+                    // console.log(miBanco.data);
 
                     // Obtener id del banco usando el codigo del banco
-                    const bancoResponse = await axios.get(`http://localhost:3000/heros/buscar_banco?codigo=${postData.Banco}`);
-                    ;
-                    console.log(bancoResponse.data.id);
+                    const banco = await axios.get(`http://localhost:3000/heros/buscar_banco?codigo=${postData.Banco}`);
 
-                    if (cliente_id) {
+                    let cliente = null;
+                    let cliente_id = null;
 
-                        // Guardo el cliente_id y token_id
-                        const fourResponse = await axios.post('http://localhost:3000/heros/cliente_tokens', {
-                            cliente_id: cliente_id,
-                            token_id: secondResponse.data.id
-                        });
-                        console.log(fourResponse.data);
+                    // Obtener id del cliente usando la cedula
+                    cliente = await axios.get(`http://localhost:3000/heros/buscar_cliente?cedula=${postData.Cedula}`);
 
-                        // Guardo la transacción
-                        const fiveResponse = await axios.post('http://localhost:3000/heros/crear_transac', {
-                            cliente_token_id: fourResponse.data.id,
-                            telefono: postData.Telefono,
-                            banco_id: bancoResponse.data.id,
-                            monto: postData.Monto,
-                            referencia: response.data.reference,
-                            descripcion: ''
-                        });
-                        console.log(fiveResponse.data);
-
+                    if (cliente.data.id) {
+                        cliente_id = cliente.data.id
                     } else {
-
                         // Guardo al cliente:
-                        const thirdResponse = await axios.post('http://localhost:3000/heros/crear_cliente', { cedula: postData.Cedula });
-                        //console.log(thirdResponse.data);
-
-                        // Guardo el cliente_id y token_id
-                        const fourResponse = await axios.post('http://localhost:3000/heros/cliente_tokens', {
-                            cliente_id: thirdResponse.data.id,
-                            token_id: secondResponse.data.id
-                        });
-                        console.log(fourResponse.data);
-
-                        // Guardo la transacción
-                        const fiveResponse = await axios.post('http://localhost:3000/heros/crear_transac', {
-                            cliente_token_id: fourResponse.data.id,
-                            telefono: postData.Telefono,
-                            banco_id: bancoResponse.data.id,
-                            monto: postData.Monto,
-                            referencia: response.data.reference,
-                            descripcion: ''
-                        });
-                        console.log(fiveResponse.data);
-
+                        cliente = await axios.post('http://localhost:3000/heros/crear_cliente', { cedula: postData.Cedula });
+                        cliente_id = cliente.data.id
                     }
+
+                    // Guardo el cliente_id y token_id
+                    const cliente_token = await axios.post('http://localhost:3000/heros/cliente_tokens', {
+                        cliente_id: cliente_id,
+                        token_id: token.data.id
+                    });
+                    console.log(cliente_token.data);
+
+                    // Guardo la transacción
+                    const transac = await axios.post('http://localhost:3000/heros/crear_transac', {
+                        cliente_token_id: cliente_token.data.id,
+                        telefono: postData.Telefono,
+                        banco_id: banco.data.id,
+                        monto: postData.Monto,
+                        referencia: miBanco.data.reference,
+                        descripcion: ''
+                    });
+                    console.log(transac.data);
 
                 } catch (err) {
                     setErrorPago("Ha ocurrido un error con el token");
