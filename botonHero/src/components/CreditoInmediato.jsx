@@ -115,8 +115,8 @@ const CreditoInmediato = () => {
         e.preventDefault();
 
         if (!selectedBank) { setError('Seleccione un banco'); return; }
-        if (!selectedNacionalidad || !cedula) { setError('Indique nacionalidad y cédula'); return; }
-        if (!selectedCodigoArea || !telefono) { setError('Indique código y teléfono'); return; }
+        if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
+        if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
 
         setLoading(true);
 
