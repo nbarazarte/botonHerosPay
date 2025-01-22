@@ -24,7 +24,7 @@ const CreditoInmediato = () => {
     const [errorPago, setErrorPago] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [bankOptions, setBankOptions] = useState([]);
-    const nacionalidad = ['V', 'E'];
+    const nacionalidad = ['V', 'E', 'J'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
@@ -326,12 +326,12 @@ const CreditoInmediato = () => {
                                     <div className="relative flex-1">
                                         <input id="cedula" type="number"
                                             value={cedula}
-                                            placeholder="Cédula"
+                                            placeholder="Cédula/RIF."
                                             onChange={handleChangeCedula}
                                             //maxLength={8} 
                                             onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
                                             className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
-                                        <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula</label>
+                                        <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                     </div>
                                 </div>
 
