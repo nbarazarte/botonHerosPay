@@ -11,13 +11,13 @@ library.add(solidIcons, brandIcons, regularIcons) // Añade conjuntos de íconos
 
 import CreditoInmediato from './components/CreditoInmediato'
 
-const tokenApi = localStorage.getItem('token'); // Obtener el token de `localStorage`
+
 
 function App() {
 
   return (
     <>
-      <CreditoInmediato tokenApi={tokenApi} />
+      <CreditoInmediato />
     </>
   )
 }

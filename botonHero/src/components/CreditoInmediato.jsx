@@ -9,7 +9,7 @@ import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const CreditoInmediato = ({ tokenApi }) => {
+const CreditoInmediato = () => {
 
     const [selectedNacionalidad, setSelectedNacionalidad] = useState('');
     const [cedula, setCedula] = useState('');
@@ -29,9 +29,9 @@ const CreditoInmediato = ({ tokenApi }) => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
-
-    const urlLocal = 'http://localhost:3000/heros/';
-    const urlServidor = 'http://192.168.111.210/apiBotonHero/heros/';
+    const urlLocal = import.meta.env.REACT_APP_URL_LOCAL;
+    const urlServidor = import.meta.env.REACT_APP_URL_SERVIDOR;
+    const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
     const [url, seturl] = useState(urlLocal);
 
@@ -39,7 +39,7 @@ const CreditoInmediato = ({ tokenApi }) => {
     useEffect(() => {
         const checkURLs = async () => {
             try {
-                await axios.get(`${urlServidor}bancos`, { headers });
+                await axios.get(`${urlServidor}/bancos`, { headers });
                 seturl(urlServidor);
             } catch (error) {
                 // Manejo del error sin mostrar en la consola
