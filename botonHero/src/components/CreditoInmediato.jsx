@@ -306,7 +306,7 @@ const CreditoInmediato = ({ tokenApi }) => {
             }
 
         } catch (err) {
-            setError('error');
+            setError(err);//setError('error');
             setToken(null);
         } finally {
             setLoading(false); // Oculta el loading
