@@ -328,7 +328,9 @@ const CreditoInmediato = () => {
                                             value={cedula}
                                             placeholder="Cédula"
                                             onChange={handleChangeCedula}
-                                            maxLength={8} className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                            //maxLength={8} 
+                                            onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
+                                            className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                         <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula</label>
                                     </div>
                                 </div>
@@ -351,7 +353,9 @@ const CreditoInmediato = () => {
                                             value={telefono}
                                             placeholder="Teléfono"
                                             onChange={handleChangeTelefono}
-                                            maxLength={7} className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                            //maxLength={7} 
+                                            onInput={(e) => { e.target.value = e.target.value.slice(0, 7) }}
+                                            className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                         <label htmlFor="telefono" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Teléfono</label>
                                     </div>
 
