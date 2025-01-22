@@ -34,7 +34,7 @@ const CreditoInmediato = () => {
     const urlMibanco = import.meta.env.REACT_APP_URL_MIBANCO;
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
-    const [url, seturl] = useState(urlLocal);// si se va a trabajar local: urlLocal si se va a subir al servidor urlServidor
+    const [url, seturl] = useState(urlServidor);// si se va a trabajar local: urlLocal si se va a subir al servidor urlServidor
 
     const handleCopy = () => {
         //console.log('copiando');
