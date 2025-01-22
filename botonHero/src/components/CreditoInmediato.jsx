@@ -29,12 +29,22 @@ const CreditoInmediato = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
-    const urlLocal = import.meta.env.REACT_APP_URL_LOCAL;
-    const urlServidor = import.meta.env.REACT_APP_URL_SERVIDOR;
-    const urlMibanco = import.meta.env.REACT_APP_URL_MIBANCO;
+    const urlApiBotonLocal = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
+    const urlApiMiBancoLocal = import.meta.env.REACT_APP_URL_API_MIBANCO_LOCAL;
+    const urlApiBotonServidor = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
+    const urlApiMiBancoServidor = import.meta.env.REACT_APP_URL_API_MIBANCO_SERVIDOR;
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
-    const [url, seturl] = useState(urlServidor);// si se va a trabajar local: urlLocal si se va a subir al servidor urlServidor
+
+    // ###########################  NOTA  ###############################
+    // si se va a trabajar local:
+    //const [url, setUrl] = useState(urlApiBotonLocal);
+    //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoLocal);
+
+    // si se va a trabajar servidor:
+    const [url, setUrl] = useState(urlApiBotonServidor);
+    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
+    // ###################################################################
 
     const handleCopy = () => {
         //console.log('copiando');
@@ -51,6 +61,12 @@ const CreditoInmediato = () => {
     const handleSelectChangeNacionalidad = (e) => {
         setSelectedNacionalidad(e.target.value);
         setNacionalidadCedula(e.target.value + cedula);
+
+        // Limpiar el input de cedula si se selecciona 'V' o 'E'
+        if (e.target.value === 'V' || e.target.value === 'E' || e.target.value === 'J') {
+            setCedula('');
+        }
+
     };
 
     const handleChangeCedula = (e) => {
@@ -114,7 +130,7 @@ const CreditoInmediato = () => {
             };
 
             // Primera petición POST: Api de Mi Banco
-            const miBanco = await axios.post(`${urlMibanco}CreditoInmediato`, postData);
+            const miBanco = await axios.post(`${urlMibanco}`, postData);
             setError('');
 
             if (miBanco.data.code === 'ACCP') {
@@ -329,7 +345,10 @@ const CreditoInmediato = () => {
                                             placeholder="Cédula/RIF."
                                             onChange={handleChangeCedula}
                                             //maxLength={8} 
-                                            onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
+                                            onInput={(e) => {
+                                                const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
+                                                e.target.value = e.target.value.slice(0, maxLength);
+                                            }}
                                             className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                         <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                     </div>
