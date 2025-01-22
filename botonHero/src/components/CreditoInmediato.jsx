@@ -236,19 +236,19 @@ const CreditoInmediato = () => {
         }
     };
 
-    useEffect(() => {
-        if (token) {
-            setText(token.token);
-            handleCopy();
-            Swal.fire({
-                position: "center",
-                icon: "success",
-                title: `Token: ${token.token} copiado!`,
-                showConfirmButton: false,
-                timer: 1500
-            });
-        }
-    }, [token]);
+    /*     useEffect(() => {
+            if (token) {
+                setText(token.token);
+                handleCopy();
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: `Token: ${token.token} copiado!`,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        }, [token]); */
 
     return (
 
