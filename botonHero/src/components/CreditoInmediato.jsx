@@ -324,7 +324,7 @@ const CreditoInmediato = () => {
                                     </div>
 
                                     <div className="relative flex-1">
-                                        <input id="cedula" type="text"
+                                        <input id="cedula" type="number"
                                             value={cedula}
                                             placeholder="Cédula"
                                             onChange={handleChangeCedula}
@@ -347,7 +347,7 @@ const CreditoInmediato = () => {
                                     </div>
 
                                     <div className="mt-10 relative">
-                                        <input id="telefono" type="text"
+                                        <input id="telefono" type="number"
                                             value={telefono}
                                             placeholder="Teléfono"
                                             onChange={handleChangeTelefono}
