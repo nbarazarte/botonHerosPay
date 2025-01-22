@@ -30,6 +30,9 @@ const CreditoInmediato = ({ tokenApi }) => {
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
 
+    const urlLocal = 'http://localhost:3000/heros/';
+    const urlServidor = 'http://192.168.111.210/apiBotonHero/heros/';
+
     const handleCopy = () => {
         //console.log('copiando');
         copy(token.token, {
@@ -76,30 +79,11 @@ const CreditoInmediato = ({ tokenApi }) => {
         setMonto(e.target.value);
     };
 
-    // Llamo a la lista de los bancos nacionales
-    /*     useEffect(() => {
-            const fetchBanks = async () => {
-                try {
-    
-                    const response = await axios.get('http://localhost:3000/heros/bancos', {
-                        headers: {
-                            'Authorization': `Bearer ${tokenApi}`
-                        }
-                    });
-                    setBankOptions(response.data);
-                } catch (error) {
-                    console.error(error);
-                }
-            };
-    
-            fetchBanks();
-        }, []); */
-
     useEffect(() => {
         const fetchBanks = async () => {
             try {
                 // Primer intento: `localhost`
-                const response = await axios.get('http://localhost:3000/heros/bancos', {
+                const response = await axios.get(`${urlLocal}bancos`, {
                     headers: {
                         'Authorization': `Bearer ${tokenApi}`
                     }
@@ -110,7 +94,7 @@ const CreditoInmediato = ({ tokenApi }) => {
 
                 try {
                     // Segundo intento: `192.168.111.210`
-                    const response = await axios.get('http://192.168.111.210/apiBotonHero/heros/bancos', {
+                    const response = await axios.get(`${urlServidor}bancos`, {
                         headers: {
                             'Authorization': `Bearer ${tokenApi}`
                         }
@@ -155,14 +139,14 @@ const CreditoInmediato = ({ tokenApi }) => {
                     // Intento de obtención del token
                     let token;
                     try {
-                        token = await axios.get('http://localhost:3000/heros/buscar_token', {
+                        token = await axios.get(`${urlLocal}buscar_token`, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
                         });
                     } catch (error) {
                         console.log("Fallo en localhost. Intentando segunda URL...");
-                        token = await axios.get('http://192.168.111.210/apiBotonHero/heros/buscar_token', {
+                        token = await axios.get(`${urlServidor}buscar_token`, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
@@ -174,13 +158,13 @@ const CreditoInmediato = ({ tokenApi }) => {
 
                     // Actualización del token
                     try {
-                        await axios.put(`http://localhost:3000/heros/${token.data.id}`, { used: true }, {
+                        await axios.put(`${urlLocal}${token.data.id}`, { used: true }, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
                         });
                     } catch (error) {
-                        await axios.put(`http://192.168.111.210/apiBotonHero/heros/${token.data.id}`, { used: true }, {
+                        await axios.put(`${urlServidor}${token.data.id}`, { used: true }, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
@@ -190,13 +174,13 @@ const CreditoInmediato = ({ tokenApi }) => {
                     // Obtener id del banco usando el codigo del banco
                     let banco;
                     try {
-                        banco = await axios.get(`http://localhost:3000/heros/buscar_banco?codigo=${postData.Banco}`, {
+                        banco = await axios.get(`${urlLocal}buscar_banco?codigo=${postData.Banco}`, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
                         });
                     } catch (error) {
-                        banco = await axios.get(`http://192.168.111.210/apiBotonHero/heros/buscar_banco?codigo=${postData.Banco}`, {
+                        banco = await axios.get(`${urlServidor}buscar_banco?codigo=${postData.Banco}`, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
@@ -208,13 +192,13 @@ const CreditoInmediato = ({ tokenApi }) => {
 
                     // Obtener id del cliente usando la cedula
                     try {
-                        cliente = await axios.get(`http://localhost:3000/heros/buscar_cliente?cedula=${postData.Cedula}`, {
+                        cliente = await axios.get(`${urlLocal}buscar_cliente?cedula=${postData.Cedula}`, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
                         });
                     } catch (error) {
-                        cliente = await axios.get(`http://192.168.111.210/apiBotonHero/heros/buscar_cliente?cedula=${postData.Cedula}`, {
+                        cliente = await axios.get(`${urlServidor}buscar_cliente?cedula=${postData.Cedula}`, {
                             headers: {
                                 'Authorization': `Bearer ${tokenApi}`
                             }
@@ -226,13 +210,13 @@ const CreditoInmediato = ({ tokenApi }) => {
                     } else {
                         // Guardo al cliente:
                         try {
-                            cliente = await axios.post('http://localhost:3000/heros/crear_cliente', { cedula: postData.Cedula }, {
+                            cliente = await axios.post(`${urlLocal}crear_cliente`, { cedula: postData.Cedula }, {
                                 headers: {
                                     'Authorization': `Bearer ${tokenApi}`
                                 }
                             });
                         } catch (error) {
-                            cliente = await axios.post('http://192.168.111.210/apiBotonHero/heros/crear_cliente', { cedula: postData.Cedula }, {
+                            cliente = await axios.post(`${urlServidor}crear_cliente`, { cedula: postData.Cedula }, {
                                 headers: {
                                     'Authorization': `Bearer ${tokenApi}`
                                 }
@@ -244,7 +228,7 @@ const CreditoInmediato = ({ tokenApi }) => {
                     // Guardo el cliente_id y token_id
                     let cliente_token;
                     try {
-                        cliente_token = await axios.post('http://localhost:3000/heros/cliente_tokens', {
+                        cliente_token = await axios.post(`${urlLocal}cliente_tokens`, {
                             cliente_id: cliente_id,
                             token_id: token.data.id
                         }, {
@@ -253,7 +237,7 @@ const CreditoInmediato = ({ tokenApi }) => {
                             }
                         });
                     } catch (error) {
-                        cliente_token = await axios.post('http://192.168.111.210/apiBotonHero/heros/cliente_tokens', {
+                        cliente_token = await axios.post(`${urlServidor}cliente_tokens`, {
                             cliente_id: cliente_id,
                             token_id: token.data.id
                         }, {
@@ -267,7 +251,7 @@ const CreditoInmediato = ({ tokenApi }) => {
                     // Guardo la transacción
                     let transac;
                     try {
-                        transac = await axios.post('http://localhost:3000/heros/crear_transac', {
+                        transac = await axios.post(`${urlLocal}crear_transac`, {
                             cliente_token_id: cliente_token.data.id,
                             telefono: postData.Telefono,
                             banco_id: banco.data.id,
@@ -280,7 +264,7 @@ const CreditoInmediato = ({ tokenApi }) => {
                             }
                         });
                     } catch (error) {
-                        transac = await axios.post('http://192.168.111.210/apiBotonHero/heros/crear_transac', {
+                        transac = await axios.post(`${urlServidor}crear_transac`, {
                             cliente_token_id: cliente_token.data.id,
                             telefono: postData.Telefono,
                             banco_id: banco.data.id,
