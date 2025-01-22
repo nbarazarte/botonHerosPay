@@ -43,7 +43,7 @@ const CreditoInmediato = () => {
                 seturl(urlServidor);
             } catch (error) {
                 // Manejo del error sin mostrar en la consola
-                console.clear();
+                //console.clear();
             }
 
             try {
@@ -51,9 +51,9 @@ const CreditoInmediato = () => {
                 seturl(urlLocal);
             } catch (error) {
                 // Manejo del error sin mostrar en la consola
-                console.clear();
+                //console.clear();
             }
-            console.clear();
+            //console.clear();
         };
 
         checkURLs();
@@ -229,7 +229,8 @@ const CreditoInmediato = () => {
             }
 
         } catch (err) {
-            setError(err);//setError('error');
+            setError(err);
+            console.error("Error-->:", err);
             setToken(null);
         } finally {
             setLoading(false); // Oculta el loading
