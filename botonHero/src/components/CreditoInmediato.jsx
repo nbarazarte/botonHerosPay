@@ -328,7 +328,7 @@ const CreditoInmediato = ({ tokenApi }) => {
     }, [token]);
 
     return (
-        <div className="p-8 flex-1">
+        <div className="flex-1">
             <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
                 <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
                     <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
