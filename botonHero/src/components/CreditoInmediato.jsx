@@ -33,31 +33,31 @@ const CreditoInmediato = () => {
     const urlServidor = import.meta.env.REACT_APP_URL_SERVIDOR;
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
-    const [url, seturl] = useState(urlLocal);
+    const [url, seturl] = useState(urlServidor);
 
     // Esto es para que trabaje en el servidor o localmente
-    useEffect(() => {
-        const checkURLs = async () => {
-            try {
-                await axios.get(`${urlServidor}/bancos`, { headers });
-                seturl(urlServidor);
-            } catch (error) {
-                // Manejo del error sin mostrar en la consola
+    /*     useEffect(() => {
+            const checkURLs = async () => {
+                try {
+                    await axios.get(`${urlServidor}/bancos`, { headers });
+                    seturl(urlServidor);
+                } catch (error) {
+                    // Manejo del error sin mostrar en la consola
+                    //console.clear();
+                }
+    
+                try {
+                    await axios.get(`${urlLocal}bancos`, { headers });
+                    seturl(urlLocal);
+                } catch (error) {
+                    // Manejo del error sin mostrar en la consola
+                    //console.clear();
+                }
                 //console.clear();
-            }
-
-            try {
-                await axios.get(`${urlLocal}bancos`, { headers });
-                seturl(urlLocal);
-            } catch (error) {
-                // Manejo del error sin mostrar en la consola
-                //console.clear();
-            }
-            //console.clear();
-        };
-
-        checkURLs();
-    }, []);
+            };
+    
+            checkURLs();
+        }, []); */
 
     //console.log(url);
 
