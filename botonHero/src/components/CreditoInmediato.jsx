@@ -31,6 +31,7 @@ const CreditoInmediato = () => {
     const [copied, setCopied] = useState(false);
     const urlLocal = import.meta.env.REACT_APP_URL_LOCAL;
     const urlServidor = import.meta.env.REACT_APP_URL_SERVIDOR;
+    const urlMibanco = import.meta.env.REACT_APP_URL_MIBANCO;
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
     const [url, seturl] = useState(urlServidor);
@@ -141,7 +142,7 @@ const CreditoInmediato = () => {
             };
 
             // Primera petición POST: Api de Mi Banco
-            const miBanco = await axios.post('http://localhost:3001/CreditoInmediato', postData);
+            const miBanco = await axios.post(`${urlMibanco}CreditoInmediato`, postData);
             setError('');
 
             if (miBanco.data.code === 'ACCP') {
