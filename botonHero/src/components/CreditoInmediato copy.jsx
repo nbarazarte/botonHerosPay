@@ -35,28 +35,26 @@ const CreditoInmediato = ({ tokenApi }) => {
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
     const [url, seturl] = useState(urlLocal);
 
-    // Esto es para que trabaje en el servidor o localmente
     useEffect(() => {
         const checkURLs = async () => {
+
             try {
                 await axios.get(`${urlServidor}bancos`, { headers });
                 seturl(urlServidor);
             } catch (error) {
-                // Manejo del error sin mostrar en la consola
-                console.clear();
+
+                try {
+                    await axios.get(`${urlLocal}bancos`, { headers });
+                    seturl(urlLocal);
+                } catch (error) {
+                    console.error("Fallo en ambas URL:", error);
+                }
             }
 
-            try {
-                await axios.get(`${urlLocal}bancos`, { headers });
-                seturl(urlLocal);
-            } catch (error) {
-                // Manejo del error sin mostrar en la consola
-                console.clear();
-            }
-            console.clear();
         };
 
         checkURLs();
+
     }, []);
 
     //console.log(url);
@@ -110,10 +108,16 @@ const CreditoInmediato = ({ tokenApi }) => {
     useEffect(() => {
         const fetchBanks = async () => {
             try {
-                const response = await axios.get(`${url}bancos`, { headers });
+                const response = await axios.get(`${urlLocal}bancos`, { headers });
                 setBankOptions(response.data);
             } catch (error) {
-                console.error("Error obteniendo bancos:", error);
+                //console.error("Fallo en localhost. Intentando segunda URL...", error);
+                try {
+                    const response = await axios.get(`${urlServidor}bancos`, { headers });
+                    setBankOptions(response.data);
+                } catch (error) {
+                    console.error("Fallo en ambas URL:", error);
+                }
             }
         };
 
@@ -149,9 +153,10 @@ const CreditoInmediato = ({ tokenApi }) => {
                     // Intento de obtención del token
                     let token;
                     try {
-                        token = await axios.get(`${url}buscar_token`, { headers });
+                        token = await axios.get(`${urlLocal}buscar_token`, { headers });
                     } catch (error) {
-                        console.log("Fallo obteniendo token:", error);
+                        console.log("Fallo en localhost. Intentando segunda URL...");
+                        token = await axios.get(`${urlServidor}buscar_token`, { headers });
                     }
 
                     setToken(token.data);
@@ -159,17 +164,17 @@ const CreditoInmediato = ({ tokenApi }) => {
 
                     // Actualización del token
                     try {
-                        await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
+                        await axios.put(`${urlLocal}${token.data.id}`, { used: true }, { headers });
                     } catch (error) {
-                        console.log("Fallo actualizando token:", error);
+                        await axios.put(`${urlServidor}${token.data.id}`, { used: true }, { headers });
                     }
 
                     // Obtener id del banco usando el codigo del banco
                     let banco;
                     try {
-                        banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
+                        banco = await axios.get(`${urlLocal}buscar_banco?codigo=${postData.Banco}`, { headers });
                     } catch (error) {
-                        console.log("Fallo obteniendo id del banco:", error);
+                        banco = await axios.get(`${urlServidor}buscar_banco?codigo=${postData.Banco}`, { headers });
                     }
 
                     let cliente = null;
@@ -177,9 +182,9 @@ const CreditoInmediato = ({ tokenApi }) => {
 
                     // Obtener id del cliente usando la cedula
                     try {
-                        cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
+                        cliente = await axios.get(`${urlLocal}buscar_cliente?cedula=${postData.Cedula}`, { headers });
                     } catch (error) {
-                        console.log("Fallo obteniendo id del cliente:", error);
+                        cliente = await axios.get(`${urlServidor}buscar_cliente?cedula=${postData.Cedula}`, { headers });
                     }
 
                     if (cliente.data.id) {
@@ -187,9 +192,9 @@ const CreditoInmediato = ({ tokenApi }) => {
                     } else {
                         // Guardo al cliente:
                         try {
-                            cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
+                            cliente = await axios.post(`${urlLocal}crear_cliente`, { cedula: postData.Cedula }, { headers });
                         } catch (error) {
-                            console.log("Fallo guardando cliente:", error);
+                            cliente = await axios.post(`${urlServidor}crear_cliente`, { cedula: postData.Cedula }, { headers });
                         }
                         cliente_id = cliente.data.id;
                     }
@@ -197,19 +202,22 @@ const CreditoInmediato = ({ tokenApi }) => {
                     // Guardo el cliente_id y token_id
                     let cliente_token;
                     try {
-                        cliente_token = await axios.post(`${url}cliente_tokens`, {
+                        cliente_token = await axios.post(`${urlLocal}cliente_tokens`, {
                             cliente_id: cliente_id,
                             token_id: token.data.id
                         }, { headers });
                     } catch (error) {
-                        console.log("Fallo guardando en cliente_token:", error);
+                        cliente_token = await axios.post(`${urlServidor}cliente_tokens`, {
+                            cliente_id: cliente_id,
+                            token_id: token.data.id
+                        }, { headers });
                     }
-                    //console.log(cliente_token.data);
+                    console.log(cliente_token.data);
 
                     // Guardo la transacción
                     let transac;
                     try {
-                        transac = await axios.post(`${url}crear_transac`, {
+                        transac = await axios.post(`${urlLocal}crear_transac`, {
                             cliente_token_id: cliente_token.data.id,
                             telefono: postData.Telefono,
                             banco_id: banco.data.id,
@@ -218,9 +226,16 @@ const CreditoInmediato = ({ tokenApi }) => {
                             descripcion: ''
                         }, { headers });
                     } catch (error) {
-                        console.log("Fallo guardando la transaccion:", error);
+                        transac = await axios.post(`${urlServidor}crear_transac`, {
+                            cliente_token_id: cliente_token.data.id,
+                            telefono: postData.Telefono,
+                            banco_id: banco.data.id,
+                            monto: postData.Monto,
+                            referencia: miBanco.data.reference,
+                            descripcion: ''
+                        }, { headers });
                     }
-                    //console.log(transac.data);
+                    console.log(transac.data);
 
                 } catch (err) {
                     setErrorPago("Ha ocurrido un error con el token");
