@@ -29,10 +29,16 @@ const CreditoInmediato = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
+
     const urlApiBotonLocal = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
     const urlApiMiBancoLocal = import.meta.env.REACT_APP_URL_API_MIBANCO_LOCAL;
+
     const urlApiBotonServidor = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
     const urlApiMiBancoServidor = import.meta.env.REACT_APP_URL_API_MIBANCO_SERVIDOR;
+
+    const urlApiBotonServidorPublico = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
+    const urlApiMiBancoServidorPublico = import.meta.env.REACT_APP_URL_API_MIBANCO_SERVIDOR_PUBLICO;
+
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
 
@@ -42,8 +48,12 @@ const CreditoInmediato = () => {
     //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoLocal);
 
     // si se va a trabajar servidor:
-    const [url, setUrl] = useState(urlApiBotonServidor);
-    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
+    //const [url, setUrl] = useState(urlApiBotonServidor);
+    //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
+
+    // si se va a trabajar servidor Publico:
+    const [url, setUrl] = useState(urlApiBotonServidorPublico);
+    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidorPublico);
     // ###################################################################
 
     const handleCopy = () => {
