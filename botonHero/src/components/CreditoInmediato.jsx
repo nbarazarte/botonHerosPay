@@ -147,11 +147,7 @@ const CreditoInmediato = ({ tokenApi }) => {
             };
 
             // Primera petición POST: Api de Mi Banco
-            const miBanco = await axios.post('http://localhost:3001/CreditoInmediato', postData, {
-                headers: {
-                    'Authorization': `Bearer ${tokenApi}`
-                }
-            });
+            const miBanco = await axios.post('http://localhost:3001/CreditoInmediato', postData);
             setError('');
 
             if (miBanco.data.code === 'ACCP') {
