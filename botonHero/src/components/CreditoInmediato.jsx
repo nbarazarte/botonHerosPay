@@ -7,6 +7,7 @@ import Lottie from "lottie-react";
 import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
 import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
+import formError from "../assets/LottieFiles/Animation - 1737642103978.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const CreditoInmediato = () => {
@@ -268,7 +269,8 @@ const CreditoInmediato = () => {
                                 <div className="flex justify-center items-center">
                                     <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
                                         <div className="flex justify-center items-center text-center">
-                                            <div>
+                                            <div className="flex flex-row justify-center items-center gap-1">
+                                                <Lottie animationData={formError} loop={true} style={{ width: '45px', height: '45px' }} />
                                                 <p className="text-sm">{error}</p>
                                             </div>
                                         </div>
