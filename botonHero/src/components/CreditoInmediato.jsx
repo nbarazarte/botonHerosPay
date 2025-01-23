@@ -124,7 +124,7 @@ const CreditoInmediato = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedBank) { setError('Seleccione un banco'); return; }
+        if (!selectedBank) { setError('Seleccione un Banco'); return; }
         if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
         if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
 
