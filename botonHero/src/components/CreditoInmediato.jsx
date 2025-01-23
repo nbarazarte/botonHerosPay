@@ -252,83 +252,84 @@ const CreditoInmediato = () => {
 
     return (
 
-        <>
-            {!bankOptions.length == 0 ? (
-                <div className="flex-1">
-                    <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
-                        <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
-                            <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
+        <div className="flex-1">
+            <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
+                <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
+                    <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1>
 
-                            {loading ? (
+                    {loading ? (
+                        <div className="flex justify-center items-center">
+                            <Lottie animationData={loadingLottie} loop={false} style={{ width: '50px', height: '50px' }} />
+                        </div>
+                    ) : (
+
+                        <>
+                            {error && (
                                 <div className="flex justify-center items-center">
-                                    <Lottie animationData={loadingLottie} loop={false} style={{ width: '50px', height: '50px' }} />
+                                    <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
+                                        <div className="flex justify-center items-center text-center">
+                                            <div>
+                                                <p className="text-sm">{error}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            ) : (
+                            )}
 
+                            {token ? (
+
+                                <div className="flex justify-center items-center">
+                                    <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
+
+                                        <div className="flex justify-center items-center text-center">
+                                            <div className='justify-center items-center' >
+
+                                                <div className="flex flex-row justify-center items-center gap-1">
+                                                    <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
+                                                    <p className="text-sm">¡Aprobado!</p>
+                                                </div>
+
+                                                <div className="flex flex-row justify-center items-center gap-1">
+                                                    <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
+                                                    <p className="text-sm justify-center items-center">
+                                                        Token de acceso: <span className='font-bold'>{token.token}</span>
+                                                    </p>
+
+                                                    <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
+                                                        <FontAwesomeIcon icon="fa-regular fa-copy" />
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            ) : (
                                 <>
-                                    {error && (
+                                    {errorPago && (
                                         <div className="flex justify-center items-center">
                                             <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
                                                 <div className="flex justify-center items-center text-center">
                                                     <div>
-                                                        <p className="text-sm">{error}</p>
+                                                        <p className="text-sm">{errorPago}</p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    )}
-
-                                    {token ? (
-
-                                        <div className="flex justify-center items-center">
-                                            <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
-
-                                                <div className="flex justify-center items-center text-center">
-                                                    <div className='justify-center items-center' >
-
-                                                        <div className="flex flex-row justify-center items-center gap-1">
-                                                            <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
-                                                            <p className="text-sm">¡Aprobado!</p>
-                                                        </div>
-
-                                                        <div className="flex flex-row justify-center items-center gap-1">
-                                                            <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
-                                                            <p className="text-sm justify-center items-center">
-                                                                Token de acceso: <span className='font-bold'>{token.token}</span>
-                                                            </p>
-
-                                                            <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
-                                                                <FontAwesomeIcon icon="fa-regular fa-copy" />
-                                                            </button>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                    ) : (
-                                        <>
-                                            {errorPago && (
-                                                <div className="flex justify-center items-center">
-                                                    <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
-                                                        <div className="flex justify-center items-center text-center">
-                                                            <div>
-                                                                <p className="text-sm">{errorPago}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </>
                                     )}
                                 </>
                             )}
+                        </>
+                    )}
 
+                    {!bankOptions.length == 0 ? (
+
+                        <div className="flex flex-1 h-full justify-center items-center">
                             <form className="mt-8" onSubmit={handleSubmit}>
                                 <label htmlFor="bank" className="block">
-                                    <select value={selectedBank} onChange={handleSelectChange} className="block w-full mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="bank">
+                                    <select value={selectedBank} onChange={handleSelectChange} className="pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="bank">
                                         <option value="" disabled>Bancos</option>
                                         {bankOptions.map((bank) => (
                                             <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
@@ -336,12 +337,14 @@ const CreditoInmediato = () => {
                                     </select>
                                 </label>
 
-                                <div className="mt-10 flex flex-row justify-between gap-1">
+                                <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
 
                                     <div className="relative flex-1">
                                         <label htmlFor="nacionalidad" className="block">
-                                            <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad} className="block border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="nacionalidad">
-                                                <option value="" disabled>Nac.</option>
+                                            <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
+                                                className="pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="nacionalidad">
+
+                                                <option value="" disabled>N/J</option>
                                                 {nacionalidad.map((nacio, index) => (
                                                     <option key={index} value={nacio}>{nacio}</option>
                                                 ))}
@@ -359,16 +362,17 @@ const CreditoInmediato = () => {
                                                 const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
                                                 e.target.value = e.target.value.slice(0, maxLength);
                                             }}
-                                            className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                            className="w-36 peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                         <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                     </div>
                                 </div>
 
-                                <div className="mt-1 flex flex-row justify-between gap-1">
+                                <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
 
-                                    <div className="mt-10 relative">
+                                    <div className="relative flex-1">
                                         <label htmlFor="telefono" className="block">
-                                            <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea} className="block border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="telefono">
+                                            <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea}
+                                                className="pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-black" id="telefono">
                                                 <option value="" disabled>Cód.</option>
                                                 {codigosArea.map((codigoArea, index) => (
                                                     <option key={index} value={codigoArea}>{codigoArea}</option>
@@ -377,32 +381,32 @@ const CreditoInmediato = () => {
                                         </label>
                                     </div>
 
-                                    <div className="mt-10 relative">
+                                    <div className="relative flex-1">
                                         <input id="telefono" type="number"
                                             value={telefono}
                                             placeholder="Teléfono"
                                             onChange={handleChangeTelefono}
                                             //maxLength={7} 
                                             onInput={(e) => { e.target.value = e.target.value.slice(0, 7) }}
-                                            className="peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                            className="w-36 peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                         <label htmlFor="telefono" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Teléfono</label>
                                     </div>
 
                                 </div>
 
-                                <div className="mt-10 relative">
+                                <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                     <input id="monto" type="text"
                                         value={`$${monto}`}
                                         onChange={handleChangeMonto}
-                                        readOnly className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                        readOnly className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                     <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
                                 </div>
 
-                                <div className="mt-10 relative">
+                                <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                     <input id="concepto" type="text"
                                         value={concepto}
                                         onChange={handleChangeConcepto}
-                                        placeholder="Concepto" className="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
+                                        readOnly className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-rose-600" />
                                     <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
                                 </div>
 
@@ -431,19 +435,16 @@ const CreditoInmediato = () => {
 
                             </form>
                         </div>
-                    </div>
-                </div>
 
-            ) : (
-                <div className="flex-1 justify-center items-center">
-                    <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
-                        <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
+                    ) : (
+                        <div className="flex flex-1 h-full justify-center items-center">
                             <Lottie animationData={loadingLottie} loop={false} style={{ width: '100px', height: '100px' }} />
                         </div>
-                    </div>
+                    )}
+
                 </div>
-            )}
-        </>
+            </div>
+        </div>
     )
 };
 
