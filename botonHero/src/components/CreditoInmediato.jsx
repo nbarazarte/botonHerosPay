@@ -266,7 +266,7 @@ const CreditoInmediato = () => {
 
                         <>
                             {error ? (
-                                <div className="flex justify-center items-center">
+                                <div className="flex justify-center items-center pt-3">
                                     <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-60" role="alert">
                                         <div className="flex justify-center items-center text-center">
                                             <div>
@@ -277,7 +277,7 @@ const CreditoInmediato = () => {
                                 </div>
                             ) : (
 
-                                <div className="justify-center items-center">
+                                <div className="justify-center items-center pt-3">
 
                                     <div className="justify-center items-center text-center">
 
