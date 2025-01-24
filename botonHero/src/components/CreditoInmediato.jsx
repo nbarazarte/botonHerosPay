@@ -254,7 +254,7 @@ const CreditoInmediato = () => {
     return (
 
         <div className="flex-1">
-            <div className="w-80 rounded-3xl mx-auto overflow-hidden shadow-xl"> {/* shadow-xl */}
+            <div className="w-80 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
                 <div className="bg-white pb-8 rounded-tr-4xl">
                     {/* <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1> */}
 
@@ -267,10 +267,9 @@ const CreditoInmediato = () => {
                         <>
                             {error ? (
                                 <div className="flex justify-center items-center">
-                                    <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
+                                    <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-60" role="alert">
                                         <div className="flex justify-center items-center text-center">
-                                            <div className="flex flex-row justify-center items-center gap-1">
-                                                <Lottie animationData={formError} loop={true} style={{ width: '45px', height: '45px' }} />
+                                            <div>
                                                 <p className="text-sm">{error}</p>
                                             </div>
                                         </div>
