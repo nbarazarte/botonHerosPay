@@ -265,7 +265,7 @@ const CreditoInmediato = () => {
                     ) : (
 
                         <>
-                            {error && (
+                            {error ? (
                                 <div className="flex justify-center items-center">
                                     <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
                                         <div className="flex justify-center items-center text-center">
@@ -276,6 +276,18 @@ const CreditoInmediato = () => {
                                         </div>
                                     </div>
                                 </div>
+                            ) : (
+
+                                <div className="justify-center items-center">
+
+                                    <div className="justify-center items-center text-center">
+
+                                        <h1 className="text-2xl">Pasarela de Pagos</h1>
+                                        <h3 className="text-sm">Crédito Inmediato</h3>
+
+                                    </div>
+                                </div>
+
                             )}
 
                             {token ? (
