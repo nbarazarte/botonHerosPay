@@ -412,27 +412,10 @@ const CreditoInmediato = () => {
                                     <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
                                 </div>
 
-                                {token && !loading ? (
-                                    <div className='mt-10 px-4 py-2 '>
-                                        Aparece el otro formulario para pegar el token
-
-                                        <iframe
-                                            width="100%"
-                                            height="200"
-                                            className=""
-                                            srcDoc='
-                                        <div className="mt-10 relative">
-                                            <input id="token" type="text"
-                                                value=""
-                                                onChange=""
-                                                />
-                                        </div>'
-                                        ></iframe>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">Verificar</button>
-                                    </>
+                                {(!token || loading) && (
+                                    <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">
+                                        Verificar
+                                    </button>
                                 )}
 
                             </form>
