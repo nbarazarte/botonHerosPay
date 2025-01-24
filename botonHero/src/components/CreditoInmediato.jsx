@@ -254,8 +254,8 @@ const CreditoInmediato = () => {
     return (
 
         <div className="flex-1">
-            <div className="w-80 bg-white rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
-                <div className="px-10 pt-4 pb-8 bg-white rounded-tr-4xl">
+            <div className="w-80 bg-white mx-auto overflow-hidden "> {/* shadow-xl */}
+                <div className="px-10 bg-white">
                     {/* <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1> */}
 
                     {loading ? (
@@ -413,9 +413,11 @@ const CreditoInmediato = () => {
                                 </div>
 
                                 {(!token || loading) && (
-                                    <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">
-                                        Verificar
-                                    </button>
+                                    <div className='pb-2'>
+                                        <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">
+                                            Verificar
+                                        </button>
+                                    </div>
                                 )}
 
                             </form>
