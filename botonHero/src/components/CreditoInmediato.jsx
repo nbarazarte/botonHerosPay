@@ -53,8 +53,8 @@ const CreditoInmediato = () => {
     //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
 
     // si se va a trabajar servidor Publico:
-    const [url, setUrl] = useState(urlApiBotonServidor);
-    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
+    const [url, setUrl] = useState(urlApiBotonServidorPublico);
+    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidorPublico);
     // ###################################################################
 
     const handleCopy = () => {
