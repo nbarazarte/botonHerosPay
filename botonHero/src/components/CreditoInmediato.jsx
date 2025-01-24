@@ -53,8 +53,8 @@ const CreditoInmediato = () => {
     //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
 
     // si se va a trabajar servidor Publico:
-    const [url, setUrl] = useState(urlApiBotonServidor);
-    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
+    const [url, setUrl] = useState(urlApiBotonServidorPublico);
+    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidorPublico);
     // ###################################################################
 
     const handleCopy = () => {
@@ -292,7 +292,7 @@ const CreditoInmediato = () => {
                             {token ? (
 
                                 <div className="flex justify-center items-center">
-                                    <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-full" role="alert">
+                                    <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-60" role="alert">
 
                                         <div className="flex justify-center items-center text-center">
                                             <div className='justify-center items-center' >
