@@ -414,8 +414,12 @@ const CreditoInmediato = () => {
 
                                 {(!token || loading) && (
                                     <div className='pb-2'>
-                                        <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">
-                                            Verificar
+
+                                        {/*                                         <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">
+                                            VERIFICAR
+                                        </button> */}
+                                        <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
+                                            VERIFICAR
                                         </button>
                                     </div>
                                 )}
