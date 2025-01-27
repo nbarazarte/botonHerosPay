@@ -8,7 +8,8 @@ import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
 import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import formError from "../assets/LottieFiles/Animation - 1737642103978.json";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import CryptoJS from 'crypto-js';
 
 const CreditoInmediato = () => {
 
@@ -40,6 +41,9 @@ const CreditoInmediato = () => {
     const urlApiBotonServidorPublico = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
     const urlApiMiBancoServidorPublico = import.meta.env.REACT_APP_URL_API_MIBANCO_SERVIDOR_PUBLICO;
 
+    const urlApiMiBancoProduccion = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
+    const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
+
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
 
@@ -54,8 +58,11 @@ const CreditoInmediato = () => {
 
     // si se va a trabajar servidor Publico:
     const [url, setUrl] = useState(urlApiBotonServidor);
-    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
+    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoProduccion);
+    const [urlMibancoConsulta, setUrlMiBancoConsulta] = useState(urlApiMiBancoConsulta);
     // ###################################################################
+
+    const [hmac, setHmac] = useState('');
 
     const handleCopy = () => {
         //console.log('copiando');
@@ -132,19 +139,54 @@ const CreditoInmediato = () => {
         setLoading(true);
 
         try {
+
+            const tokenCommerce = '1fa04963ddd562bc85ceda56767eeb7898fc42042f7f3ff19cc0394fae9709d2';
+
             const postData = {
                 Banco: selectedBank,
-                Cedula: nacionalidadCedula,
-                Telefono: numTelefono,
                 Monto: monto,
+                Telefono: numTelefono,
+                Cedula: nacionalidadCedula,
                 Concepto: concepto
             };
 
             // Primera petición POST: Api de Mi Banco
-            const miBanco = await axios.post(`${urlMibanco}`, postData);
+            //const miBanco = await axios.post(`${urlMibanco}`, postData);
+            const { Banco, Cedula, Telefono, Monto } = postData;
+            const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}`;
+            const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+            const hmac = hash.toString(CryptoJS.enc.Hex);
+
+            const headersMiBanco = {
+                'Content-Type': 'application/json',
+                'Authorization': `${hmac}`,
+                'Commerce': `${tokenCommerce}`
+            };
+
+            //const miBancoOtp = await axios.post(`${urlMibancoOtp}`, postData, { headers: headersMiBanco });
+            const miBanco = await axios.post(`${urlMibanco}`, postData, { headers: headersMiBanco });
             setError('');
 
-            if (miBanco.data.code === 'ACCP') {
+            console.log({ id: miBanco.data.id });
+
+            const dataToHash2 = `${miBanco.data.id}`;
+            const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
+            const hmac2 = hash2.toString(CryptoJS.enc.Hex);
+
+            const headersMiBanco2 = {
+                'Content-Type': 'application/json',
+                'Authorization': `${hmac2}`,
+                'Commerce': `${tokenCommerce}`
+            };
+
+
+            //const miBancoOtp = await axios.post(`${urlMibancoOtp}`, postData, { headers: headersMiBanco });
+            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, { id: miBanco.data.id }, { headers: headersMiBanco2 });
+            setError('');
+
+            console.log(miBancoConsulta.data);
+
+            if (miBancoConsulta.data.code === 'ACCP') {
                 try {
                     // Intento de obtención del token
                     let token;
@@ -228,6 +270,7 @@ const CreditoInmediato = () => {
                 }
             }
 
+
         } catch (err) {
             setError(err);
             console.error("Error-->:", err);
@@ -254,6 +297,7 @@ const CreditoInmediato = () => {
     return (
 
         <div className="flex-1">
+
             <div className="w-80 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
                 <div className="bg-white pb-8 rounded-tr-4xl">
                     {/* <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1> */}
@@ -399,7 +443,7 @@ const CreditoInmediato = () => {
 
                                 <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                     <input id="monto" type="text"
-                                        value={`$${monto}`}
+                                        value={`${monto}`}
                                         onChange={handleChangeMonto}
                                         readOnly className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                     <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
