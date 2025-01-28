@@ -57,11 +57,11 @@ const CreditoInmediato = () => {
     //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
 
     // si se va a trabajar servidor Publico:
-    const [url, setUrl] = useState(urlApiBotonServidor);
+    const [url, setUrl] = useState(urlApiBotonLocal);
     const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoProduccion);
     const [urlMibancoConsulta, setUrlMiBancoConsulta] = useState(urlApiMiBancoConsulta);
     // ###################################################################
-
+    const tokenCommerce = '1fa04963ddd562bc85ceda56767eeb7898fc42042f7f3ff19cc0394fae9709d2';
     const [hmac, setHmac] = useState('');
 
     const handleCopy = () => {
@@ -139,9 +139,6 @@ const CreditoInmediato = () => {
         setLoading(true);
 
         try {
-
-            const tokenCommerce = '1fa04963ddd562bc85ceda56767eeb7898fc42042f7f3ff19cc0394fae9709d2';
-
             const postData = {
                 Banco: selectedBank,
                 Monto: monto,
@@ -150,43 +147,26 @@ const CreditoInmediato = () => {
                 Concepto: concepto
             };
 
-            // Primera petición POST: Api de Mi Banco
-            //const miBanco = await axios.post(`${urlMibanco}`, postData);
-            const { Banco, Cedula, Telefono, Monto } = postData;
-            const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}`;
-            const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-            const hmac = hash.toString(CryptoJS.enc.Hex);
-
-            const headersMiBanco = {
-                'Content-Type': 'application/json',
-                'Authorization': `${hmac}`,
-                'Commerce': `${tokenCommerce}`
-            };
-
-            //const miBancoOtp = await axios.post(`${urlMibancoOtp}`, postData, { headers: headersMiBanco });
-            const miBanco = await axios.post(`${urlMibanco}`, postData, { headers: headersMiBanco });
             setError('');
 
-            console.log({ id: miBanco.data.id });
+            const data1 = await handleCreditoInmediato(postData);
 
-            const dataToHash2 = `${miBanco.data.id}`;
-            const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
-            const hmac2 = hash2.toString(CryptoJS.enc.Hex);
+            //console.log(data1);
 
-            const headersMiBanco2 = {
-                'Content-Type': 'application/json',
-                'Authorization': `${hmac2}`,
-                'Commerce': `${tokenCommerce}`
-            };
+            if (data1.code === 'AC00') {
+                //console.log(`Mensaje 1: ${data1.message}`);
+                //setError(data1.message);
 
+                const data2 = await handleConsulta(data1.id);
+                //const data2 = await handleConsulta('709458ac-6837-4def-a664-3d6c45047113');
 
-            //const miBancoOtp = await axios.post(`${urlMibancoOtp}`, postData, { headers: headersMiBanco });
-            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, { id: miBanco.data.id }, { headers: headersMiBanco2 });
-            setError('');
+                console.log(`Mensaje 2: ${data2.message}`);
+                setError(data2.message)
+                return
 
-            console.log(miBancoConsulta.data);
+            }
 
-            if (miBancoConsulta.data.code === 'ACCP') {
+            if (data1.code === 'ACCP') {
                 try {
                     // Intento de obtención del token
                     let token;
@@ -256,7 +236,7 @@ const CreditoInmediato = () => {
                             telefono: postData.Telefono,
                             banco_id: banco.data.id,
                             monto: postData.Monto,
-                            referencia: miBanco.data.reference,
+                            referencia: '1234',//miBanco.data.reference,
                             descripcion: ''
                         }, { headers });
                     } catch (error) {
@@ -270,7 +250,6 @@ const CreditoInmediato = () => {
                 }
             }
 
-
         } catch (err) {
             setError(err);
             console.error("Error-->:", err);
@@ -280,19 +259,54 @@ const CreditoInmediato = () => {
         }
     };
 
-    /*     useEffect(() => {
-            if (token) {
-                setText(token.token);
-                handleCopy();
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: `Token: ${token.token} copiado!`,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            }
-        }, [token]); */
+    const handleCreditoInmediato = async (postData) => {
+        try {
+            const { Banco, Cedula, Telefono, Monto, Concepto } = postData;
+            const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}`;
+            const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+            const hmac = hash.toString(CryptoJS.enc.Hex);
+
+            const headersMiBanco = {
+                'Content-Type': 'application/json',
+                'Authorization': `${hmac}`,
+                'Commerce': `${tokenCommerce}`
+            };
+
+            const miBanco = await axios.post(`${urlMibanco}`, postData, { headers: headersMiBanco });
+
+            setError('');
+            return miBanco.data;
+
+        } catch (error) {
+            console.error('Error al realizar la solicitud:', error);
+            setError('Ocurrió un error al procesar la solicitud');
+            return null;
+        }
+    }
+
+    const handleConsulta = async (id) => {
+        try {
+            const dataToHash2 = `${id}`;
+            const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
+            const hmac2 = hash2.toString(CryptoJS.enc.Hex);
+
+            const headersMiBanco2 = {
+                'Content-Type': 'application/json',
+                'Authorization': `${hmac2}`,
+                'Commerce': `${tokenCommerce}`
+            };
+
+            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, { id: id }, { headers: headersMiBanco2 });
+
+            setError('');
+            return miBancoConsulta.data;
+
+        } catch (error) {
+            console.error('Error al realizar la consulta:', error);
+            setError('Ocurrió un error al procesar la consulta');
+            return null;
+        }
+    };
 
     return (
 
@@ -311,7 +325,11 @@ const CreditoInmediato = () => {
                         <>
                             {error ? (
                                 <div className="flex justify-center items-center pt-3">
-                                    <div className="bg-orange-200 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60" role="alert">
+
+
+
+                                    <div className="flex flex-row justify-center items-center gap-1 bg-orange-200 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60">
+                                        <Lottie animationData={formError} loop={true} style={{ width: '40px', height: '40px' }} />
                                         <p className="text-sm">{error}</p>
                                     </div>
                                 </div>
