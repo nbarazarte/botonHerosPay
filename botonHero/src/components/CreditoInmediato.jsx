@@ -268,6 +268,9 @@ const CreditoInmediato = () => {
                         setErrorPago("Ha ocurrido un error con el token");
                         setToken(null);
                     }
+                } else {
+                    setError(data2.message);
+                    return
                 }
 
             } else {
@@ -357,8 +360,6 @@ const CreditoInmediato = () => {
                             {error ? (
                                 <div className="flex justify-center items-center pt-3">
 
-
-
                                     <div className="flex flex-row justify-center items-center gap-1 bg-orange-200 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60">
                                         <Lottie animationData={formError} loop={true} style={{ width: '40px', height: '40px' }} />
                                         <p className="text-sm">{error}</p>
@@ -423,7 +424,7 @@ const CreditoInmediato = () => {
                     {!bankOptions.length == 0 ? (
 
                         <div className="flex flex-1 h-full justify-center items-center">
-                            <form className="mt-8" onSubmit={handleSubmit}>
+                            <form className="mt-1" onSubmit={handleSubmit}>
                                 <label htmlFor="bank" className="block">
                                     <select value={selectedBank} onChange={handleSelectChange} className="pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="bank">
                                         <option value="" disabled className='text-center'>Bancos Nacionales</option>
