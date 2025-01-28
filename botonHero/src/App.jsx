@@ -25,6 +25,7 @@ function App() {
         </nav>
 
         <Routes>
+          <Route path="/" element={<DebitoInmediato />} />
           <Route path="/credito-inmediato" element={<CreditoInmediato />} />
           <Route path="/debito-inmediato" element={<DebitoInmediato />} />
         </Routes>
