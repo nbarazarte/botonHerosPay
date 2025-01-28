@@ -75,9 +75,10 @@ const CreditoInmediato = () => {
         setTimeout(() => setCopied(false), 3000); // Reset after 3 seconds
     };
 
-    const handleSelectChange = (event) => { setSelectedBank(event.target.value); };
+    const handleSelectChange = (event) => { setSelectedBank(event.target.value); setError(''); };
 
     const handleSelectChangeNacionalidad = (e) => {
+        setError('');
         setSelectedNacionalidad(e.target.value);
         setNacionalidadCedula(e.target.value + cedula);
 
@@ -89,6 +90,7 @@ const CreditoInmediato = () => {
     };
 
     const handleChangeCedula = (e) => {
+        setError('');
         const value = e.target.value;
         // Permitir solo números (0-9)
         const onlyNumbers = value.replace(/[^0-9]/g, '');
@@ -97,11 +99,13 @@ const CreditoInmediato = () => {
     };
 
     const handleSelectChangeCodigoArea = (e) => {
+        setError('');
         setSelectedCodigoArea(e.target.value);
         setNumTelefono(e.target.value + telefono);
     };
 
     const handleChangeTelefono = (e) => {
+        setError('');
         const value = e.target.value;
         // Permitir solo números (0-9)
         const onlyNumbers = value.replace(/[^0-9]/g, '');
