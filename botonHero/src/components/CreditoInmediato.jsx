@@ -7,7 +7,7 @@ import Lottie from "lottie-react";
 import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
 import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
-import formError from "../assets/LottieFiles/Animation - 1737642103978.json";
+import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
@@ -31,6 +31,7 @@ const CreditoInmediato = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
+    const [idCreditoInmediato, setIdCreditoInmediato] = useState()
 
     const urlApiBotonLocal = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
     const urlApiMiBancoLocal = import.meta.env.REACT_APP_URL_API_MIBANCO_LOCAL;
@@ -41,7 +42,7 @@ const CreditoInmediato = () => {
     const urlApiBotonServidorPublico = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
     const urlApiMiBancoServidorPublico = import.meta.env.REACT_APP_URL_API_MIBANCO_SERVIDOR_PUBLICO;
 
-    const urlApiMiBancoProduccion = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
+    const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
 
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
@@ -57,8 +58,8 @@ const CreditoInmediato = () => {
     //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
 
     // si se va a trabajar servidor Publico:
-    const [url, setUrl] = useState(urlApiBotonLocal);
-    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoProduccion);
+    const [url, setUrl] = useState(urlApiBotonServidor);
+    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoCreditoInmediato);
     const [urlMibancoConsulta, setUrlMiBancoConsulta] = useState(urlApiMiBancoConsulta);
     // ###################################################################
     const tokenCommerce = '1fa04963ddd562bc85ceda56767eeb7898fc42042f7f3ff19cc0394fae9709d2';
@@ -154,16 +155,12 @@ const CreditoInmediato = () => {
             //console.log(data1);
 
             if (data1.code === 'AC00') {
-                //console.log(`Mensaje 1: ${data1.message}`);
-                //setError(data1.message);
-
-                const data2 = await handleConsulta(data1.id);
-                //const data2 = await handleConsulta('709458ac-6837-4def-a664-3d6c45047113');
-
-                console.log(`Mensaje 2: ${data2.message}`);
-                setError(data2.message)
+                //console.log(data1.id);
+                // const data2 = await handleConsulta(data1.id);
+                // console.log(data2.message);
+                // setError(data2.message);
+                setError(data1.message);
                 return
-
             }
 
             if (data1.code === 'ACCP') {
@@ -172,8 +169,19 @@ const CreditoInmediato = () => {
                     let token;
                     try {
                         token = await axios.get(`${url}buscar_token`, { headers });
+
+                        if (token.data == '') {
+                            let msj = 'No hay tokens disponibles';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+
                     } catch (error) {
-                        console.log("Fallo obteniendo token:", error);
+                        let msj = 'Fallo obteniendo token';
+                        //console.log(msj, error);
+                        setError(msj);
+                        return
                     }
 
                     setToken(token.data);
@@ -183,7 +191,10 @@ const CreditoInmediato = () => {
                     try {
                         await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
                     } catch (error) {
-                        console.log("Fallo actualizando token:", error);
+                        let msj = 'No se actualizo el token';
+                        //console.log(msj, error);
+                        setError(msj);
+                        return
                     }
 
                     // Obtener id del banco usando el codigo del banco
@@ -191,7 +202,10 @@ const CreditoInmediato = () => {
                     try {
                         banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
                     } catch (error) {
-                        console.log("Fallo obteniendo id del banco:", error);
+                        let msj = 'Error id del banco';
+                        //console.log(msj, error);
+                        setError(msj);
+                        return
                     }
 
                     let cliente = null;
@@ -201,7 +215,10 @@ const CreditoInmediato = () => {
                     try {
                         cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
                     } catch (error) {
-                        console.log("Fallo obteniendo id del cliente:", error);
+                        let msj = 'Error id del cliente';
+                        //console.log(msj, error);
+                        setError(msj);
+                        return
                     }
 
                     if (cliente.data.id) {
@@ -211,7 +228,10 @@ const CreditoInmediato = () => {
                         try {
                             cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
                         } catch (error) {
-                            console.log("Fallo guardando cliente:", error);
+                            let msj = 'Error guardar cliente';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
                         }
                         cliente_id = cliente.data.id;
                     }
@@ -224,7 +244,10 @@ const CreditoInmediato = () => {
                             token_id: token.data.id
                         }, { headers });
                     } catch (error) {
-                        console.log("Fallo guardando en cliente_token:", error);
+                        let msj = 'Error guardar cliente_token';
+                        //console.log(msj, error);
+                        setError(msj);
+                        return
                     }
                     //console.log(cliente_token.data);
 
@@ -240,7 +263,10 @@ const CreditoInmediato = () => {
                             descripcion: ''
                         }, { headers });
                     } catch (error) {
-                        console.log("Fallo guardando la transaccion:", error);
+                        let msj = 'Error guardar transaccion';
+                        //console.log(msj, error);
+                        setError(msj);
+                        return
                     }
                     //console.log(transac.data);
 
@@ -296,7 +322,13 @@ const CreditoInmediato = () => {
                 'Commerce': `${tokenCommerce}`
             };
 
-            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, { id: id }, { headers: headersMiBanco2 });
+            const data = {
+                id: id
+            }
+
+            //console.log(data);
+
+            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco2 });
 
             setError('');
             return miBancoConsulta.data;
@@ -477,10 +509,6 @@ const CreditoInmediato = () => {
 
                                 {(!token || loading) && (
                                     <div className='pb-2'>
-
-                                        {/*                                         <button type="submit" className="mt-10 px-4 py-2 rounded bg-rose-500 hover:bg-rose-400 text-white font-semibold text-center block w-full focus:outline-none focus:ring focus:ring-offset-2 focus:ring-rose-500 focus:ring-opacity-80 cursor-pointer">
-                                            VERIFICAR
-                                        </button> */}
                                         <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
                                             VERIFICAR
                                         </button>
