@@ -1,0 +1,18 @@
+.menu {
+    list-style-type: none;
+    padding: 0;
+}
+
+.menu li {
+    display: inline;
+    margin-right: 10px;
+}
+
+.menu li a {
+    text-decoration: none;
+    color: blue;
+}
+
+.menu li a:hover {
+    text-decoration: underline;
+}
