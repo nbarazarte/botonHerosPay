@@ -16,6 +16,17 @@ router.get('/bancos', async (req, res) => {
     }
 });
 
+// Obtener todos los bancos que usan solo debito inmediato
+router.get('/bancosDebitoInmediato', async (req, res) => {
+    try {
+        const result = await pool.query(`select * from public.bancos where tipo = 'debito inmediato' ORDER BY codigo_banco asc`);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
 // Buscar id del banco por código
 router.get('/buscar_banco', async (req, res) => {
     try {

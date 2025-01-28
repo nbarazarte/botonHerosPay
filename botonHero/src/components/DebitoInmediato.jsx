@@ -117,7 +117,7 @@ const CreditoInmediato = () => {
     useEffect(() => {
         const fetchBanks = async () => {
             try {
-                const response = await axios.get(`${url}bancos`, { headers });
+                const response = await axios.get(`${url}bancosDebitoInmediato`, { headers });
                 setBankOptions(response.data);
             } catch (error) {
                 console.error("Error obteniendo bancos:", error);
