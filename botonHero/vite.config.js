@@ -4,5 +4,6 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  envPrefix: 'REACT_APP_'
+  envPrefix: 'REACT_APP_',
+  base: '/boton/'
 })
