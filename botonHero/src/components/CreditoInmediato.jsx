@@ -151,7 +151,7 @@ const CreditoInmediato = () => {
             setError('');
 
             const data1 = await handleCreditoInmediato(postData);
-            const data2 = {}
+            let data2 = {}
 
             if (data1.code === 'AC00') {
                 await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
