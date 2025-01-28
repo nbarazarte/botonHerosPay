@@ -345,7 +345,7 @@ const CreditoInmediato = () => {
 
                     {loading ? (
                         <div className="flex justify-center items-center">
-                            <Lottie animationData={loadingLottie} loop={true} style={{ width: '50px', height: '50px' }} />
+                            <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
                         </div>
                     ) : (
 
