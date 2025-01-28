@@ -152,14 +152,10 @@ const CreditoInmediato = () => {
 
             const data1 = await handleCreditoInmediato(postData);
 
-            //console.log(data1);
-
             if (data1.code === 'AC00') {
-                //console.log(data1.id);
-                // const data2 = await handleConsulta(data1.id);
-                // console.log(data2.message);
-                // setError(data2.message);
-                setError(data1.message);
+                await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
+                const data2 = await handleConsulta(data1.id)
+                setError(data2.message);
                 return
             }
 
@@ -312,6 +308,7 @@ const CreditoInmediato = () => {
 
     const handleConsulta = async (id) => {
         try {
+
             const dataToHash2 = `${id}`;
             const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
             const hmac2 = hash2.toString(CryptoJS.enc.Hex);
@@ -323,10 +320,8 @@ const CreditoInmediato = () => {
             };
 
             const data = {
-                id: id
+                id: `${id}`
             }
-
-            //console.log(data);
 
             const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco2 });
 
@@ -350,7 +345,7 @@ const CreditoInmediato = () => {
 
                     {loading ? (
                         <div className="flex justify-center items-center">
-                            <Lottie animationData={loadingLottie} loop={false} style={{ width: '50px', height: '50px' }} />
+                            <Lottie animationData={loadingLottie} loop={true} style={{ width: '50px', height: '50px' }} />
                         </div>
                     ) : (
 
