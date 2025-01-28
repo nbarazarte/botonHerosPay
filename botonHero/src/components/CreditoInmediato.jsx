@@ -151,125 +151,129 @@ const CreditoInmediato = () => {
             setError('');
 
             const data1 = await handleCreditoInmediato(postData);
+            const data2 = {}
 
             if (data1.code === 'AC00') {
                 await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
-                const data2 = await handleConsulta(data1.id)
-                setError(data2.message);
-                return
-            }
+                data2 = await handleConsulta(data1.id)
 
-            if (data1.code === 'ACCP') {
-                try {
-                    // Intento de obtención del token
-                    let token;
+                if (data2.code === 'ACCP') {
                     try {
-                        token = await axios.get(`${url}buscar_token`, { headers });
-
-                        if (token.data == '') {
-                            let msj = 'No hay tokens disponibles';
-                            //console.log(msj, error);
-                            setError(msj);
-                            return
-                        }
-
-                    } catch (error) {
-                        let msj = 'Fallo obteniendo token';
-                        //console.log(msj, error);
-                        setError(msj);
-                        return
-                    }
-
-                    setToken(token.data);
-                    setError('');
-
-                    // Actualización del token
-                    try {
-                        await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
-                    } catch (error) {
-                        let msj = 'No se actualizo el token';
-                        //console.log(msj, error);
-                        setError(msj);
-                        return
-                    }
-
-                    // Obtener id del banco usando el codigo del banco
-                    let banco;
-                    try {
-                        banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
-                    } catch (error) {
-                        let msj = 'Error id del banco';
-                        //console.log(msj, error);
-                        setError(msj);
-                        return
-                    }
-
-                    let cliente = null;
-                    let cliente_id = null;
-
-                    // Obtener id del cliente usando la cedula
-                    try {
-                        cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
-                    } catch (error) {
-                        let msj = 'Error id del cliente';
-                        //console.log(msj, error);
-                        setError(msj);
-                        return
-                    }
-
-                    if (cliente.data.id) {
-                        cliente_id = cliente.data.id;
-                    } else {
-                        // Guardo al cliente:
+                        // Intento de obtención del token
+                        let token;
                         try {
-                            cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
+                            token = await axios.get(`${url}buscar_token`, { headers });
+
+                            if (token.data == '') {
+                                let msj = 'No hay tokens disponibles';
+                                //console.log(msj, error);
+                                setError(msj);
+                                return
+                            }
+
                         } catch (error) {
-                            let msj = 'Error guardar cliente';
+                            let msj = 'Fallo obteniendo token';
                             //console.log(msj, error);
                             setError(msj);
                             return
                         }
-                        cliente_id = cliente.data.id;
-                    }
 
-                    // Guardo el cliente_id y token_id
-                    let cliente_token;
-                    try {
-                        cliente_token = await axios.post(`${url}cliente_tokens`, {
-                            cliente_id: cliente_id,
-                            token_id: token.data.id
-                        }, { headers });
-                    } catch (error) {
-                        let msj = 'Error guardar cliente_token';
-                        //console.log(msj, error);
-                        setError(msj);
-                        return
-                    }
-                    //console.log(cliente_token.data);
+                        setToken(token.data);
+                        setError('');
 
-                    // Guardo la transacción
-                    let transac;
-                    try {
-                        transac = await axios.post(`${url}crear_transac`, {
-                            cliente_token_id: cliente_token.data.id,
-                            telefono: postData.Telefono,
-                            banco_id: banco.data.id,
-                            monto: postData.Monto,
-                            referencia: '1234',//miBanco.data.reference,
-                            descripcion: ''
-                        }, { headers });
-                    } catch (error) {
-                        let msj = 'Error guardar transaccion';
-                        //console.log(msj, error);
-                        setError(msj);
-                        return
-                    }
-                    //console.log(transac.data);
+                        // Actualización del token
+                        try {
+                            await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
+                        } catch (error) {
+                            let msj = 'No se actualizo el token';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
 
-                } catch (err) {
-                    setErrorPago("Ha ocurrido un error con el token");
-                    setToken(null);
+                        // Obtener id del banco usando el codigo del banco
+                        let banco;
+                        try {
+                            banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
+                        } catch (error) {
+                            let msj = 'Error id del banco';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+
+                        let cliente = null;
+                        let cliente_id = null;
+
+                        // Obtener id del cliente usando la cedula
+                        try {
+                            cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
+                        } catch (error) {
+                            let msj = 'Error id del cliente';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+
+                        if (cliente.data.id) {
+                            cliente_id = cliente.data.id;
+                        } else {
+                            // Guardo al cliente:
+                            try {
+                                cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
+                            } catch (error) {
+                                let msj = 'Error guardar cliente';
+                                //console.log(msj, error);
+                                setError(msj);
+                                return
+                            }
+                            cliente_id = cliente.data.id;
+                        }
+
+                        // Guardo el cliente_id y token_id
+                        let cliente_token;
+                        try {
+                            cliente_token = await axios.post(`${url}cliente_tokens`, {
+                                cliente_id: cliente_id,
+                                token_id: token.data.id
+                            }, { headers });
+                        } catch (error) {
+                            let msj = 'Error guardar cliente_token';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+                        //console.log(cliente_token.data);
+
+                        // Guardo la transacción
+                        let transac;
+                        try {
+                            transac = await axios.post(`${url}crear_transac`, {
+                                cliente_token_id: cliente_token.data.id,
+                                telefono: postData.Telefono,
+                                banco_id: banco.data.id,
+                                monto: postData.Monto,
+                                referencia: '1234',//miBanco.data.reference,
+                                descripcion: ''
+                            }, { headers });
+                        } catch (error) {
+                            let msj = 'Error guardar transaccion';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+                        //console.log(transac.data);
+
+                    } catch (err) {
+                        setErrorPago("Ha ocurrido un error con el token");
+                        setToken(null);
+                    }
                 }
+
+            } else {
+
+                setError(data1.message);
+                return
             }
 
         } catch (err) {
