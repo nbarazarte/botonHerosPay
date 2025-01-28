@@ -31,39 +31,19 @@ const CreditoInmediato = () => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
-    const [idCreditoInmediato, setIdCreditoInmediato] = useState()
-
-    const urlApiBotonLocal = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
-    const urlApiMiBancoLocal = import.meta.env.REACT_APP_URL_API_MIBANCO_LOCAL;
-
-    const urlApiBotonServidor = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
-    const urlApiMiBancoServidor = import.meta.env.REACT_APP_URL_API_MIBANCO_SERVIDOR;
-
-    const urlApiBotonServidorPublico = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
-    const urlApiMiBancoServidorPublico = import.meta.env.REACT_APP_URL_API_MIBANCO_SERVIDOR_PUBLICO;
-
+    const [idCreditoInmediato, setIdCreditoInmediato] = useState();
+    const [hmac, setHmac] = useState('');
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
-
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
+    const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
-
     // ###########################  NOTA  ###############################
-    // si se va a trabajar local:
-    //const [url, setUrl] = useState(urlApiBotonLocal);
-    //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoLocal);
-
-    // si se va a trabajar servidor:
-    //const [url, setUrl] = useState(urlApiBotonServidor);
-    //const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoServidor);
-
-    // si se va a trabajar servidor Publico:
-    const [url, setUrl] = useState(urlApiBotonServidor);
+    const [url, setUrl] = useState(urlApiBoton);
     const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoCreditoInmediato);
     const [urlMibancoConsulta, setUrlMiBancoConsulta] = useState(urlApiMiBancoConsulta);
     // ###################################################################
-    const tokenCommerce = '1fa04963ddd562bc85ceda56767eeb7898fc42042f7f3ff19cc0394fae9709d2';
-    const [hmac, setHmac] = useState('');
 
     const handleCopy = () => {
         //console.log('copiando');
@@ -86,7 +66,6 @@ const CreditoInmediato = () => {
         if (e.target.value === 'V' || e.target.value === 'E' || e.target.value === 'J') {
             setCedula('');
         }
-
     };
 
     const handleChangeCedula = (e) => {
