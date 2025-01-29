@@ -33,7 +33,7 @@ const CreditoInmediato = () => {
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
@@ -101,16 +101,28 @@ const CreditoInmediato = () => {
     };
 
     useEffect(() => {
-        const fetchBanks = async () => {
+        const fetchBanksAndMonto = async () => {
+            // Pido los bancos que usan solo debito inmediato
             try {
-                const response = await axios.get(`${url}bancos`, { headers });
+                const response = await axios.get(`${url}bancosDebitoInmediato`, { headers });
                 setBankOptions(response.data);
             } catch (error) {
                 console.error("Error obteniendo bancos:", error);
             }
+
+            // Pido el monto de credito inmediato
+            try {
+                const response = await axios.get(`${url}creditoinmediato`, { headers });
+                setMonto(response.data[0].monto);
+                console.log(response.data[0].monto);
+
+            } catch (error) {
+                console.error("Error obteniendo monto:", error);
+            }
+
         };
 
-        fetchBanks();
+        fetchBanksAndMonto();
     }, []);
 
     const handleSubmit = async (e) => {

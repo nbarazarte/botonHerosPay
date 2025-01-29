@@ -5,6 +5,28 @@ const pool = require('../db');
 const autenticarToken = require('../middlewares/autenticarToken'); // Asegúrate de que no use desestructuración
 router.use(autenticarToken); // Usa el middleware aqui para proteger todas las rutas
 
+// Obtener monto los debito inmediato
+router.get('/debitoinmediato', async (req, res) => {
+    try {
+        const result = await pool.query(`SELECT monto FROM public.montos where tipo = 'debito inmediato'`);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Obtener monto los credito inmediato
+router.get('/creditoinmediato', async (req, res) => {
+    try {
+        const result = await pool.query(`SELECT monto FROM public.montos where tipo = 'credito inmediato'`);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
 // Obtener todos los bancos
 router.get('/bancos', async (req, res) => {
     try {
