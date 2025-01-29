@@ -201,10 +201,34 @@ const CreditoInmediato = () => {
             let data2 = {}
 
             if (data1.code === 'AC00') {
-                await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
-                data2 = await handleConsulta(data1.id)
+                // await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
+                // data2 = await handleConsulta(data1.id)
 
-                console.log(data2);
+                // console.log(data2);
+
+                const maxRetries = 20;
+                const delay = 2000; // 2 segundos
+                let attempts = 0;
+
+                const retryConsulta = async (id) => {
+                    while (attempts < maxRetries) {
+                        attempts++;
+                        try {
+                            data2 = await handleConsulta(id);
+                            //console.log(data2);
+
+                            if (data2.code !== 'AC00') {// esto lo hago porque la respuesta de la consulta no es la esperada
+                                break;
+                            }
+                        } catch (error) {
+                            console.error("Error en la consulta:", error);
+                        }
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                };
+
+                await retryConsulta(data1.id);
+
 
                 if (data2.code === 'ACCP') {
                     try {

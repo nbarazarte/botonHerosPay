@@ -152,7 +152,7 @@ const CreditoInmediato = () => {
                 //await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
                 //data2 = await handleConsulta(data1.id)
 
-                const maxRetries = 5;
+                const maxRetries = 20;
                 const delay = 2000; // 2 segundos
                 let attempts = 0;
 
