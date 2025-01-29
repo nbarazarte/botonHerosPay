@@ -22,9 +22,7 @@ const CreditoInmediato = () => {
     const [monto, setMonto] = useState('1.00');
     const [concepto, setConcepto] = useState('Pago de Internet');
     const [otp, setOtp] = useState('');
-
     const [dataForm, setDataForm] = useState({})
-
     const [token, setToken] = useState(null);
     const [error, setError] = useState('');
     const [errorPago, setErrorPago] = useState('');
@@ -42,6 +40,7 @@ const CreditoInmediato = () => {
     const urlApiMiBancoDebitoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
     const urlApiMiBancoGenerarOtp = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
     const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
+    const urlApiMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
@@ -51,6 +50,7 @@ const CreditoInmediato = () => {
     const [urlMibanco2, setUrlMiBanco2] = useState(urlApiMiBancoDebitoInmediato);
     const [urlMibanco3, setUrlMiBanco3] = useState(urlApiMiBancoGenerarOtp);
     const [urlMibancoConsulta, setUrlMiBancoConsulta] = useState(urlApiMiBancoConsulta);
+    const [urlMiBancoBcv, setUrlMiBancoBcv] = useState(urlApiMiBancoBcv)
     const [showOtpForm1, setShowOtpForm1] = useState(true);
     const [showOtpForm2, setShowOtpForm2] = useState(false);
     // ###################################################################
@@ -125,15 +125,54 @@ const CreditoInmediato = () => {
             }
 
             // Pido el monto de debito inmediato
+            let response;
             try {
-                const response = await axios.get(`${url}debitoinmediato`, { headers });
-                setMonto(response.data[0].monto);
-                console.log(response.data[0].monto);
+                response = await axios.get(`${url}debitoinmediato`, { headers });
+                // setMonto(response.data[0].monto);
+                //console.log(response.data[0].monto);
 
             } catch (error) {
                 console.error("Error obteniendo monto:", error);
             }
 
+            // Consulto la tasa del BCV del dia
+            try {
+                function obtenerFechaValor() {
+                    const fechaActual = new Date();
+                    const año = fechaActual.getFullYear();
+                    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                    const dia = String(fechaActual.getDate()).padStart(2, '0');
+                    return `${año}-${mes}-${dia}`;
+                }
+
+                const fechaValor = obtenerFechaValor();
+                // console.log(fechaValor); // Salida: "2024-07-23" (la fecha actual en el formato YYYY-MM-DD)
+
+                const dataToHash = `${fechaValor}USD`;
+                const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+                const hmac = hash.toString(CryptoJS.enc.Hex);
+
+                const postData = {
+                    Moneda: "USD",
+                    Fechavalor: fechaValor
+                }
+
+                const headersMiBanco = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${hmac}`,
+                    'Commerce': `${tokenCommerce}`
+                };
+
+                const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
+
+                //console.log(tasaBcv.data.tipocambio);
+                setMonto((response.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
+
+            } catch (error) {
+                console.error('Error al realizar la solicitud:', error);
+                setError('Ocurrió un error al procesar la solicitud');
+                return null;
+            }
         };
 
         fetchBanksAndMonto();
@@ -174,7 +213,6 @@ const CreditoInmediato = () => {
             setLoading(false); // Oculta el loading
         }
     };
-
 
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
@@ -601,7 +639,7 @@ const CreditoInmediato = () => {
 
                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                                 <input id="monto" type="text"
-                                                    value={`${monto}`}
+                                                    value={`Bs.${monto}`}
                                                     onChange={handleChangeMonto}
                                                     readOnly className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                 <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
