@@ -13,7 +13,7 @@ function App() {
   return (
     <Router basename="/boton">
       <div>
-        <nav>
+        {/*         <nav>
           <ul className="menu">
             <li>
               <Link to="/credito-inmediato">Crédito Inmediato</Link>
@@ -22,7 +22,7 @@ function App() {
               <Link to="/debito-inmediato">Débito Inmediato</Link>
             </li>
           </ul>
-        </nav>
+        </nav> */}
 
         <Routes>
           <Route path="/" element={<DebitoInmediato />} />
