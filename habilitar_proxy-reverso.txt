@@ -1,0 +1,45 @@
+ cat /etc/apache2/sites-available/herospay.conf 
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
+
+    ServerName herospay.heros-technology.com
+    ServerAlias www.herospay.heros-technology.com
+
+    #RewriteEngine On
+    #RewriteCond %{HTTPS} off
+    #RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    #Redirect permanent / https://herospay.heros-technology.com:18212/
+
+    ProxyRequests off
+
+    # Primer ProxyPass para localhost:3000
+    ProxyPass /apiBotonHero/ http://localhost:3000/
+    ProxyPassReverse /apiBotonHero/ http://localhost:3000/
+
+    # Segundo ProxyPass para localhost:3001
+    ProxyPass /apiMiBanco/ http://localhost:3001/
+    ProxyPassReverse /apiMiBanco/ http://localhost:3001/
+
+    <Proxy *>
+        Require all granted
+    </Proxy>
+
+    Alias /boton /var/www/html/dist
+
+    <Directory /var/www/html/dist>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    <Directory /var/www/html>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
