@@ -453,7 +453,7 @@ const CreditoInmediato = () => {
         <div className="flex-1">
 
             <div className="w-64 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
-                <div className="bg-white pb-8 rounded-tr-4xl">
+                <div className="bg-white pb-0 rounded-tr-4xl">
                     {/* <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1> */}
 
                     {loading ? (
