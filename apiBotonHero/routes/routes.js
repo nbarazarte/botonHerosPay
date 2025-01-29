@@ -72,12 +72,13 @@ router.get('/buscar_token', async (req, res) => {
     }
 });
 
-// Actualizar campo used de un token
+// Actualizar campo used y la fecha de creación de un token
 router.put('/:id', async (req, res) => {
     try {
         const { used } = req.body;
+
         const result = await pool.query(
-            'UPDATE tokens SET used = $1 WHERE id = $2 RETURNING *',
+            'UPDATE tokens SET used = $1, fecha_creacion = NOW() WHERE id = $2 RETURNING *',
             [used, req.params.id]
         );
 
