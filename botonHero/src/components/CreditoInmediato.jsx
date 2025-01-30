@@ -429,9 +429,9 @@ const CreditoInmediato = () => {
                                 </div>
                             ) : (
 
-                                <div className="justify-center items-center text-center pt-3">
+                                <div className="justify-center items-center text-center pt-3 pb-3">
                                     <h1 className="text-2xl">Pasarela de Pagos</h1>
-                                    <h3 className="text-sm">Crédito Inmediato</h3>
+                                    <h3 className="text-sm font-semibold">Crédito Inmediato</h3>
                                 </div>
                             )}
 
