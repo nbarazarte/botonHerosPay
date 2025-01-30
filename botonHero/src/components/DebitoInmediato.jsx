@@ -495,7 +495,7 @@ const CreditoInmediato = () => {
 
     return (
 
-        <div className="flex flex-1 w-screen h-screen justify-center items-center justify-items-center">
+        <div className="flex flex-1 w-screen h-screen justify-center items-start justify-items-center">
 
             <div className="w-64 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
                 <div className="bg-white pb-0 rounded-tr-4xl">
