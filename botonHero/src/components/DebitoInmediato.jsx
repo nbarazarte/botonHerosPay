@@ -8,12 +8,13 @@ import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
 import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
+import sms from "../assets/LottieFiles/Animation - 1738195342163.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const CreditoInmediato = () => {
-
-    const [selectedNacionalidad, setSelectedNacionalidad] = useState('');
+    const nacionalidad = ['V', 'E', 'J'];
+    const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
     const [cedula, setCedula] = useState('');
     const [nacionalidadCedula, setNacionalidadCedula] = useState('');
     const [selectedCodigoArea, setSelectedCodigoArea] = useState('');
@@ -28,14 +29,13 @@ const CreditoInmediato = () => {
     const [errorPago, setErrorPago] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [bankOptions, setBankOptions] = useState([]);
-    const nacionalidad = ['V', 'E', 'J'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoDebitoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
     const urlApiMiBancoGenerarOtp = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
@@ -107,6 +107,8 @@ const CreditoInmediato = () => {
     };
 
     const handleChangeOtp = (e) => {
+        setError('');
+        setErrorPago('');
         setOtp(e.target.value);
     };
 
@@ -376,11 +378,14 @@ const CreditoInmediato = () => {
                         //console.log(transac.data);
 
                     } catch (err) {
-                        setErrorPago("Ha ocurrido un error con el token");
+                        setError("Ha ocurrido un error con el token");
                         setToken(null);
                     }
                 } else {
+
+                    setError('');
                     setError(data2.message);
+                    setErrorPago(data2.code);
                     return
                 }
 
@@ -488,7 +493,7 @@ const CreditoInmediato = () => {
 
     return (
 
-        <div className="flex-1">
+        <div className="flex flex-1 w-screen h-screen justify-center items-center justify-items-center">
 
             <div className="w-64 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
                 <div className="bg-white pb-0 rounded-tr-4xl">
@@ -517,7 +522,7 @@ const CreditoInmediato = () => {
                                 </div>
                             )}
 
-                            {token ? (
+                            {token && (
 
                                 <div className="flex justify-center items-center">
                                     <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-60" role="alert">
@@ -547,20 +552,6 @@ const CreditoInmediato = () => {
                                     </div>
                                 </div>
 
-                            ) : (
-                                <>
-                                    {errorPago && (
-                                        <div className="flex justify-center items-center">
-                                            <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
-                                                <div className="flex justify-center items-center text-center">
-                                                    <div>
-                                                        <p className="text-sm">{errorPago}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </>
                             )}
                         </>
                     )}
@@ -653,13 +644,11 @@ const CreditoInmediato = () => {
                                                 <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
                                             </div>
 
-                                            {(!token || loading) && (
-                                                <div className='pb-2'>
-                                                    <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                        Solicitar OTP
-                                                    </button>
-                                                </div>
-                                            )}
+                                            <div className='pb-2'>
+                                                <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
+                                                    Solicitar OTP
+                                                </button>
+                                            </div>
 
                                         </form>
                                     </div>
@@ -670,7 +659,13 @@ const CreditoInmediato = () => {
                                 showOtpForm2 && (
 
                                     <div className="flex flex-1 h-full justify-center items-center">
+
                                         <form className="mt-1" onSubmit={handleSubmitConOtp}>
+                                            <p className='text-sm text-center'>En breve recibirá un mensaje de texto</p>
+                                            <p className='text-sm text-center'>Copie y pegue el código en el campo OTP</p>
+                                            <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                                <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                            </div>
 
                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                                 <input id="otp" type="number"
@@ -681,10 +676,16 @@ const CreditoInmediato = () => {
                                                 <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">OTP</label>
                                             </div>
 
-                                            {(!token || loading) && (
+                                            {!errorPago ? (
                                                 <div className='pb-2'>
                                                     <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                        Verificar
+                                                        VERIFICAR
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className='pb-2'>
+                                                    <button onClick={() => window.location.reload()} className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
+                                                        Recargar pagina
                                                     </button>
                                                 </div>
                                             )}

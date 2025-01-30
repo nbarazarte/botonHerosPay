@@ -12,8 +12,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const CreditoInmediato = () => {
-
-    const [selectedNacionalidad, setSelectedNacionalidad] = useState('');
+    const nacionalidad = ['V', 'E', 'J'];
+    const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
     const [cedula, setCedula] = useState('');
     const [nacionalidadCedula, setNacionalidadCedula] = useState('');
     const [selectedCodigoArea, setSelectedCodigoArea] = useState('');
@@ -26,14 +26,13 @@ const CreditoInmediato = () => {
     const [errorPago, setErrorPago] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [bankOptions, setBankOptions] = useState([]);
-    const nacionalidad = ['V', 'E', 'J'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
     const urlApiMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
@@ -324,11 +323,13 @@ const CreditoInmediato = () => {
                         //console.log(transac.data);
 
                     } catch (err) {
-                        setErrorPago("Ha ocurrido un error con el token");
+                        setError("Ha ocurrido un error con el token");
                         setToken(null);
                     }
                 } else {
+                    setError('');
                     setError(data2.message);
+                    setErrorPago(data2.code);
                     return
                 }
 
@@ -403,7 +404,7 @@ const CreditoInmediato = () => {
 
     return (
 
-        <div className="flex-1">
+        <div className="flex flex-1 w-screen h-screen justify-center items-center justify-items-center">
 
             <div className="w-64 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
                 <div className="bg-white pb-0 rounded-tr-4xl">
@@ -432,7 +433,7 @@ const CreditoInmediato = () => {
                                 </div>
                             )}
 
-                            {token ? (
+                            {token && (
 
                                 <div className="flex justify-center items-center">
                                     <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-60" role="alert">
@@ -462,20 +463,6 @@ const CreditoInmediato = () => {
                                     </div>
                                 </div>
 
-                            ) : (
-                                <>
-                                    {errorPago && (
-                                        <div className="flex justify-center items-center">
-                                            <div className="bg-red-100 border-t-4 border-red-500 rounded-b text-teal-900 px-4 py-3 shadow-md w-full" role="alert">
-                                                <div className="flex justify-center items-center text-center">
-                                                    <div>
-                                                        <p className="text-sm">{errorPago}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </>
                             )}
                         </>
                     )}

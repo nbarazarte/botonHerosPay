@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import './App.css';
+//import './App.css';
 import './styles.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas as solidIcons } from '@fortawesome/free-solid-svg-icons';
