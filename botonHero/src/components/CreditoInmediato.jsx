@@ -33,7 +33,7 @@ const CreditoInmediato = () => {
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
     const urlApiMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
