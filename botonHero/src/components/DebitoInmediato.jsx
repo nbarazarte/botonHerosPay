@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const CreditoInmediato = () => {
+    const [pagoExitoso, setPagoExitoso] = useState(false);
     const nacionalidad = ['V', 'E', 'J'];
     const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
     const [cedula, setCedula] = useState('');
@@ -201,7 +202,7 @@ const CreditoInmediato = () => {
             setError('');
 
             const data1 = await handleGenerarOtp(postData);
-            console.log(data1);
+            //console.log(data1);
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
 
             setShowOtpForm1(false)
@@ -376,6 +377,7 @@ const CreditoInmediato = () => {
                             return
                         }
                         //console.log(transac.data);
+                        setPagoExitoso(true);
 
                     } catch (err) {
                         setError("Ha ocurrido un error con el token");
@@ -658,40 +660,47 @@ const CreditoInmediato = () => {
                             {
                                 showOtpForm2 && (
 
-                                    <div className="flex flex-1 h-full justify-center items-center">
+                                    <>
+                                        {!pagoExitoso && (
 
-                                        <form className="mt-1" onSubmit={handleSubmitConOtp}>
-                                            <p className='text-sm text-center'>En breve recibirá un mensaje de texto</p>
-                                            <p className='text-sm text-center'>Copie y pegue el código en el campo OTP</p>
-                                            <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                                <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                            <div className="flex flex-1 h-full justify-center items-center">
+
+                                                <form className="mt-1" onSubmit={handleSubmitConOtp}>
+                                                    <p className='text-sm text-center'>En breve recibirá un mensaje de texto.</p>
+                                                    <p className='text-sm text-center'>Copie y pegue el código en el campo OTP.</p>
+                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                                        <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                                    </div>
+
+                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1">
+                                                        <input id="otp" type="number"
+                                                            value={otp}
+                                                            onChange={handleChangeOtp}
+                                                            onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
+                                                            className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                        <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">OTP</label>
+                                                    </div>
+
+                                                    {!errorPago ? (
+                                                        <div className='pb-2'>
+                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
+                                                                VERIFICAR
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className='pb-2'>
+                                                            <button onClick={() => window.location.reload()} className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
+                                                                Recargar pagina
+                                                            </button>
+                                                        </div>
+                                                    )}
+
+                                                </form>
                                             </div>
 
-                                            <div className="mt-8 relative flex flex-row pl-1 pr-1">
-                                                <input id="otp" type="number"
-                                                    value={otp}
-                                                    onChange={handleChangeOtp}
-                                                    onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
-                                                    className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">OTP</label>
-                                            </div>
+                                        )}
 
-                                            {!errorPago ? (
-                                                <div className='pb-2'>
-                                                    <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                        VERIFICAR
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <div className='pb-2'>
-                                                    <button onClick={() => window.location.reload()} className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                        Recargar pagina
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                        </form>
-                                    </div>
+                                    </>
                                 )
                             }
                         </>

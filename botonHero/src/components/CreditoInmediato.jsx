@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const CreditoInmediato = () => {
+    const [pagoExitoso, setPagoExitoso] = useState(false)
     const nacionalidad = ['V', 'E', 'J'];
     const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
     const [cedula, setCedula] = useState('');
@@ -321,6 +322,7 @@ const CreditoInmediato = () => {
                             return
                         }
                         //console.log(transac.data);
+                        setPagoExitoso(true);
 
                     } catch (err) {
                         setError("Ha ocurrido un error con el token");
