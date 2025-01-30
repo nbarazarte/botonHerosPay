@@ -184,6 +184,25 @@ const CreditoInmediato = () => {
     const handleSubmitSinOtp = async (e) => {
         e.preventDefault();
 
+        // Intento de obtención del token
+        let token;
+        try {
+            token = await axios.get(`${url}buscar_token`, { headers });
+
+            if (token.data == '') {
+                let msj = `No hay tokens disponibles, \n intente luego.`;
+                //console.log(msj, error);
+                setError(msj);
+                return
+            }
+
+        } catch (error) {
+            let msj = 'Fallo obteniendo token';
+            //console.log(msj, error);
+            setError(msj);
+            return
+        }
+
         if (!selectedBank) { setError('Seleccione un Banco'); return; }
         if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
         if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
@@ -191,6 +210,7 @@ const CreditoInmediato = () => {
         setLoading(true);
 
         try {
+
             const postData = {
                 Banco: selectedBank,
                 Monto: monto,
