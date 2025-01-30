@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-//import './App.css';
 import './styles.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas as solidIcons } from '@fortawesome/free-solid-svg-icons';
@@ -13,12 +12,12 @@ function App() {
   return (
     <Router basename="/boton">
       <div>
-        <nav>
-          <ul className="menu">
-            <li>
+        <nav className='flex w-full justify-center'>
+          <ul className="menu flex justify-center">
+            <li className='bg-naranjaMove text-white p-2 m-2 rounded-lg'>
               <Link to="/credito-inmediato">Crédito Inmediato</Link>
             </li>
-            <li>
+            <li className='bg-naranjaMove text-white p-2 m-2 rounded-lg'>
               <Link to="/debito-inmediato">Débito Inmediato</Link>
             </li>
           </ul>
