@@ -666,11 +666,20 @@ const CreditoInmediato = () => {
                                             <div className="flex flex-1 h-full justify-center items-center">
 
                                                 <form className="mt-1" onSubmit={handleSubmitConOtp}>
-                                                    <p className='text-sm text-center'>En breve recibirá un mensaje de texto.</p>
-                                                    <p className='text-sm text-center'>Copie y pegue el código en el campo OTP.</p>
-                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                                        <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
-                                                    </div>
+
+                                                    {loading ? (
+                                                        <div className="flex justify-center items-center">
+                                                            <p className='text-sm text-center'>En espera del Banco.</p>
+                                                        </div>
+                                                    ) : (
+                                                        <>
+                                                            <p className='text-sm text-center'>En breve recibirá un mensaje de texto.</p>
+                                                            <p className='text-sm text-center'>Copie y pegue el código en el campo OTP.</p>
+                                                            <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                                                <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                                            </div>
+                                                        </>
+                                                    )}
 
                                                     <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                                         <input id="otp" type="number"
