@@ -115,6 +115,7 @@ const CreditoInmediato = () => {
         setError('');
         setErrorPago('');
         setOtp(e.target.value);
+        setIsVisible(true);
     };
 
     const handleChangeMonto = (e) => {
@@ -435,8 +436,12 @@ const CreditoInmediato = () => {
                 }
 
             } else {
+                //console.log(data1.message);
 
-                setError(data1.message);
+                //setError(data1.message);
+                setError('La longitd del campo OTP recibida es incorrecta');
+                setOtp('');
+                setIsVisible(true);
                 return
             }
 
@@ -478,6 +483,7 @@ const CreditoInmediato = () => {
             return miBancoGenerarOtp.data;
 
         } catch (error) {
+
             console.error('Error al realizar la consulta:', error);
             setError('Ocurrió un error al procesar la consulta');
             return null;
