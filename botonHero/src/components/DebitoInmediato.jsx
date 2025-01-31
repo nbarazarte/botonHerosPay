@@ -572,8 +572,7 @@ const CreditoInmediato = () => {
                             ) : (
 
                                 <div className="justify-center items-center text-center pt-3 pb-3">
-                                    <h1 className="text-2xl">Pasarela de Pagos</h1>
-                                    <h3 className="text-sm font-semibold">Débito Inmediato</h3>
+                                    <h1 className="text-2xl">Pago Débito Inmediato</h1>                                    
                                 </div>
                             )}
 
