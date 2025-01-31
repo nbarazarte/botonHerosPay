@@ -702,7 +702,7 @@ const CreditoInmediato = () => {
 
                                                     {loading ? (
                                                         <div className="flex justify-center items-center">
-                                                            <p className='text-sm text-center'>Por favor espere la respuesta de su Banco.</p>
+                                                            <p className='text-sm text-center'>Esperando la respuesta del Banco.</p>
                                                         </div>
                                                     ) : (
                                                         <>
