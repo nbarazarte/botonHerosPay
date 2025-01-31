@@ -725,7 +725,7 @@ const CreditoInmediato = () => {
 
                                                     {!errorPago ? (
                                                         <div className='pb-2'>
-                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-semibold text-center block w-full cursor-pointer">
+                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-light text-sm text-center block w-full cursor-pointer">
                                                                 Confirmar Pago
                                                             </button>
                                                         </div>
