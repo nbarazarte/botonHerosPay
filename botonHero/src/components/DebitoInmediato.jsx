@@ -333,6 +333,8 @@ const CreditoInmediato = () => {
                             return
                         }
 
+                        //console.log(token.data);
+
                         setToken(token.data);
                         setError('');
 
