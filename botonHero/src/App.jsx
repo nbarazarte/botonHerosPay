@@ -10,7 +10,7 @@ import DebitoInmediato from './components/DebitoInmediato';
 
 function App() {
   return (
-    <Router basename="/boton">
+    <Router basename="/">{/* /boton */}
       <div className=''>
         {/*         <nav className='flex w-full justify-center'>
           <ul className="menu flex justify-center">
