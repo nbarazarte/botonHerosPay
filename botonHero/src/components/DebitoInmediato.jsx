@@ -744,8 +744,8 @@ const CreditoInmediato = () => {
                                                         </div>
                                                     ) : (
                                                         <>
-                                                            <p className='text-sm text-center font-semibold'>{msjOtp}</p><br />
-                                                            <p className='text-xs text-center text-blue-950 font-semibold'>Copie y pegue el código en el campo OTP.</p><br />
+                                                            <p className='text-sm text-center font-semibold'>{msjOtp}</p>
+                                                            <p className='text-xs text-center text-blue-950 font-semibold'>Copie y pegue el código en el campo OTP.</p>
                                                             <p className='text-xs text-center'>Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente.</p>
                                                             <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                                                 <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
