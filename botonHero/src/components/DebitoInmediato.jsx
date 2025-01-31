@@ -680,8 +680,8 @@ const CreditoInmediato = () => {
                                             </div>
 
                                             <div className='pb-2'>
-                                                <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                    Solicitar OTP
+                                                <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
+                                                    SOLICITAR OTP
                                                 </button>
                                             </div>
 
@@ -725,14 +725,14 @@ const CreditoInmediato = () => {
 
                                                     {!errorPago ? (
                                                         <div className='pb-2'>
-                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-light text-sm text-center block w-full cursor-pointer">
+                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
                                                                 CONFIRMAR PAGO
                                                             </button>
                                                         </div>
                                                     ) : (
                                                         <div className='pb-2'>
-                                                            <button onClick={() => window.location.reload()} className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                                Ir al Inicio
+                                                            <button onClick={() => window.location.reload()} className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
+                                                                IR AL INICIO
                                                             </button>
                                                         </div>
                                                     )}
