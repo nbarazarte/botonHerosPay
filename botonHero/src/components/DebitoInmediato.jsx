@@ -608,7 +608,7 @@ const CreditoInmediato = () => {
 
                                             <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
 
-                                                <div className="relative flex-1">
+                                                <div className="relative flex-1 flex items-center">
                                                     <label htmlFor="nacionalidad" className="block">
                                                         <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
                                                             className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
@@ -621,7 +621,7 @@ const CreditoInmediato = () => {
                                                     </label>
                                                 </div>
 
-                                                <div className="relative flex-1">
+                                                <div className="relative flex-1 flex items-center">
                                                     <input id="cedula" type="number"
                                                         value={cedula}
                                                         placeholder="Cédula/RIF."
@@ -631,37 +631,55 @@ const CreditoInmediato = () => {
                                                             const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
                                                             e.target.value = e.target.value.slice(0, maxLength);
                                                         }}
-                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0" />
                                                     <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                                 </div>
                                             </div>
 
                                             <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
-
-                                                <div className="relative flex-1">
+                                                <div className="relative flex-1 flex items-center">
                                                     <label htmlFor="codigosArea" className="block">
-                                                        <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea}
-                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="codigosArea">
-                                                            <option value="" disabled className='text-center'>Cód.</option>
+                                                        <select
+                                                            value={selectedCodigoArea}
+                                                            onChange={handleSelectChangeCodigoArea}
+                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
+                                                            id="codigosArea"
+                                                        >
+                                                            <option value="" disabled className="text-center">
+                                                                Cód.
+                                                            </option>
                                                             {codigosArea.map((codigoArea, index) => (
-                                                                <option key={index} value={codigoArea} className='text-center'>{codigoArea}</option>
+                                                                <option key={index} value={codigoArea} className="text-center">
+                                                                    {codigoArea}
+                                                                </option>
                                                             ))}
                                                         </select>
                                                     </label>
                                                 </div>
 
-                                                <div className="relative flex-1">
-                                                    <input id="telefono" type="number"
+                                                <div className="relative flex-1 flex items-center">
+                                                    <input
+                                                        id="telefono"
+                                                        type="number"
                                                         value={telefono}
                                                         placeholder="Teléfono"
                                                         onChange={handleChangeTelefono}
-                                                        //maxLength={7} 
-                                                        onInput={(e) => { e.target.value = e.target.value.slice(0, 7) }}
-                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                    <label htmlFor="telefono" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Teléfono</label>
+                                                        // maxLength={7}
+                                                        onInput={(e) => {
+                                                            e.target.value = e.target.value.slice(0, 7);
+                                                        }}
+                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0"
+                                                    />
+                                                    <label
+                                                        htmlFor="telefono"
+                                                        className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                                                    >
+                                                        Teléfono
+                                                    </label>
                                                 </div>
-
                                             </div>
+
+
 
                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                                 <input id="monto" type="text"
