@@ -33,6 +33,7 @@ const CreditoInmediato = () => {
     const [bankOptions, setBankOptions] = useState([]);
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
     const [loading, setLoading] = useState(false);
+    const [loadingBankWait, setLoadingBankWait] = useState(false);
     const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
@@ -244,6 +245,7 @@ const CreditoInmediato = () => {
         if (!otp) { setError('Indique el OTP recibido'); return; }
 
         setLoading(true);
+        setLoadingBankWait(true);
 
         try {
             const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
@@ -290,7 +292,6 @@ const CreditoInmediato = () => {
                 };
 
                 await retryConsulta(data1.id);
-
 
                 if (data2.code === 'ACCP') {
                     try {
@@ -424,6 +425,7 @@ const CreditoInmediato = () => {
             setToken(null);
         } finally {
             setLoading(false); // Oculta el loading
+            setLoadingBankWait(false);
         }
     };
 
@@ -522,9 +524,20 @@ const CreditoInmediato = () => {
                 <div className="bg-white pb-0 rounded-tr-4xl">
 
                     {loading ? (
-                        <div className="flex justify-center items-center">
-                            <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
-                        </div>
+                        <>
+                            {loadingBankWait ? (
+
+                                <div className="flex justify-center items-center">
+                                    <Lottie animationData={bankWait} loop={true} style={{ width: '150px', height: '150px' }} />
+                                </div>
+                            ) : (
+                                <div className="flex justify-center items-center">
+                                    <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
+                                </div>
+                            )}
+
+                        </>
+
                     ) : (
 
                         <>
@@ -689,7 +702,7 @@ const CreditoInmediato = () => {
 
                                                     {loading ? (
                                                         <div className="flex justify-center items-center">
-                                                            <p className='text-sm text-center'>En espera del Banco.</p>
+                                                            <p className='text-sm text-center'>Por favor espere la respuesta de su Banco.</p>
                                                         </div>
                                                     ) : (
                                                         <>
