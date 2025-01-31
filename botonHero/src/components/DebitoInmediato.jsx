@@ -611,7 +611,7 @@ const CreditoInmediato = () => {
                                                 <div className="relative flex-1 flex items-center">
                                                     <label htmlFor="nacionalidad" className="block">
                                                         <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
-                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
+                                                            className="bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
 
                                                             <option value="" disabled className='text-center'>N/J</option>
                                                             {nacionalidad.map((nacio, index) => (
@@ -631,7 +631,7 @@ const CreditoInmediato = () => {
                                                             const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
                                                             e.target.value = e.target.value.slice(0, maxLength);
                                                         }}
-                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0" />
+                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                     <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                                 </div>
                                             </div>
@@ -642,7 +642,7 @@ const CreditoInmediato = () => {
                                                         <select
                                                             value={selectedCodigoArea}
                                                             onChange={handleSelectChangeCodigoArea}
-                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
+                                                            className="bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
                                                             id="codigosArea"
                                                         >
                                                             <option value="" disabled className="text-center">
@@ -668,7 +668,7 @@ const CreditoInmediato = () => {
                                                         onInput={(e) => {
                                                             e.target.value = e.target.value.slice(0, 7);
                                                         }}
-                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0"
+                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
                                                     />
                                                     <label
                                                         htmlFor="telefono"
