@@ -626,9 +626,9 @@ const CreditoInmediato = () => {
                                             <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
 
                                                 <div className="relative flex-1">
-                                                    <label htmlFor="telefono" className="block">
+                                                    <label htmlFor="codigosArea" className="block">
                                                         <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea}
-                                                            className="pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="telefono">
+                                                            className="pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="codigosArea">
                                                             <option value="" disabled className='text-center'>Cód.</option>
                                                             {codigosArea.map((codigoArea, index) => (
                                                                 <option key={index} value={codigoArea} className='text-center'>{codigoArea}</option>

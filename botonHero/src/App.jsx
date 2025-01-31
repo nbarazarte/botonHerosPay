@@ -12,16 +12,16 @@ function App() {
   return (
     <Router basename="/boton">
       <div className=''>
-        <nav className='flex w-full justify-center'>
+        {/*         <nav className='flex w-full justify-center'>
           <ul className="menu flex justify-center">
-            <li className='bg-naranjaMove text-white p-2 m-2 rounded-lg'>
-              <Link to="/credito-inmediato">Crédito Inmediato</Link>
-            </li>
             <li className='bg-naranjaMove text-white p-2 m-2 rounded-lg'>
               <Link to="/debito-inmediato">Débito Inmediato</Link>
             </li>
+            <li className='bg-naranjaMove text-white p-2 m-2 rounded-lg'>
+              <Link to="/credito-inmediato">Crédito Inmediato</Link>
+            </li>
           </ul>
-        </nav>
+        </nav> */}
 
         <Routes>
           <Route path="/" element={<DebitoInmediato />} />
