@@ -598,7 +598,7 @@ const CreditoInmediato = () => {
                                     <div className="flex flex-1 h-full justify-center items-center">
                                         <form className="mt-1" onSubmit={handleSubmitSinOtp}>
                                             <label htmlFor="bank" className="block">
-                                                <select value={selectedBank} onChange={handleSelectChange} className="bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="bank">
+                                                <select value={selectedBank} onChange={handleSelectChange} className="bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
                                                     <option value="" disabled className='text-center'>Seleccione el Banco</option>
                                                     {bankOptions.map((bank) => (
                                                         <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
@@ -611,7 +611,7 @@ const CreditoInmediato = () => {
                                                 <div className="relative flex-1">
                                                     <label htmlFor="nacionalidad" className="block">
                                                         <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
-                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
+                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
 
                                                             <option value="" disabled className='text-center'>N/J</option>
                                                             {nacionalidad.map((nacio, index) => (
@@ -631,7 +631,7 @@ const CreditoInmediato = () => {
                                                             const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
                                                             e.target.value = e.target.value.slice(0, maxLength);
                                                         }}
-                                                        className="w-36 peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                     <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                                 </div>
                                             </div>
@@ -641,7 +641,7 @@ const CreditoInmediato = () => {
                                                 <div className="relative flex-1">
                                                     <label htmlFor="codigosArea" className="block">
                                                         <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea}
-                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="codigosArea">
+                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="codigosArea">
                                                             <option value="" disabled className='text-center'>Cód.</option>
                                                             {codigosArea.map((codigoArea, index) => (
                                                                 <option key={index} value={codigoArea} className='text-center'>{codigoArea}</option>
@@ -657,7 +657,7 @@ const CreditoInmediato = () => {
                                                         onChange={handleChangeTelefono}
                                                         //maxLength={7} 
                                                         onInput={(e) => { e.target.value = e.target.value.slice(0, 7) }}
-                                                        className="w-36 peer border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                     <label htmlFor="telefono" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Teléfono</label>
                                                 </div>
 
@@ -667,7 +667,7 @@ const CreditoInmediato = () => {
                                                 <input id="monto" type="text"
                                                     value={`Bs.${monto}`}
                                                     onChange={handleChangeMonto}
-                                                    readOnly className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                    readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                 <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
                                             </div>
 
@@ -675,7 +675,7 @@ const CreditoInmediato = () => {
                                                 <input id="concepto" type="text"
                                                     value={concepto}
                                                     onChange={handleChangeConcepto}
-                                                    readOnly className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                    readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                 <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
                                             </div>
 
@@ -719,7 +719,7 @@ const CreditoInmediato = () => {
                                                             value={otp}
                                                             onChange={handleChangeOtp}
                                                             onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
-                                                            className="w-56 peer h-10 border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                            className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                         <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">OTP</label>
                                                     </div>
 

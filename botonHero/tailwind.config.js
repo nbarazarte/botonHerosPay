@@ -10,6 +10,9 @@ export default {
         azulMove: '#010873',
         naranjaMove: '#F28705	',
       },
+      borderWidth: {
+        '1': '1px',
+      },
     },
   },
   plugins: [],
