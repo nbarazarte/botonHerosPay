@@ -598,7 +598,7 @@ const CreditoInmediato = () => {
                                     <div className="flex flex-1 h-full justify-center items-center">
                                         <form className="mt-1" onSubmit={handleSubmitSinOtp}>
                                             <label htmlFor="bank" className="block">
-                                                <select value={selectedBank} onChange={handleSelectChange} className=" bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="bank">
+                                                <select value={selectedBank} onChange={handleSelectChange} className="bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="bank">
                                                     <option value="" disabled className='text-center'>Seleccione el Banco</option>
                                                     {bankOptions.map((bank) => (
                                                         <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
@@ -611,7 +611,7 @@ const CreditoInmediato = () => {
                                                 <div className="relative flex-1">
                                                     <label htmlFor="nacionalidad" className="block">
                                                         <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
-                                                            className="pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
+                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
 
                                                             <option value="" disabled className='text-center'>N/J</option>
                                                             {nacionalidad.map((nacio, index) => (
@@ -641,7 +641,7 @@ const CreditoInmediato = () => {
                                                 <div className="relative flex-1">
                                                     <label htmlFor="codigosArea" className="block">
                                                         <select value={selectedCodigoArea} onChange={handleSelectChangeCodigoArea}
-                                                            className="pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="codigosArea">
+                                                            className="bg-white pl-1 pr-1 w-20 mt-0 px-0.5 border-0 border-b-2 border-gray-200 focus:ring-0 focus:border-naranjaMove" id="codigosArea">
                                                             <option value="" disabled className='text-center'>Cód.</option>
                                                             {codigosArea.map((codigoArea, index) => (
                                                                 <option key={index} value={codigoArea} className='text-center'>{codigoArea}</option>
