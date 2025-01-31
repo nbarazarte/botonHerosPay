@@ -53,7 +53,7 @@ router.get('/bancosDebitoInmediato', async (req, res) => {
 router.get('/buscar_banco', async (req, res) => {
     try {
         const { codigo } = req.query;
-        const result = await pool.query('SELECT id FROM bancos WHERE codigo_banco = $1 ORDER BY id DESC LIMIT 1', [codigo]);
+        const result = await pool.query('SELECT * FROM bancos WHERE codigo_banco = $1 ORDER BY id DESC LIMIT 1', [codigo]);
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
@@ -64,7 +64,7 @@ router.get('/buscar_banco', async (req, res) => {
 // Obtener un token
 router.get('/buscar_token', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM tokens WHERE used = false ORDER BY id DESC LIMIT 1');
+        const result = await pool.query('SELECT id FROM tokens WHERE used = false ORDER BY id DESC LIMIT 1');
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);

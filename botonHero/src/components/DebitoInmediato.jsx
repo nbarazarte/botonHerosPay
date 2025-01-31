@@ -15,6 +15,8 @@ import CryptoJS from 'crypto-js';
 
 const CreditoInmediato = () => {
     const [pagoExitoso, setPagoExitoso] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const [msjOtp, setMsjOtp] = useState('');
     const nacionalidad = ['V', 'E', 'J'];
     const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
     const [cedula, setCedula] = useState('');
@@ -190,6 +192,7 @@ const CreditoInmediato = () => {
         let token;
         try {
             token = await axios.get(`${url}buscar_token`, { headers });
+            //console.log(token.data.id);
 
             if (token.data == '') {
                 let msj = `No hay tokens disponibles, \n intente luego.`;
@@ -222,9 +225,24 @@ const CreditoInmediato = () => {
             };
 
             setError('');
+            setMsjOtp('');
+
+            // Obtener nombre del banco usando el codigo del banco
+            let banco;
+            try {
+                banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
+            } catch (error) {
+                let msj = 'Error id del banco';
+                //console.log(msj, error);
+                setError(msj);
+                return
+            }
 
             const data1 = await handleGenerarOtp(postData);
             //console.log(data1);
+            //console.log(postData);
+            setMsjOtp(`En breve recibirá un mensaje de texto al ${postData.Telefono} de ${banco.data.nombre_banco}.`)
+
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
 
             setShowOtpForm1(false)
@@ -242,6 +260,7 @@ const CreditoInmediato = () => {
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
 
+        setIsVisible(false);
         if (!otp) { setError('Indique el OTP recibido'); return; }
 
         setLoading(true);
@@ -451,6 +470,7 @@ const CreditoInmediato = () => {
             }
 
             const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco2 });
+            //console.log(miBancoGenerarOtp.data);
 
             setError('');
             return miBancoGenerarOtp.data;
@@ -631,7 +651,7 @@ const CreditoInmediato = () => {
                                                             const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
                                                             e.target.value = e.target.value.slice(0, maxLength);
                                                         }}
-                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                     <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                                 </div>
                                             </div>
@@ -668,7 +688,7 @@ const CreditoInmediato = () => {
                                                         onInput={(e) => {
                                                             e.target.value = e.target.value.slice(0, 7);
                                                         }}
-                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
+                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
                                                     />
                                                     <label
                                                         htmlFor="telefono"
@@ -720,12 +740,13 @@ const CreditoInmediato = () => {
 
                                                     {loading ? (
                                                         <div className="flex justify-center items-center">
-                                                            <p className='text-sm text-center'>Esperando la respuesta del Banco.</p>
+                                                            <p className='text-sm text-center font-semibold'>Esperando la respuesta del Banco.</p>
                                                         </div>
                                                     ) : (
                                                         <>
-                                                            <p className='text-xs text-center'>En breve recibirá un mensaje de texto.</p>
-                                                            <p className='text-xs text-center'>Copie y pegue el código en el campo OTP.</p>
+                                                            <p className='text-sm text-center font-semibold'>{msjOtp}</p><br />
+                                                            <p className='text-xs text-center text-blue-950 font-semibold'>Copie y pegue el código en el campo OTP.</p><br />
+                                                            <p className='text-xs text-center'>Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente.</p>
                                                             <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                                                 <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
                                                             </div>
@@ -743,9 +764,14 @@ const CreditoInmediato = () => {
 
                                                     {!errorPago ? (
                                                         <div className='pb-2'>
-                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
-                                                                CONFIRMAR PAGO
-                                                            </button>
+                                                            {isVisible && (
+                                                                <button
+                                                                    type="submit"
+                                                                    className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
+                                                                >
+                                                                    CONFIRMAR PAGO
+                                                                </button>
+                                                            )}
                                                         </div>
                                                     ) : (
                                                         <div className='pb-2'>
