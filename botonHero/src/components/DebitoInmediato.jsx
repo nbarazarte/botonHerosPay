@@ -40,7 +40,7 @@ const CreditoInmediato = () => {
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoDebitoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
     const urlApiMiBancoGenerarOtp = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
@@ -594,13 +594,13 @@ const CreditoInmediato = () => {
 
                                                 <div className="flex flex-row justify-center items-center gap-1">
                                                     <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
-                                                    <p className="text-base">¡Aprobado!</p>
+                                                    <p className="text-2xl">¡Aprobado!</p>
                                                 </div>
 
                                                 <div className="flex flex-row justify-center items-center gap-1">
                                                     <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
                                                     <p className="text-lg justify-center items-center">
-                                                        Token de Acceso: <span className='font-bold'>{token.token}</span>
+                                                        Token de Acceso: <span className='font-bold text-2xl'>{token.token}</span>
                                                     </p>
 
                                                     <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
@@ -769,7 +769,7 @@ const CreditoInmediato = () => {
                                                             onChange={handleChangeOtp}
                                                             onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
                                                             className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                        <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">OTP</label>
+                                                        <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Escriba o pegue su código OTP</label>
                                                     </div>
 
                                                     {!errorPago ? (
