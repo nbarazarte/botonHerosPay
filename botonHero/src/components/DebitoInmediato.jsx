@@ -9,6 +9,7 @@ import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
 import sms from "../assets/LottieFiles/Animation - 1738195342163.json";
+import bankWait from "../assets/LottieFiles/Animation - 1738285370531.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
@@ -268,7 +269,7 @@ const CreditoInmediato = () => {
                 // console.log(data2);
 
                 const maxRetries = 20;
-                const delay = 2000; // 2 segundos
+                const delay = 1000; // 1 segundo
                 let attempts = 0;
 
                 const retryConsulta = async (id) => {
@@ -519,7 +520,6 @@ const CreditoInmediato = () => {
 
             <div className="w-64 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
                 <div className="bg-white pb-0 rounded-tr-4xl">
-                    {/* <h1 className="text-2xl font-semibold text-gray-900">Crédito Inmediato</h1> */}
 
                     {loading ? (
                         <div className="flex justify-center items-center">
@@ -554,17 +554,17 @@ const CreditoInmediato = () => {
 
                                                 <div className="flex flex-row justify-center items-center gap-1">
                                                     <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
-                                                    <p className="text-sm">¡Aprobado!</p>
+                                                    <p className="text-base">¡Aprobado!</p>
                                                 </div>
 
                                                 <div className="flex flex-row justify-center items-center gap-1">
                                                     <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
-                                                    <p className="text-sm justify-center items-center">
-                                                        Token de acceso: <span className='font-bold'>{token.token}</span>
+                                                    <p className="text-lg justify-center items-center">
+                                                        Token de Acceso: <span className='font-bold'>{token.token}</span>
                                                     </p>
 
                                                     <button className="hover:text-black text-gray-400 text-center cursor-pointer" onClick={handleCopy}>
-                                                        <FontAwesomeIcon icon="fa-regular fa-copy" />
+                                                        <FontAwesomeIcon className='text-lg' icon="fa-regular fa-copy" />
                                                     </button>
                                                 </div>
 
@@ -712,14 +712,14 @@ const CreditoInmediato = () => {
 
                                                     {!errorPago ? (
                                                         <div className='pb-2'>
-                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                                VERIFICAR
+                                                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-semibold text-center block w-full cursor-pointer">
+                                                                Confirmar Pago
                                                             </button>
                                                         </div>
                                                     ) : (
                                                         <div className='pb-2'>
                                                             <button onClick={() => window.location.reload()} className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                                Recargar pagina
+                                                                Ir al Inicio
                                                             </button>
                                                         </div>
                                                     )}
