@@ -631,7 +631,7 @@ const CreditoInmediato = () => {
                                                             const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
                                                             e.target.value = e.target.value.slice(0, maxLength);
                                                         }}
-                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0" />
+                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0" />
                                                     <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                                 </div>
                                             </div>
@@ -668,7 +668,7 @@ const CreditoInmediato = () => {
                                                         onInput={(e) => {
                                                             e.target.value = e.target.value.slice(0, 7);
                                                         }}
-                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0"
+                                                        className="w-32 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove mt-0"
                                                     />
                                                     <label
                                                         htmlFor="telefono"
