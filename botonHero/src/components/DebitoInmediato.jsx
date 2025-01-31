@@ -746,9 +746,12 @@ const CreditoInmediato = () => {
                                                 <form className="mt-1" onSubmit={handleSubmitConOtp}>
 
                                                     {loading ? (
-                                                        <div className="flex justify-center items-center">
+                                                        <>
                                                             <p className='text-sm text-center font-semibold'>Esperando la respuesta del Banco.</p>
-                                                        </div>
+                                                            <div className="flex flex-1 justify-center items-center">
+                                                                <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
+                                                            </div>
+                                                        </>
                                                     ) : (
                                                         <>
                                                             <p className='text-sm text-center font-semibold'>{msjOtp}</p>
