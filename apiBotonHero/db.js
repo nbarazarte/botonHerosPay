@@ -1,11 +1,16 @@
+const dotenv = require('dotenv');
+
+// Asegúrate de especificar la ruta correcta si tu archivo .env no está en el directorio raíz
+dotenv.config({ path: './.env' });
+
 const { Pool } = require('pg');
 
 const pool = new Pool({
-    user: 'postgres',           // Tu usuario
-    host: 'localhost',          // El host donde se encuentra tu base de datos
-    database: 'herostokendb',   // Nombre de tu base de datos
-    password: 'H3r05*!',        // Tu contraseña
-    port: 5432,                 // Puerto de PostgreSQL (por defecto 5432)
+    user: process.env.DBUSER,
+    host: process.env.DBHOST,
+    database: process.env.DBDATABASE,
+    password: process.env.DBPASSWORD,
+    port: process.env.DBPORT,
 });
 
 module.exports = pool;
