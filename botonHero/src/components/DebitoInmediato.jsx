@@ -13,7 +13,7 @@ import bankWait from "../assets/LottieFiles/Animation - 1738285370531.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
-const CreditoInmediato = () => {
+const DebitoInmediato = () => {
     const [pagoExitoso, setPagoExitoso] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [msjOtp, setMsjOtp] = useState('');
@@ -706,8 +706,6 @@ const CreditoInmediato = () => {
                                                 </div>
                                             </div>
 
-
-
                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                                 <input id="monto" type="text"
                                                     value={`Bs.${monto}`}
@@ -813,4 +811,4 @@ const CreditoInmediato = () => {
     )
 };
 
-export default CreditoInmediato;
+export default DebitoInmediato;
