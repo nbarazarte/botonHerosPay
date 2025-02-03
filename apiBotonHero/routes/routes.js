@@ -130,13 +130,12 @@ router.post('/cliente_tokens', async (req, res) => {
     }
 });
 
-// Insertar datos en la tabla transac
 router.post('/crear_transac', async (req, res) => {
     try {
-        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion } = req.body;
+        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id } = req.body;
         const result = await pool.query(
-            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *',
-            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion]
+            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) RETURNING *',
+            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -144,5 +143,6 @@ router.post('/crear_transac', async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
+
 
 module.exports = router;
