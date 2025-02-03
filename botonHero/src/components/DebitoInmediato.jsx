@@ -418,6 +418,7 @@ const DebitoInmediato = () => {
                                 monto: postData.Monto,
                                 referencia: data2.reference,
                                 descripcion: postData.Concepto,
+                                pasarela_id: 1,
                             }, { headers });
                         } catch (error) {
                             let msj = 'Error guardar transaccion';
