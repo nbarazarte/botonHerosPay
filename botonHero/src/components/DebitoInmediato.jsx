@@ -261,9 +261,13 @@ const DebitoInmediato = () => {
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
 
-        setIsVisible(false);
-        if (!otp) { setError('Indique el OTP recibido'); return; }
 
+        if (!otp) {
+            setError('Indique el OTP recibido');
+            setIsVisible(true);
+            return;
+        }
+        setIsVisible(false);
         setLoading(true);
         setLoadingBankWait(true);
 
@@ -547,9 +551,9 @@ const DebitoInmediato = () => {
 
     return (
 
-        <div className="flex flex-1 w-screen h-screen justify-center items-start justify-items-center">
+        <div className="flex flex-1 w-screen h-screen/50 justify-center items-center justify-items-center">
 
-            <div className="w-64 rounded-3xl mx-auto overflow-hidden"> {/* shadow-xl */}
+            <div className="w-64 rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
                 <div className="bg-white pb-0 rounded-tr-4xl">
 
                     {loading ? (
