@@ -287,6 +287,7 @@ const DebitoInmediato = () => {
 
             const data1 = await handleDebitoInmediato(postData);
             let data2 = {}
+            //console.log(data1);
 
             if (data1.code === 'AC00') {
                 // await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
@@ -415,8 +416,8 @@ const DebitoInmediato = () => {
                                 telefono: postData.Telefono,
                                 banco_id: banco.data.id,
                                 monto: postData.Monto,
-                                referencia: '1234',//miBanco.data.reference,
-                                descripcion: ''
+                                referencia: data2.reference,
+                                descripcion: postData.Concepto,
                             }, { headers });
                         } catch (error) {
                             let msj = 'Error guardar transaccion';
