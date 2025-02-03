@@ -551,7 +551,7 @@ const DebitoInmediato = () => {
 
     return (
 
-        <div className="flex flex-1 w-screen h-screen/50 justify-center items-center justify-items-center">
+        <div className="flex flex-1 w-screen h-screen justify-center items-start justify-items-center">
 
             <div className="w-64 rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
                 <div className="bg-white pb-0 rounded-tr-4xl">
@@ -659,7 +659,7 @@ const DebitoInmediato = () => {
                         <>
                             {
                                 showOtpForm1 && (
-                                    <div className="flex flex-1 h-full justify-center items-center">
+                                    <div className="flex flex-1 h-screen justify-center items-center">
                                         <form className="mt-1" onSubmit={handleSubmitSinOtp}>
                                             <label htmlFor="bank" className="block">
                                                 <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
