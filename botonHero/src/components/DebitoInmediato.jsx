@@ -40,7 +40,7 @@ const DebitoInmediato = () => {
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoDebitoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
     const urlApiMiBancoGenerarOtp = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
@@ -556,7 +556,8 @@ const DebitoInmediato = () => {
                             {loadingBankWait ? (
 
                                 <div className="flex justify-center items-center pt-24">
-                                    <Lottie animationData={bankWait} loop={true} style={{ width: '150px', height: '150px' }} />
+                                    {/* <Lottie animationData={bankWait} loop={true} style={{ width: '150px', height: '150px' }} /> */}
+                                    <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
                                 </div>
                             ) : (
                                 <div className="flex justify-center items-center">
@@ -608,13 +609,12 @@ const DebitoInmediato = () => {
                                                                     <div className="flex size-12 items-center justify-center rounded-full bg-green-100 ">
                                                                         <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
                                                                     </div>
-                                                                    <p>¡Pago Aprobado!</p>
+                                                                    <p className='text-lg'>¡Pago Aprobado!</p>
                                                                 </div>
-
 
                                                             </div>
                                                             <div className="mt-2">
-                                                                <p className="text-sm text-gray-500">
+                                                                <p className="text-md text-gray-500">
                                                                     Por favor, copie el token de acceso asignado en la casilla <span className='font-bold text-black'>Token *</span> que aparece en la parte inferior de esta pantalla para conectarse a la red.
                                                                 </p>
                                                             </div>
@@ -626,7 +626,7 @@ const DebitoInmediato = () => {
                                                         <div className="justify-center items-center">
                                                             <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
                                                         </div>
-                                                        <p className="justify-center items-center">
+                                                        <p className="text-lg justify-center items-center">
                                                             Token de Acceso: <span className='font-bold'>{token.token}</span>
                                                         </p>
                                                     </div>
@@ -657,7 +657,7 @@ const DebitoInmediato = () => {
                                     <div className="flex flex-1 h-full justify-center items-center">
                                         <form className="mt-1" onSubmit={handleSubmitSinOtp}>
                                             <label htmlFor="bank" className="block">
-                                                <select value={selectedBank} onChange={handleSelectChange} className="bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
+                                                <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
                                                     <option value="" disabled className='text-center'>Seleccione el Banco</option>
                                                     {bankOptions.map((bank) => (
                                                         <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
@@ -670,7 +670,7 @@ const DebitoInmediato = () => {
                                                 <div className="relative flex-1 flex items-center">
                                                     <label htmlFor="nacionalidad" className="block">
                                                         <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
-                                                            className="bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
+                                                            className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
 
                                                             <option value="" disabled className='text-center'>N/J</option>
                                                             {nacionalidad.map((nacio, index) => (
@@ -690,8 +690,8 @@ const DebitoInmediato = () => {
                                                             const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
                                                             e.target.value = e.target.value.slice(0, maxLength);
                                                         }}
-                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                    <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
+                                                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                    <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
                                                 </div>
                                             </div>
 
@@ -701,7 +701,7 @@ const DebitoInmediato = () => {
                                                         <select
                                                             value={selectedCodigoArea}
                                                             onChange={handleSelectChangeCodigoArea}
-                                                            className="bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
+                                                            className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
                                                             id="codigosArea"
                                                         >
                                                             <option value="" disabled className="text-center">
@@ -727,11 +727,11 @@ const DebitoInmediato = () => {
                                                         onInput={(e) => {
                                                             e.target.value = e.target.value.slice(0, 7);
                                                         }}
-                                                        className="w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
+                                                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
                                                     />
                                                     <label
                                                         htmlFor="telefono"
-                                                        className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                                                        className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
                                                     >
                                                         Teléfono
                                                     </label>
@@ -746,13 +746,13 @@ const DebitoInmediato = () => {
                                                 <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
                                             </div>
 
-                                            <div className="mt-8 relative flex flex-row pl-1 pr-1">
+                                            {/*                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                                 <input id="concepto" type="text"
                                                     value={concepto}
                                                     onChange={handleChangeConcepto}
                                                     readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
                                                 <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
-                                            </div>
+                                            </div> */}
 
                                             <div className='pb-2'>
                                                 <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
@@ -777,16 +777,17 @@ const DebitoInmediato = () => {
 
                                                     {loading ? (
                                                         <>
-                                                            <p className='text-sm text-center font-semibold'>Por favor espere mientras el banco procesa la solicitud.</p>
+                                                            <p className='text-lg text-center font-semibold'>Por favor espere mientras el banco procesa la solicitud.</p>
                                                             <div className="flex flex-1 justify-center items-center">
-                                                                <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
+
+                                                                <Lottie animationData={bankWait} loop={true} style={{ width: '150px', height: '150px' }} />
                                                             </div>
                                                         </>
                                                     ) : (
                                                         <>
                                                             <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                                            <p className='text-xs text-center text-blue-950 font-semibold'>Copie y pegue el código en el campo OTP.</p>
-                                                            <p className='text-xs text-center'>Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente.</p>
+                                                            <p className='text-md text-center text-blue-950 font-semibold'>Copie y pegue el código recibido de su banco.</p>
+                                                            <p className='text-sm text-center'>Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente.</p>
                                                             <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                                                 <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
                                                             </div>
@@ -797,10 +798,11 @@ const DebitoInmediato = () => {
                                                         <div className="mt-8 relative flex flex-row pl-1 pr-1">
                                                             <input id="otp" type="number"
                                                                 value={otp}
+                                                                placeholder=""
                                                                 onChange={handleChangeOtp}
                                                                 onInput={(e) => { e.target.value = e.target.value.slice(0, 8) }}
                                                                 className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                            <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Escriba o pegue su código OTP</label>
+                                                            <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Ingrese el código recibido</label>
                                                         </div>
                                                     )}
                                                     {!errorPago ? (
