@@ -242,7 +242,7 @@ const DebitoInmediato = () => {
             const data1 = await handleGenerarOtp(postData);
             //console.log(data1);
             //console.log(postData);
-            setMsjOtp(`En breve recibirá un mensaje de texto al ${postData.Telefono} de ${banco.data.nombre_banco}.`)
+            setMsjOtp(`En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
 
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
 
@@ -786,7 +786,6 @@ const DebitoInmediato = () => {
                                                     ) : (
                                                         <>
                                                             <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                                            <p className='text-md text-center text-blue-950 font-semibold'>Copie y pegue el código recibido de su banco.</p>
                                                             <p className='text-sm text-center'>Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente.</p>
                                                             <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                                                 <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
