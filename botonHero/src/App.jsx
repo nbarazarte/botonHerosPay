@@ -7,6 +7,7 @@ import { far as regularIcons } from '@fortawesome/free-regular-svg-icons';
 library.add(solidIcons, brandIcons, regularIcons); // Añade conjuntos de íconos
 import CreditoInmediato from './components/CreditoInmediato';
 import DebitoInmediato from './components/DebitoInmediato';
+import Vista from './components/Vista';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/" element={<DebitoInmediato />} />
           <Route path="/credito-inmediato" element={<CreditoInmediato />} />
           <Route path="/debito-inmediato" element={<DebitoInmediato />} />
+          <Route path="/vista" element={<Vista />} />
         </Routes>
       </div>
     </Router>

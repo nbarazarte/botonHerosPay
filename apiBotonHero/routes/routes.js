@@ -130,6 +130,7 @@ router.post('/cliente_tokens', async (req, res) => {
     }
 });
 
+// Insertar en transac
 router.post('/crear_transac', async (req, res) => {
     try {
         const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id } = req.body;
@@ -138,6 +139,17 @@ router.post('/crear_transac', async (req, res) => {
             [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id]
         );
         res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Buscar transaacciones un token
+router.get('/buscar_transacciones', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM public.view_transacciones order by fecha_creacion desc');
+        res.json(result.rows);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
