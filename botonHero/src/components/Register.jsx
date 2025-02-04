@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const Register = () => {
 
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
     const [url, setUrl] = useState(urlApiBoton);
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
