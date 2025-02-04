@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import logo from './assets/images/logo_heros.png';
+import avatar from './assets/images/logo_heros.jpg';
 
 const DataTable = () => {
     const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
@@ -275,10 +277,9 @@ const Vista = () => {
     };
 
     const user = {
-        name: 'Tom Cook',
-        email: 'tom@example.com',
-        imageUrl:
-            '/src/assets/images/logo_heros.jpg',
+        name: 'Herosnet',
+        email: 'suscripciones@heros-technology.com',
+        imageUrl: { avatar },
     }
     const navigation = [
         { name: 'Dashboard', href: '#', current: true },
@@ -308,8 +309,8 @@ const Vista = () => {
                             <div className="flex items-center">
                                 <div className="shrink-0">
                                     <img
-                                        alt="Your Company"
-                                        src="/src/assets/images/logo_heros.png"
+                                        alt="Heros Technology"
+                                        src={logo}
                                         className=""
                                     />
                                 </div>
@@ -415,7 +416,7 @@ const Vista = () => {
                                 >
                                     <span className="absolute -inset-1.5" />
                                     <span className="sr-only">View notifications</span>
-                                    <BellIcon aria-hidden="true" className="size-6" />
+                                    {/* <BellIcon aria-hidden="true" className="size-6" /> */}
                                 </button>
                             </div>
                             <div className="mt-3 space-y-1 px-2">
