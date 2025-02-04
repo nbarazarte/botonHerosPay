@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import logo from './assets/images/logo_heros.png';
-import avatar from './assets/images/logo_heros.jpg';
+import logo from '../assets/images/logo_heros.png';
+import avatar from '../assets/images/logo_heros.jpg';
 
 const DataTable = () => {
     const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
