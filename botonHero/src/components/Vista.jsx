@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Button, TextField } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 
 const DataTable = () => {
@@ -44,14 +45,14 @@ const DataTable = () => {
 
     const columns = [
         {
-            field: 'id', headerName: 'ID', width: 50, renderHeader: () => (
+            field: 'id', headerName: 'ID', width: 90, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>ID</div>
                 </Box>
             )
         },
         {
-            field: 'tipo', headerName: 'TIPO', width: 150, renderHeader: () => (
+            field: 'tipo', headerName: 'TIPO', width: 140, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>TIPO</div>
                     <TextField
@@ -66,7 +67,7 @@ const DataTable = () => {
             )
         },
         {
-            field: 'token', headerName: 'TOKEN', width: 90, renderHeader: () => (
+            field: 'token', headerName: 'TOKEN', width: 120, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>TOKEN</div>
                     <TextField
@@ -81,7 +82,7 @@ const DataTable = () => {
             )
         },
         {
-            field: 'cedula', headerName: 'CÉDULA', width: 100, renderHeader: () => (
+            field: 'cedula', headerName: 'CÉDULA', width: 160, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>CÉDULA</div>
                     <TextField
@@ -96,7 +97,7 @@ const DataTable = () => {
             )
         },
         {
-            field: 'telefono', headerName: 'TELÉFONO', width: 120, renderHeader: () => (
+            field: 'telefono', headerName: 'TELÉFONO', width: 160, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>TELÉFONO</div>
                     <TextField
@@ -126,9 +127,9 @@ const DataTable = () => {
             )
         },
         {
-            field: 'codigo_banco', headerName: 'CÓDIGO', width: 90, renderHeader: () => (
+            field: 'codigo_banco', headerName: 'COD.', width: 110, renderHeader: () => (
                 <Box className="flex flex-col items-center">
-                    <div>CÓDIGO</div>
+                    <div>COD.</div>
                     <TextField
                         name="codigo_banco"
                         value={searchTerms.codigo_banco}
@@ -141,7 +142,7 @@ const DataTable = () => {
             )
         },
         {
-            field: 'monto', headerName: 'MONTO', width: 90, renderHeader: () => (
+            field: 'monto', headerName: 'MONTO', width: 125, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>MONTO</div>
                     <TextField
@@ -156,9 +157,9 @@ const DataTable = () => {
             )
         },
         {
-            field: 'referencia', headerName: 'REFERENCIA', width: 120, renderHeader: () => (
+            field: 'referencia', headerName: 'REF.', width: 120, renderHeader: () => (
                 <Box className="flex flex-col items-center">
-                    <div>REFERENCIA</div>
+                    <div>REF.</div>
                     <TextField
                         name="referencia"
                         value={searchTerms.referencia}
@@ -170,21 +171,21 @@ const DataTable = () => {
                 </Box>
             )
         },
-        {
-            field: 'descripcion', headerName: 'DESCRIPCIÓN', width: 150, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>DESCRIPCIÓN</div>
-                    <TextField
-                        name="descripcion"
-                        value={searchTerms.descripcion}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
+        /*         {
+                    field: 'descripcion', headerName: 'DESCRIPCIÓN', width: 220, renderHeader: () => (
+                        <Box className="flex flex-col items-center">
+                            <div>DESCRIPCIÓN</div>
+                            <TextField
+                                name="descripcion"
+                                value={searchTerms.descripcion}
+                                onChange={handleSearch}
+                                placeholder=""
+                                variant="standard"
+                                fullWidth
+                            />
+                        </Box>
+                    )
+                }, */
         {
             field: 'fecha', headerName: 'FECHA', width: 100, renderHeader: () => (
                 <Box className="flex flex-col items-center">
@@ -256,11 +257,28 @@ const DataTable = () => {
 };
 
 const Vista = () => {
+    const navigate = useNavigate();
+    const username = localStorage.getItem('username');
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        navigate('/login');
+    };
+
     return (
         <div className="container mx-auto p-4">
-            <DataTable />
+            <header className="mb-4">
+                <h2>Bienvenido, {username}</h2>
+                <Button variant="contained" color="secondary" onClick={handleLogout}>
+                    Cerrar sesión
+                </Button>
+            </header>
+            <main>
+                <DataTable />
+            </main>
         </div>
     );
-}
+};
 
 export default Vista;

@@ -1,9 +1,45 @@
-// routes/routes.js
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const autenticarToken = require('../middlewares/autenticarToken'); // Asegúrate de que no use desestructuración
-router.use(autenticarToken); // Usa el middleware aqui para proteger todas las rutas
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+// Uso del middleware para proteger todas las rutas
+router.use(autenticarToken);
+
+// Registro de nuevo usuario
+router.post('/register', async (req, res) => {
+    try {
+        const { username, password, email } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const result = await pool.query('INSERT INTO usuarios (username, password, email) VALUES ($1, $2, $3) RETURNING *', [username, hashedPassword, email]);
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Login de usuario
+router.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const result = await pool.query('SELECT * FROM usuarios WHERE username = $1', [username]);
+        if (result.rows.length === 0) return res.status(404).send('Usuario no encontrado');
+
+        const user = result.rows[0];
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) return res.status(401).send('Contraseña incorrecta');
+
+        const token = jwt.sign({ id: user.id, username: user.username }, 'secret', { expiresIn: '1h' });
+        await pool.query('INSERT INTO auth_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)', [user.id, token, new Date(Date.now() + 3600000)]);
+        res.json({ token });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
 
 // Obtener monto los debito inmediato
 router.get('/debitoinmediato', async (req, res) => {
@@ -155,6 +191,5 @@ router.get('/buscar_transacciones', async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
-
 
 module.exports = router;
