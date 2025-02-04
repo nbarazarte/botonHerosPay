@@ -49,7 +49,7 @@ const DataTable = () => {
 
     const columns = [
         {
-            field: 'id', headerName: 'ID', width: 90, renderHeader: () => (
+            field: 'id', headerName: 'ID', width: 50, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>ID</div>
                 </Box>
@@ -253,7 +253,7 @@ const DataTable = () => {
 
     return (
 
-        <Box sx={{ height: 700 }} className="p-4 w-full">
+        <Box sx={{ height: 700 }} className=" w-full">
             <div className="flex flex-row justify-between items-center">
                 <h1 className="text-2xl font-bold">Transacciones de la pasarela de pagos HerosPay</h1>
                 <div className='flex justify-end items-end'>
@@ -350,7 +350,7 @@ const Vista = () => {
                                             <MenuButton className="relative flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 focus:outline-hidden">
                                                 <span className="absolute -inset-1.5" />
                                                 <span className="sr-only">Open user menu</span>
-                                                <img alt="" src={user.imageUrl} className="size-8 rounded-full" />
+                                                <img alt="" src={avatar} className="size-8 rounded-full" />
                                             </MenuButton>
                                         </div>
                                         <MenuItems
@@ -436,7 +436,7 @@ const Vista = () => {
                 </Disclosure>
 
                 <main>
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                    <div className="w-screen  sm:px-6 lg:px-8">
 
                         <div className="container mx-auto p-4">
                             <main>
