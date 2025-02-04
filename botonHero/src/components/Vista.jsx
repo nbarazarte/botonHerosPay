@@ -1,30 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Button } from '@mui/material';
-import { saveAs } from 'file-saver';
+import { Box, Button, TextField } from '@mui/material';
 import * as XLSX from 'xlsx';
 
 const DataTable = () => {
-
     const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
     const [url, setUrl] = useState(urlApiBoton);
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
     const [data, setData] = useState([]);
-    const [search, setSearch] = useState('');
-
-    /*     useEffect(() => {
-            axios.get(`${url}buscar_transacciones`, { headers })
-                .then(response => {
-                    //console.log('Data fetched: ', response.data);
-                    setData(response.data);
-                })
-                .catch(error => {
-                    console.error('Error fetching data: ', error);
-                });
-        }, []);
-     */
+    const [searchTerms, setSearchTerms] = useState({
+        tipo: '',
+        token: '',
+        cedula: '',
+        telefono: '',
+        banco: '',
+        codigo_banco: '',
+        monto: '',
+        referencia: '',
+        descripcion: '',
+        fecha: '',
+        hora: ''
+    });
 
     useEffect(() => {
         axios.get(`${url}buscar_transacciones`, { headers })
@@ -45,57 +43,213 @@ const DataTable = () => {
     }, []);
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 50 },
-        { field: 'tipo', headerName: 'TIPO', width: 150 },
-        { field: 'token', headerName: 'TOKEN', width: 90 },
-        { field: 'cedula', headerName: 'CÉDULA', width: 100 },
-        { field: 'telefono', headerName: 'TELÉFONO', width: 120 },
-        { field: 'banco', headerName: 'BANCO', width: 220 },
-        { field: 'codigo_banco', headerName: 'CÓDIGO', width: 90 },
-        { field: 'monto', headerName: 'MONTO', width: 90 },
-        { field: 'referencia', headerName: 'REFERENCIA', width: 120 },
-        { field: 'descripcion', headerName: 'DESCRIPCIÓN', width: 150 },
-        { field: 'fecha', headerName: 'FECHA', width: 100 },
-        { field: 'hora', headerName: 'HORA', width: 100 },
+        {
+            field: 'id', headerName: 'ID', width: 50, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>ID</div>
+                </Box>
+            )
+        },
+        {
+            field: 'tipo', headerName: 'TIPO', width: 150, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>TIPO</div>
+                    <TextField
+                        name="tipo"
+                        value={searchTerms.tipo}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'token', headerName: 'TOKEN', width: 90, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>TOKEN</div>
+                    <TextField
+                        name="token"
+                        value={searchTerms.token}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'cedula', headerName: 'CÉDULA', width: 100, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>CÉDULA</div>
+                    <TextField
+                        name="cedula"
+                        value={searchTerms.cedula}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'telefono', headerName: 'TELÉFONO', width: 120, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>TELÉFONO</div>
+                    <TextField
+                        name="telefono"
+                        value={searchTerms.telefono}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'banco', headerName: 'BANCO', width: 220, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>BANCO</div>
+                    <TextField
+                        name="banco"
+                        value={searchTerms.banco}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'codigo_banco', headerName: 'CÓDIGO', width: 90, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>CÓDIGO</div>
+                    <TextField
+                        name="codigo_banco"
+                        value={searchTerms.codigo_banco}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'monto', headerName: 'MONTO', width: 90, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>MONTO</div>
+                    <TextField
+                        name="monto"
+                        value={searchTerms.monto}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'referencia', headerName: 'REFERENCIA', width: 120, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>REFERENCIA</div>
+                    <TextField
+                        name="referencia"
+                        value={searchTerms.referencia}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'descripcion', headerName: 'DESCRIPCIÓN', width: 150, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>DESCRIPCIÓN</div>
+                    <TextField
+                        name="descripcion"
+                        value={searchTerms.descripcion}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'fecha', headerName: 'FECHA', width: 100, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>FECHA</div>
+                    <TextField
+                        name="fecha"
+                        value={searchTerms.fecha}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+        {
+            field: 'hora', headerName: 'HORA', width: 100, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>HORA</div>
+                    <TextField
+                        name="hora"
+                        value={searchTerms.hora}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
     ];
 
     const handleSearch = (event) => {
-        setSearch(event.target.value);
-    };
-
-    const handleExport = () => {
-        const worksheet = XLSX.utils.json_to_sheet(data);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-        XLSX.writeFile(workbook, "data.xlsx");
+        const { name, value } = event.target;
+        setSearchTerms({
+            ...searchTerms,
+            [name]: value
+        });
     };
 
     const filteredData = data.filter(item =>
-        item.tipo.toLowerCase().includes(search.toLowerCase()) ||
-        item.token.toLowerCase().includes(search.toLowerCase()) ||
-        item.cedula.toLowerCase().includes(search.toLowerCase()) ||
-        item.telefono.toLowerCase().includes(search.toLowerCase()) ||
-        item.banco.toLowerCase().includes(search.toLowerCase()) ||
-        item.codigo_banco.toLowerCase().includes(search.toLowerCase()) ||
-        item.monto.toLowerCase().includes(search.toLowerCase()) ||
-        item.referencia.toLowerCase().includes(search.toLowerCase()) ||
-        item.descripcion.toLowerCase().includes(search.toLowerCase()) ||
-        item.fecha.toLowerCase().includes(search.toLowerCase()) ||
-        item.hora.toLowerCase().includes(search.toLowerCase())
+        item.tipo.toLowerCase().includes(searchTerms.tipo.toLowerCase()) &&
+        item.token.toLowerCase().includes(searchTerms.token.toLowerCase()) &&
+        item.cedula.toLowerCase().includes(searchTerms.cedula.toLowerCase()) &&
+        item.telefono.toLowerCase().includes(searchTerms.telefono.toLowerCase()) &&
+        item.banco.toLowerCase().includes(searchTerms.banco.toLowerCase()) &&
+        item.codigo_banco.toLowerCase().includes(searchTerms.codigo_banco.toLowerCase()) &&
+        item.monto.toLowerCase().includes(searchTerms.monto.toLowerCase()) &&
+        item.referencia.toLowerCase().includes(searchTerms.referencia.toLowerCase()) &&
+        item.descripcion.toLowerCase().includes(searchTerms.descripcion.toLowerCase()) &&
+        item.fecha.toLowerCase().includes(searchTerms.fecha.toLowerCase()) &&
+        item.hora.toLowerCase().includes(searchTerms.hora.toLowerCase())
     );
+
+    const handleExport = () => {
+        const worksheet = XLSX.utils.json_to_sheet(filteredData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+        XLSX.writeFile(workbook, "data_filtrada.xlsx");
+    };
 
     return (
         <Box sx={{ height: 700 }} className="p-4 w-full">
-
             <h1 className="text-2xl font-bold mb-4">Transacciones de la pasarela de pagos HerosPay</h1>
-            <input
-                type="text"
-                value={search}
-                onChange={handleSearch}
-                placeholder="Buscar..."
-                className="mb-4 p-2 border rounded w-full"
-            />
-            <DataGrid rows={filteredData} columns={columns} pageSize={5} className="mb-4" />
+            <DataGrid rows={filteredData} columns={columns} pageSize={5} className="mb-4 mt-4" />
             <Button variant="contained" color="primary" onClick={handleExport} className="mt-4">Exportar a Excel</Button>
         </Box>
     );
