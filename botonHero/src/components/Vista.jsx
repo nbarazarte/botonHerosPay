@@ -385,7 +385,7 @@ const Vista = () => {
                     </div>
 
                     <DisclosurePanel className="md:hidden">
-                        <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
+                        {/*                         <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
                             {navigation.map((item) => (
                                 <DisclosureButton
                                     key={item.name}
@@ -400,7 +400,7 @@ const Vista = () => {
                                     {item.name}
                                 </DisclosureButton>
                             ))}
-                        </div>
+                        </div> */}
                         <div className="border-t border-gray-700 pt-4 pb-3">
                             <div className="flex items-center px-5">
                                 <div className="shrink-0">
