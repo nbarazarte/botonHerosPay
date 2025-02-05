@@ -41,6 +41,18 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Buscar id del ap por identificador
+router.get('/ap', async (req, res) => {
+    try {
+        const { idAp } = req.query;
+        const result = await pool.query('SELECT * FROM public.ap where identificador = $1 ORDER BY id DESC LIMIT 1', [idAp]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
 // Obtener monto los debito inmediato
 router.get('/debitoinmediato', async (req, res) => {
     try {
@@ -169,10 +181,10 @@ router.post('/cliente_tokens', async (req, res) => {
 // Insertar en transac
 router.post('/crear_transac', async (req, res) => {
     try {
-        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id } = req.body;
+        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, ap_id } = req.body;
         const result = await pool.query(
-            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) RETURNING *',
-            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id]
+            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, ap_id, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP) RETURNING *',
+            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, ap_id]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {

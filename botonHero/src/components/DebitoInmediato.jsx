@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 //import '../assets/styles.css'; // Importa el archivo CSS
@@ -14,6 +15,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
+    const { idAp } = useParams();
+    const [identificadorAp, setIdentificadorAp] = useState(null);
     const [pagoExitoso, setPagoExitoso] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [msjOtp, setMsjOtp] = useState('');
@@ -124,6 +127,17 @@ const DebitoInmediato = () => {
 
     useEffect(() => {
         const fetchBanksAndMonto = async () => {
+
+            try {
+                //console.log('IDAP:', idAp);
+                const response = await axios.get(`${url}ap?idAp=${idAp}`, { headers });
+                //console.log(response.data.id);
+                setIdentificadorAp(response.data.id);
+
+            } catch (error) {
+                console.error("Error obteniendo id del AP:", error);
+            }
+
             // Pido los bancos que usan solo debito inmediato
             try {
                 const response = await axios.get(`${url}bancosDebitoInmediato`, { headers });
@@ -419,6 +433,7 @@ const DebitoInmediato = () => {
                                 referencia: data2.reference,
                                 descripcion: postData.Concepto,
                                 pasarela_id: 1,
+                                ap_id: identificadorAp
                             }, { headers });
                         } catch (error) {
                             let msj = 'Error guardar transaccion';

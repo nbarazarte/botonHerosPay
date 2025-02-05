@@ -16,6 +16,8 @@ const DataTable = () => {
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
     const [data, setData] = useState([]);
     const [searchTerms, setSearchTerms] = useState({
+        nombre: '',
+        identificador: '',
         tipo: '',
         token: '',
         cedula: '',
@@ -55,6 +57,39 @@ const DataTable = () => {
                 </Box>
             )
         },
+
+        {
+            field: 'nombre', headerName: 'NOMBRE', width: 220, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>NOMBRE</div>
+                    <TextField
+                        name="nombre"
+                        value={searchTerms.nombre}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+
+        {
+            field: 'identificador', headerName: 'IDENTIFICADOR', width: 130, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>IDENTIFICADOR</div>
+                    <TextField
+                        name="identificador"
+                        value={searchTerms.identificador}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+
         {
             field: 'tipo', headerName: 'TIPO', width: 140, renderHeader: () => (
                 <Box className="flex flex-col items-center">
@@ -70,6 +105,8 @@ const DataTable = () => {
                 </Box>
             )
         },
+
+
         {
             field: 'token', headerName: 'TOKEN', width: 120, renderHeader: () => (
                 <Box className="flex flex-col items-center">
@@ -231,6 +268,8 @@ const DataTable = () => {
     };
 
     const filteredData = data.filter(item =>
+        item.nombre.toLowerCase().includes(searchTerms.nombre.toLowerCase()) &&
+        item.identificador.toLowerCase().includes(searchTerms.identificador.toLowerCase()) &&
         item.tipo.toLowerCase().includes(searchTerms.tipo.toLowerCase()) &&
         item.token.toLowerCase().includes(searchTerms.token.toLowerCase()) &&
         item.cedula.toLowerCase().includes(searchTerms.cedula.toLowerCase()) &&
@@ -436,9 +475,9 @@ const Vista = () => {
                 </Disclosure>
 
                 <main>
-                    <div className="w-screen  sm:px-6 lg:px-8">
+                    <div className="w-screen sm:px-6 lg:px-8">
 
-                        <div className="container mx-auto p-4">
+                        <div className="w-full mx-auto p-4">
                             <main>
                                 <DataTable />
                             </main>
