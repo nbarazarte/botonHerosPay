@@ -59,39 +59,7 @@ const DataTable = () => {
         },
 
         {
-            field: 'nombre', headerName: 'NOMBRE', width: 220, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>NOMBRE</div>
-                    <TextField
-                        name="nombre"
-                        value={searchTerms.nombre}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
-
-        {
-            field: 'identificador', headerName: 'IDENTIFICADOR', width: 130, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>IDENTIFICADOR</div>
-                    <TextField
-                        name="identificador"
-                        value={searchTerms.identificador}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
-
-        {
-            field: 'tipo', headerName: 'TIPO', width: 140, renderHeader: () => (
+            field: 'tipo', headerName: 'TIPO', width: 50, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>TIPO</div>
                     <TextField
@@ -108,7 +76,7 @@ const DataTable = () => {
 
 
         {
-            field: 'token', headerName: 'TOKEN', width: 120, renderHeader: () => (
+            field: 'token', headerName: 'TOKEN', width: 100, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>TOKEN</div>
                     <TextField
@@ -123,7 +91,7 @@ const DataTable = () => {
             )
         },
         {
-            field: 'cedula', headerName: 'CÉDULA', width: 160, renderHeader: () => (
+            field: 'cedula', headerName: 'CÉDULA', width: 120, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>CÉDULA</div>
                     <TextField
@@ -138,7 +106,7 @@ const DataTable = () => {
             )
         },
         {
-            field: 'telefono', headerName: 'TELÉFONO', width: 160, renderHeader: () => (
+            field: 'telefono', headerName: 'TELÉFONO', width: 120, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>TELÉFONO</div>
                     <TextField
@@ -167,23 +135,23 @@ const DataTable = () => {
                 </Box>
             )
         },
+        /*         {
+                    field: 'codigo_banco', headerName: 'COD.', width: 90, renderHeader: () => (
+                        <Box className="flex flex-col items-center">
+                            <div>COD.</div>
+                            <TextField
+                                name="codigo_banco"
+                                value={searchTerms.codigo_banco}
+                                onChange={handleSearch}
+                                placeholder=""
+                                variant="standard"
+                                fullWidth
+                            />
+                        </Box>
+                    )
+                }, */
         {
-            field: 'codigo_banco', headerName: 'COD.', width: 110, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>COD.</div>
-                    <TextField
-                        name="codigo_banco"
-                        value={searchTerms.codigo_banco}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
-        {
-            field: 'monto', headerName: 'MONTO', width: 125, renderHeader: () => (
+            field: 'monto', headerName: 'MONTO', width: 100, renderHeader: () => (
                 <Box className="flex flex-col items-center">
                     <div>MONTO</div>
                     <TextField
@@ -257,6 +225,37 @@ const DataTable = () => {
                 </Box>
             )
         },
+        {
+            field: 'nombre', headerName: 'NOMBRE', width: 220, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>SITIO</div>
+                    <TextField
+                        name="nombre"
+                        value={searchTerms.nombre}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
+
+        {
+            field: 'identificador', headerName: 'IDENTIFICADOR', width: 130, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>IDENTIFICADOR</div>
+                    <TextField
+                        name="identificador"
+                        value={searchTerms.identificador}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
     ];
 
     const handleSearch = (event) => {
@@ -292,14 +291,14 @@ const DataTable = () => {
 
     return (
 
-        <Box sx={{ height: 700 }} className=" w-full">
+        <Box className="h-full pt-2">
             <div className="flex flex-row justify-between items-center">
                 <h1 className="text-2xl font-bold">Transacciones de la pasarela de pagos HerosPay</h1>
                 <div className='flex justify-end items-end'>
                     <Button variant="contained" color="primary" onClick={handleExport} className="mt-4">Exportar a Excel</Button>
                 </div>
             </div>
-            <DataGrid rows={filteredData} columns={columns} pageSize={5} className="mb-4 mt-4" />
+            <DataGrid rows={filteredData} columns={columns} pageSize={5} className="w-full mb-4 mt-4" />
         </Box>
 
     );
@@ -341,7 +340,7 @@ const Vista = () => {
     return (
         <>
 
-            <div className="min-h-full">
+            <div className="min-h-full ">
                 <Disclosure as="nav" className="bg-gray-800">
                     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div className="flex h-16 items-center justify-between">
@@ -475,14 +474,8 @@ const Vista = () => {
                 </Disclosure>
 
                 <main>
-                    <div className="w-screen sm:px-6 lg:px-8">
-
-                        <div className="w-full mx-auto p-4">
-                            <main>
-                                <DataTable />
-                            </main>
-                        </div>
-
+                    <div className=" sm:px-6 lg:px-8">
+                        <DataTable />
                     </div>
                 </main>
             </div>
