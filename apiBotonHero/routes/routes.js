@@ -42,10 +42,10 @@ router.post('/login', async (req, res) => {
 });
 
 // Buscar id del ap por identificador
-router.get('/ap', async (req, res) => {
+router.get('/sitios', async (req, res) => {
     try {
         const { idAp } = req.query;
-        const result = await pool.query('SELECT * FROM public.ap where identificador = $1 ORDER BY id DESC LIMIT 1', [idAp]);
+        const result = await pool.query('SELECT * FROM public.sitios where identificador = $1 ORDER BY id DESC LIMIT 1', [idAp]);
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);

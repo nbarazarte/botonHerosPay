@@ -15,16 +15,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
-    const { idAp } = useParams();
+    const [numeroFactura, setNumeroFactura] = useState(null)
+    const { idSitio } = useParams();
     const [identificadorAp, setIdentificadorAp] = useState(null);
     const [pagoExitoso, setPagoExitoso] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [msjOtp, setMsjOtp] = useState('');
+    const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
     const nacionalidad = ['V', 'E', 'J'];
     const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
     const [cedula, setCedula] = useState('');
     const [nacionalidadCedula, setNacionalidadCedula] = useState('');
-    const [selectedCodigoArea, setSelectedCodigoArea] = useState('');
+    const [selectedCodigoArea, setSelectedCodigoArea] = useState(codigosArea[0]);
     const [telefono, setTelefono] = useState('');
     const [numTelefono, setNumTelefono] = useState('');
     const [monto, setMonto] = useState('1.00');
@@ -36,7 +38,6 @@ const DebitoInmediato = () => {
     const [errorPago, setErrorPago] = useState('');
     const [selectedBank, setSelectedBank] = useState('');
     const [bankOptions, setBankOptions] = useState([]);
-    const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
     const [loading, setLoading] = useState(false);
     const [loadingBankWait, setLoadingBankWait] = useState(false);
     const [text, setText] = useState("");
@@ -129,13 +130,13 @@ const DebitoInmediato = () => {
         const fetchBanksAndMonto = async () => {
 
             try {
-                //console.log('IDAP:', idAp);
-                const response = await axios.get(`${url}ap?idAp=${idAp}`, { headers });
-                //console.log(response.data.id);
+                console.log('IDsitio:', idSitio);
+                const response = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
+                console.log(response.data.id);
                 setIdentificadorAp(response.data.id);
 
             } catch (error) {
-                console.error("Error obteniendo id del AP:", error);
+                console.error("Error obteniendo id del Sitio:", error);
             }
 
             // Pido los bancos que usan solo debito inmediato
@@ -435,6 +436,11 @@ const DebitoInmediato = () => {
                                 pasarela_id: 1,
                                 ap_id: identificadorAp
                             }, { headers });
+
+                            let numeroFactura = transac.data.id.toString().padStart(5, '0');
+                            console.log(numeroFactura);
+                            setNumeroFactura(numeroFactura);
+
                         } catch (error) {
                             let msj = 'Error guardar transaccion';
                             //console.log(msj, error);
@@ -632,7 +638,9 @@ const DebitoInmediato = () => {
                                                                         <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
                                                                     </div>
                                                                     <p className='text-lg'>¡Pago Aprobado!</p>
+
                                                                 </div>
+                                                                <p className='text-base'>N°{numeroFactura}</p>
 
                                                             </div>
                                                             <div className="mt-2">
