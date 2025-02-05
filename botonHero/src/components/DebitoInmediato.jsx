@@ -130,9 +130,9 @@ const DebitoInmediato = () => {
         const fetchBanksAndMonto = async () => {
 
             try {
-                console.log('IDsitio:', idSitio);
+                //console.log('IDsitio:', idSitio);
                 const response = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
-                console.log(response.data.id);
+                //console.log(response.data.id);
                 setIdentificadorAp(response.data.id);
 
             } catch (error) {
