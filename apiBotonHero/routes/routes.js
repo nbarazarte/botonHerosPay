@@ -1,3 +1,8 @@
+const dotenv = require('dotenv');
+
+// Asegúrate de especificar la ruta correcta si tu archivo .env no está en el directorio raíz
+dotenv.config({ path: '../.env' });
+
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
@@ -203,5 +208,61 @@ router.get('/buscar_transacciones', async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
+
+// ########################## PARA R4 ################################
+
+router.get('/MBConsulta', async (req, res) => {
+    try {
+        const { idCliente, Monto, TelefonoComercio } = req.query;
+        //console.log({ idCliente, Monto, TelefonoComercio });
+
+        if (!idCliente) {
+            return res.status(400).send('idCliente es requerido');
+        }
+
+        if (!Monto) {
+            return res.status(400).send('Monto es requerido');
+        }
+
+        if (!TelefonoComercio) {
+            return res.status(400).send('TelefonoComercio es requerido');
+        }
+
+        const result = await pool.query('SELECT * FROM clientes WHERE cedula = $1 ORDER BY id DESC LIMIT 1', [`V${idCliente}`]);//nota
+
+        if (result.rows.length === 0) {
+            res.json({ status: false });
+        } else {
+            try {
+                const montosResult = await pool.query(`SELECT monto FROM public.montos where tipo = 'pago movil'`);
+
+                if (montosResult.rows[0].monto === Monto) {
+
+                    //console.log(process.env.TELEFONOCOMERCIO);
+
+                    if (TelefonoComercio === process.env.TELEFONOCOMERCIO) {
+                        //res.json({ status: true, cliente: result.rows[0], montos: montosResult.rows });
+                        res.json({ status: true });
+                    } else {
+                        res.json({ status: false });
+                    }
+
+                } else {
+                    res.json({ status: false });
+                }
+
+            } catch (err) {
+                console.error(err.message);
+                return res.status(500).send('Error en el servidor al obtener los montos');
+            }
+        }
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+
 
 module.exports = router;
