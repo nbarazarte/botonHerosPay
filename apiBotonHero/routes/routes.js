@@ -211,7 +211,7 @@ router.get('/buscar_transacciones', async (req, res) => {
 
 // ########################## PARA R4 ################################
 
-router.get('/MBConsulta', async (req, res) => {
+router.get('/MBconsulta', async (req, res) => {
     try {
         const { idCliente, Monto, TelefonoComercio } = req.query;
         //console.log({ idCliente, Monto, TelefonoComercio });
@@ -257,6 +257,32 @@ router.get('/MBConsulta', async (req, res) => {
             }
         }
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+router.post('/MBnotifica', async (req, res) => {
+    try {
+        const { idCliente, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed } = req.body;
+
+        // Validación de campos requeridos
+        if (!idCliente || !TelefonoComercio || !TelefonoEmisor || !BancoEmisor || !Monto || !FechaHora || !Referencia || !CodigoRed) {
+            return res.status(400).send('Todos los campos requeridos deben ser proporcionados');
+        }
+
+        // Inserción en la tabla R4Notifica
+        const result = await pool.query(`
+            INSERT INTO R4Notifica (IdCliente, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *
+        `, [idCliente, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed]);
+
+        if (result.rowCount > 0) {
+            res.json({ abono: true });
+        } else {
+            res.json({ abono: false });
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
