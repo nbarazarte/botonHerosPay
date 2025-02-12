@@ -16,6 +16,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
+    const [mensajeApis, setMensajeApis] = useState('');
+    const [textoBoton, setTextoBoton] = useState('Copiar Token')
     const [numeroFactura, setNumeroFactura] = useState(null)
     const { idSitio } = useParams();
     const [identificadorAp, setIdentificadorAp] = useState(null);
@@ -35,7 +37,7 @@ const DebitoInmediato = () => {
     const [otp, setOtp] = useState('');
     const [dataForm, setDataForm] = useState({})
     const [token, setToken] = useState('');
-    const [error, setError] = useState('');
+    const [error, setError] = useState(null);
     const [errorPago, setErrorPago] = useState('');
     const [errorApiR4, setErrorApiR4] = useState(null);
     const [selectedBank, setSelectedBank] = useState('');
@@ -47,7 +49,7 @@ const DebitoInmediato = () => {
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
     const [timeLeft, setTimeLeft] = useState(60);
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoDebitoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
     const urlApiMiBancoGenerarOtp = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
@@ -74,6 +76,7 @@ const DebitoInmediato = () => {
             message: "Press #{key} to copy"
         });
         setCopied(true);
+        setTextoBoton('¡Token Copiado!')
         setTimeout(() => setCopied(false), 3000); // Reset after 3 seconds
     };
 
@@ -140,7 +143,11 @@ const DebitoInmediato = () => {
                 //console.log(response.data[0].monto);
 
             } catch (error) {
-                console.error("Error obteniendo monto:", error);
+                //console.error("Error obteniendo monto:", error);
+                setMensajeApis('Falla de conexión con el Servidor');
+                setError('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
+                setErrorApiR4('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
+                return null;
             }
 
             // Consulto la tasa del BCV del dia
@@ -177,7 +184,8 @@ const DebitoInmediato = () => {
                 setMonto((response.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
 
             } catch (error) {
-                console.error('Error al realizar la solicitud:', error);
+                //console.error('Error al realizar la solicitud:', error);
+                setMensajeApis('Falla de conexión con el Banco');
                 setError('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
                 setErrorApiR4('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
                 return null;
@@ -628,7 +636,7 @@ const DebitoInmediato = () => {
                                                         <div className="flex size-12 items-center justify-center rounded-full bg-red-400 ">
                                                             <Lottie animationData={bankError} loop={true} style={{ width: '100%', height: '100%' }} />
                                                         </div>
-                                                        <p className='text-lg'>Falla de conexión con el Banco</p>
+                                                        <p className='text-lg'>{mensajeApis}</p>
 
                                                     </div>
 
@@ -657,20 +665,6 @@ const DebitoInmediato = () => {
                             </div>
                         </div>
                     </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 </>
 
@@ -769,7 +763,7 @@ const DebitoInmediato = () => {
                                                                 onClick={handleCopy}
                                                                 className="inline-flex  justify-center rounded-md bg-naranjaMove px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-orange-300 sm:ml-3 sm:w-auto"
                                                             >
-                                                                Copiar Token
+                                                                {textoBoton}
                                                             </button>
 
                                                         </div>
@@ -968,13 +962,20 @@ const DebitoInmediato = () => {
                                                                 )}
                                                             </div>
 
-                                                            {(timeLeft == 0) || (error) && (
+                                                            {(timeLeft == 0) && (
                                                                 <div className='flex flex-row pb-2 items-center justify-center'>
                                                                     <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
                                                                         IR AL INICIO
                                                                     </button>
                                                                 </div>
+                                                            )}
 
+                                                            {(error) && (
+                                                                <div className='flex flex-row pb-2 items-center justify-center'>
+                                                                    <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
+                                                                        IR AL INICIO
+                                                                    </button>
+                                                                </div>
                                                             )}
 
                                                         </form>
