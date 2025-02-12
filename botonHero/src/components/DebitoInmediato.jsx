@@ -47,7 +47,7 @@ const DebitoInmediato = () => {
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
     const [timeLeft, setTimeLeft] = useState(60);
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_LOCAL;
+    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
     const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
     const urlApiMiBancoDebitoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
     const urlApiMiBancoGenerarOtp = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
@@ -129,18 +129,19 @@ const DebitoInmediato = () => {
         setMonto(e.target.value);
     };
 
-    /*     useEffect(() => {// Estoy hay que meterlo en una funcion
-            if (timeLeft > 0) {
-                const interval = setInterval(() => {
-                    setTimeLeft((prevTime) => prevTime - 1);
-                }, 1000);
-    
-                return () => clearInterval(interval);
-            }
-        }, [timeLeft]); */
-
     useEffect(() => {
         const fetchBanksAndMonto = async () => {
+
+            // Pido el monto de debito inmediato
+            let response;
+            try {
+                response = await axios.get(`${url}debitoinmediato`, { headers });
+                // setMonto(response.data[0].monto);
+                //console.log(response.data[0].monto);
+
+            } catch (error) {
+                console.error("Error obteniendo monto:", error);
+            }
 
             // Consulto la tasa del BCV del dia
             try {
@@ -198,17 +199,6 @@ const DebitoInmediato = () => {
                 setBankOptions(response.data);
             } catch (error) {
                 console.error("Error obteniendo bancos:", error);
-            }
-
-            // Pido el monto de debito inmediato
-            let response;
-            try {
-                response = await axios.get(`${url}debitoinmediato`, { headers });
-                // setMonto(response.data[0].monto);
-                //console.log(response.data[0].monto);
-
-            } catch (error) {
-                console.error("Error obteniendo monto:", error);
             }
 
         };
@@ -270,7 +260,8 @@ const DebitoInmediato = () => {
             }
 
             const data1 = await handleGenerarOtp(postData);
-            //console.log(data1);
+            //console.log(data1.success);
+
             //console.log(postData);
             setMsjOtp(`En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
 
@@ -291,12 +282,13 @@ const DebitoInmediato = () => {
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
 
-
         if (!otp) {
             setError('Indique el OTP recibido');
             setIsVisible(true);
             return;
         }
+
+        setTimeLeft(60);
         setIsVisible(false);
         setLoading(true);
         setLoadingBankWait(true);
@@ -472,6 +464,7 @@ const DebitoInmediato = () => {
                 } else {
 
                     setError('');
+                    //console.log(data2.message);
                     setError(data2.message);
                     setErrorPago(data2.code);
                     return
@@ -488,6 +481,8 @@ const DebitoInmediato = () => {
             }
 
         } catch (err) {
+
+
             setError(err);
             console.error("Error-->:", err);
             setToken(null);
@@ -521,12 +516,17 @@ const DebitoInmediato = () => {
 
             const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco2 });
             //console.log(miBancoGenerarOtp.data);
-
             setError('');
 
             if (timeLeft > 0) {
                 const interval = setInterval(() => {
-                    setTimeLeft((prevTime) => prevTime - 1);
+                    setTimeLeft((prevTime) => {
+                        if (prevTime - 1 <= 0) {
+                            clearInterval(interval);
+                            return 0;
+                        }
+                        return prevTime - 1;
+                    });
                 }, 1000);
 
                 return () => clearInterval(interval);
@@ -968,11 +968,14 @@ const DebitoInmediato = () => {
                                                                 )}
                                                             </div>
 
-                                                            <div className='flex flex-row pb-2 items-center justify-center'>
-                                                                <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
-                                                                    IR AL INICIO
-                                                                </button>
-                                                            </div>
+                                                            {(timeLeft == 0) || (error) && (
+                                                                <div className='flex flex-row pb-2 items-center justify-center'>
+                                                                    <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
+                                                                        IR AL INICIO
+                                                                    </button>
+                                                                </div>
+
+                                                            )}
 
                                                         </form>
                                                     </div>
