@@ -69,7 +69,8 @@ const DebitoInmediato = () => {
             message: "Press #{key} to copy"
         });
         setCopied(true);
-        setTextoBoton('¡Token Copiado!')
+        setTextoBoton('¡Token Copiado!');
+        handledestruir();
         setTimeout(() => setCopied(false), 3000); // Reset after 3 seconds
     };
 
@@ -126,6 +127,32 @@ const DebitoInmediato = () => {
     };
 
     useEffect(() => {
+
+        const mensajeOtp = localStorage.getItem('mensajeOtp');
+        const dataFormulario = JSON.parse(localStorage.getItem('dataFormulario'));
+        const formulario1 = localStorage.getItem('formulario1');
+        const formulario2 = localStorage.getItem('formulario2');
+
+        if (mensajeOtp != null) {
+            /*             console.log(mensajeOtp);
+                        console.log(dataFormulario);
+                        console.log(formulario1);
+                        console.log(formulario2); */
+            setMsjOtp(mensajeOtp);
+            setDataForm(dataFormulario);
+            setShowOtpForm1(formulario1);
+            setShowOtpForm2(formulario2);
+        }
+
+    }, [])
+
+    const handledestruir = () => {
+
+        localStorage.clear(); // Esto eliminará todas las claves y valores almacenados en localStorage
+    }
+
+    useEffect(() => {
+
         const fetchBanksAndMonto = async () => {
 
             // Pido el monto de débito inmediato y en caso de fallar muestra una pantalla
@@ -264,6 +291,11 @@ const DebitoInmediato = () => {
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
+            localStorage.setItem('mensajeOtp', `En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
+            localStorage.setItem('dataFormulario', JSON.stringify(postData));
+            localStorage.setItem('formulario1', false);
+            localStorage.setItem('formulario2', true);
+
         } catch (err) {
             setError(err);
             console.error("Error-->:", err);
@@ -271,6 +303,7 @@ const DebitoInmediato = () => {
         } finally {
             setLoading(false); // Oculta el loading
         }
+
     };
 
     const handleSubmitConOtp = async (e) => {
@@ -589,7 +622,10 @@ const DebitoInmediato = () => {
 
     const RefreshButton = () => (
         <div className='flex flex-row pb-2 items-center justify-center'>
-            <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
+            <button onClick={() => {
+                handledestruir();
+                window.location.reload();
+            }} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
                 IR AL INICIO
             </button>
         </div>
@@ -762,7 +798,7 @@ const DebitoInmediato = () => {
                             {!bankOptions.length == 0 ? (
                                 <>
                                     {
-                                        showOtpForm1 && (
+                                        showOtpForm1 === true && (
                                             <div className="pt-10 flex flex-1 h-full justify-center items-center">
                                                 <form className="mt-1" onSubmit={handleSubmitSinOtp}>
                                                     <label htmlFor="bank" className="block">
