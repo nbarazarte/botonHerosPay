@@ -211,7 +211,7 @@ router.get('/buscar_transacciones', async (req, res) => {
 
 // ########################## PARA R4 ################################
 
-router.get('/MBconsulta', async (req, res) => {
+/* router.get('/MBconsulta', async (req, res) => {
     try {
         const { idCliente, Monto, TelefonoComercio } = req.query;
         //console.log({ idCliente, Monto, TelefonoComercio });
@@ -257,6 +257,33 @@ router.get('/MBconsulta', async (req, res) => {
             }
         }
 
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+ */
+
+router.post('/MBconsulta', async (req, res) => {
+    try {
+        const { IdCliente, Monto, TelefonoComercio } = req.body;
+
+        // Validación de campos requeridos
+        if (!IdCliente || !Monto || !TelefonoComercio) {
+            return res.status(400).send('Todos los campos requeridos deben ser proporcionados');
+        }
+
+        // Inserción en la tabla MBconsulta
+        const result = await pool.query(`
+            INSERT INTO R4Consulta (IdCliente, Monto, TelefonoComercio)
+            VALUES ($1, $2, $3) RETURNING *
+        `, [IdCliente, Monto, TelefonoComercio]);
+
+        if (result.rowCount > 0) {
+            res.json({ status: true });
+        } else {
+            res.json({ status: false });
+        }
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');

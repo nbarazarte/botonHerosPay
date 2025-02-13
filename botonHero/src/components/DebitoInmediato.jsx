@@ -633,7 +633,7 @@ const DebitoInmediato = () => {
         <a onClick={() => {
             handledestruir();
             window.location.reload();
-        }} className="  text-blue-700 font-sans font-semibold text-xs text-center block  cursor-pointer">
+        }} className="  text-blue-700 font-sans font-semibold text-xl text-center block  cursor-pointer">
             Ir al inicio
         </a>
 
