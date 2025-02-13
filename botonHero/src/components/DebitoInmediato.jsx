@@ -621,14 +621,22 @@ const DebitoInmediato = () => {
     };
 
     const RefreshButton = () => (
-        <div className='flex flex-row pb-2 items-center justify-center'>
-            <button onClick={() => {
-                handledestruir();
-                window.location.reload();
-            }} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
-                IR AL INICIO
-            </button>
-        </div>
+        /*         <div className='flex flex-row pb-2 items-center justify-center'>
+                    <button onClick={() => {
+                        handledestruir();
+                        window.location.reload();
+                    }} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
+                        IR AL INICIO
+                    </button>
+                </div> */
+
+        <a onClick={() => {
+            handledestruir();
+            window.location.reload();
+        }} className="  text-blue-700 font-sans font-semibold text-xs text-center block  cursor-pointer">
+            Ir al inicio
+        </a>
+
     );
 
     return (
@@ -932,6 +940,7 @@ const DebitoInmediato = () => {
                                                                 <>
                                                                     <p className='text-sm text-center font-semibold'>{msjOtp}</p>
                                                                     <p className='text-sm text-center'>Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos.</p>
+                                                                    {(timeLeft == 0 || error) && <RefreshButton />}
                                                                     <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                                                         <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
                                                                     </div>
@@ -961,7 +970,7 @@ const DebitoInmediato = () => {
                                                                 )}
                                                             </div>
 
-                                                            {(timeLeft == 0 || error) && <RefreshButton />}
+                                                            {/* {(timeLeft == 0 || error) && <RefreshButton />} */}
 
                                                         </form>
                                                     </div>
