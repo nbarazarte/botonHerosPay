@@ -2,7 +2,8 @@ const dotenv = require('dotenv');
 
 // Asegúrate de especificar la ruta correcta si tu archivo .env no está en el directorio raíz
 dotenv.config({ path: '../.env' });
-
+const axios = require('axios');
+const CryptoJS = require('crypto-js');
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
@@ -211,6 +212,73 @@ router.get('/buscar_transacciones', async (req, res) => {
 
 // ########################## PARA R4 ################################
 
+router.post('/MBconsulta', async (req, res) => {
+    try {
+        const { IdCliente, Monto, TelefonoComercio } = req.body;
+
+        // Validación de campos requeridos
+        if (!IdCliente) return res.status(400).send('IdCliente es requerido');
+        if (!Monto) return res.status(400).send('Monto es requerido');
+        if (!TelefonoComercio) return res.status(400).send('TelefonoComercio es requerido');
+
+        // Consulta en la tabla clientes
+        const result = await pool.query('SELECT * FROM clientes WHERE cedula = $1 ORDER BY id DESC LIMIT 1', [`V${IdCliente}`]);
+        if (result.rows.length === 0) return res.json({ status: false });
+
+        // Consulta en la tabla montos
+        const montosResult = await pool.query(`SELECT monto FROM public.montos WHERE tipo = 'pago movil'`);
+        if (montosResult.rows[0].monto !== Monto || TelefonoComercio !== process.env.TELEFONOCOMERCIO) {
+            return res.json({ status: false });
+        }
+
+        res.json({ status: true });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+router.post('/MBnotifica', async (req, res) => {
+    try {
+        const { IdComercio, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed } = req.body;
+
+        // Validación de campos requeridos
+        if (!IdComercio || !TelefonoComercio || !TelefonoEmisor || !BancoEmisor || !Monto || !FechaHora || !Referencia || !CodigoRed) {
+            return res.status(400).send('Todos los campos requeridos deben ser proporcionados');
+        }
+
+        const tokenCommerce = process.env.TOKEN_COMMERCE;
+        const dataToHash = Referencia + TelefonoEmisor;
+        const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+        const hmac = hash.toString(CryptoJS.enc.Hex);
+
+        const headersMiBanco = {
+            'Content-Type': 'application/json',
+            'Authorization': `${hmac}`,
+            'Commerce': `${tokenCommerce}`
+        };
+
+        // Realizar petición a la URL proporcionada
+        const response = await axios.post('https://r4conecta.mibanco.com.ve/MBconsulta_pm', {
+            referencia: Referencia,
+            telefono_origen: TelefonoEmisor
+        }, { headers: headersMiBanco });
+
+        const { code, message } = response.data;
+
+        // Manejar la respuesta de la petición
+        if (code === "00") {
+            res.json({ abono: true, mensaje: message });
+        } else {
+            res.json({ abono: false, mensaje: message });
+        }
+
+    } catch (err) {
+        console.error('Error en el servidor:', err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
 /* router.get('/MBconsulta', async (req, res) => {
     try {
         const { idCliente, Monto, TelefonoComercio } = req.query;
@@ -262,7 +330,6 @@ router.get('/buscar_transacciones', async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
- */
 
 router.post('/MBconsulta', async (req, res) => {
     try {
@@ -292,18 +359,18 @@ router.post('/MBconsulta', async (req, res) => {
 
 router.post('/MBnotifica', async (req, res) => {
     try {
-        const { idCliente, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed } = req.body;
+        const { IdComercio, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed } = req.body;
 
         // Validación de campos requeridos
-        if (!idCliente || !TelefonoComercio || !TelefonoEmisor || !BancoEmisor || !Monto || !FechaHora || !Referencia || !CodigoRed) {
+        if (!IdComercio || !TelefonoComercio || !TelefonoEmisor || !BancoEmisor || !Monto || !FechaHora || !Referencia || !CodigoRed) {
             return res.status(400).send('Todos los campos requeridos deben ser proporcionados');
         }
 
         // Inserción en la tabla R4Notifica
         const result = await pool.query(`
-            INSERT INTO R4Notifica (IdCliente, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed)
+            INSERT INTO R4Notifica (IdComercio, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *
-        `, [idCliente, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed]);
+        `, [IdComercio, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed]);
 
         if (result.rowCount > 0) {
             res.json({ abono: true });
@@ -314,8 +381,6 @@ router.post('/MBnotifica', async (req, res) => {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
     }
-});
-
-
+}); */
 
 module.exports = router;
