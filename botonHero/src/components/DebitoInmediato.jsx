@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-//import '../assets/styles.css'; // Importa el archivo CSS
 import copy from "copy-to-clipboard";
 import Swal from 'sweetalert2'
 import Lottie from "lottie-react";
@@ -16,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
+
     const [mensajeApis, setMensajeApis] = useState('');
     const [textoBoton, setTextoBoton] = useState('Copiar Token')
     const [numeroFactura, setNumeroFactura] = useState(null)
@@ -48,25 +48,18 @@ const DebitoInmediato = () => {
     const [copied, setCopied] = useState(false);
     const [idCreditoInmediato, setIdCreditoInmediato] = useState();
     const [hmac, setHmac] = useState('');
-    const [timeLeft, setTimeLeft] = useState(60);
-    const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
-    const urlApiMiBancoCreditoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_CREDITOINMEDIATO;
-    const urlApiMiBancoDebitoInmediato = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
-    const urlApiMiBancoGenerarOtp = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
-    const urlApiMiBancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
-    const urlApiMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
+    const [timeLeft, setTimeLeft] = useState(59);
+    const [showOtpForm1, setShowOtpForm1] = useState(true);
+    const [showOtpForm2, setShowOtpForm2] = useState(false);
+    // ###########################  NOTA  ###############################
+    const url = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
+    const urlMibanco2 = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
+    const urlMibanco3 = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
+    const urlMibancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
+    const urlMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
-    // ###########################  NOTA  ###############################
-    const [url, setUrl] = useState(urlApiBoton);
-    const [urlMibanco, setUrlMiBanco] = useState(urlApiMiBancoCreditoInmediato);
-    const [urlMibanco2, setUrlMiBanco2] = useState(urlApiMiBancoDebitoInmediato);
-    const [urlMibanco3, setUrlMiBanco3] = useState(urlApiMiBancoGenerarOtp);
-    const [urlMibancoConsulta, setUrlMiBancoConsulta] = useState(urlApiMiBancoConsulta);
-    const [urlMiBancoBcv, setUrlMiBancoBcv] = useState(urlApiMiBancoBcv)
-    const [showOtpForm1, setShowOtpForm1] = useState(true);
-    const [showOtpForm2, setShowOtpForm2] = useState(false);
     // ###################################################################
 
     const handleCopy = () => {
@@ -135,12 +128,10 @@ const DebitoInmediato = () => {
     useEffect(() => {
         const fetchBanksAndMonto = async () => {
 
-            // Pido el monto de debito inmediato
+            // Pido el monto de débito inmediato y en caso de fallar muestra una pantalla
             let response;
             try {
                 response = await axios.get(`${url}debitoinmediato`, { headers });
-                // setMonto(response.data[0].monto);
-                //console.log(response.data[0].monto);
 
             } catch (error) {
                 //console.error("Error obteniendo monto:", error);
@@ -150,7 +141,7 @@ const DebitoInmediato = () => {
                 return null;
             }
 
-            // Consulto la tasa del BCV del dia
+            // Consulto la tasa del BCV del dia y en caso de fallar muestra una pantalla
             try {
                 function obtenerFechaValor() {
                     const fechaActual = new Date();
@@ -161,8 +152,6 @@ const DebitoInmediato = () => {
                 }
 
                 const fechaValor = obtenerFechaValor();
-                // console.log(fechaValor); // Salida: "2024-07-23" (la fecha actual en el formato YYYY-MM-DD)
-
                 const dataToHash = `${fechaValor}USD`;
                 const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
                 const hmac = hash.toString(CryptoJS.enc.Hex);
@@ -269,12 +258,9 @@ const DebitoInmediato = () => {
 
             const data1 = await handleGenerarOtp(postData);
             //console.log(data1.success);
-
             //console.log(postData);
             setMsjOtp(`En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
-
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
-
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
@@ -320,10 +306,6 @@ const DebitoInmediato = () => {
             //console.log(data1);
 
             if (data1.code === 'AC00') {
-                // await new Promise(resolve => setTimeout(resolve, 10000));// Espero 10 segundos antes de hacer la consulta
-                // data2 = await handleConsulta(data1.id)
-
-                // console.log(data2);
 
                 const maxRetries = 20;
                 const delay = 1000; // 1 segundo
@@ -378,7 +360,7 @@ const DebitoInmediato = () => {
                         try {
                             await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
                         } catch (error) {
-                            let msj = 'No se actualizo el token';
+                            let msj = 'No se actualizó el token';
                             //console.log(msj, error);
                             setError(msj);
                             return
@@ -457,7 +439,7 @@ const DebitoInmediato = () => {
                             setNumeroFactura(numeroFactura);
 
                         } catch (error) {
-                            let msj = 'Error guardar transaccion';
+                            let msj = 'Error guardar transacción';
                             //console.log(msj, error);
                             setError(msj);
                             return
@@ -480,7 +462,6 @@ const DebitoInmediato = () => {
 
             } else {
                 //console.log(data1.message);
-
                 //setError(data1.message);
                 setError('La longitd del campo OTP recibida es incorrecta');
                 setOtp('');
@@ -490,9 +471,8 @@ const DebitoInmediato = () => {
 
         } catch (err) {
 
-
             setError(err);
-            console.error("Error-->:", err);
+            console.error("Error", err);
             setToken(null);
         } finally {
             setLoading(false); // Oculta el loading
@@ -607,6 +587,14 @@ const DebitoInmediato = () => {
         }
     };
 
+    const RefreshButton = () => (
+        <div className='flex flex-row pb-2 items-center justify-center'>
+            <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
+                IR AL INICIO
+            </button>
+        </div>
+    );
+
     return (
 
         <>
@@ -616,14 +604,12 @@ const DebitoInmediato = () => {
                 <>
                     <div className="relative z-10">
                         <div
-                            //transition
                             className="fixed inset-0 bg-gray-300 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
                         />
 
                         <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                             <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                                 <div
-                                    //transition
                                     className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
                                 >
                                     <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -680,7 +666,6 @@ const DebitoInmediato = () => {
                                     {loadingBankWait ? (
 
                                         <div className="flex justify-center items-center pt-24">
-                                            {/* <Lottie animationData={bankWait} loop={true} style={{ width: '150px', height: '150px' }} /> */}
                                             <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
                                         </div>
                                     ) : (
@@ -713,14 +698,12 @@ const DebitoInmediato = () => {
 
                                         <div className="relative z-10">
                                             <div
-                                                //transition
                                                 className="fixed inset-0 bg-gray-300 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
                                             />
 
                                             <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                                                 <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
                                                     <div
-                                                        //transition
                                                         className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
                                                     >
                                                         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -931,26 +914,6 @@ const DebitoInmediato = () => {
                                                                 </div>
                                                             )}
 
-                                                            {/*                                                             {!errorPago ? (
-                                                                <div className='pb-2'>
-                                                                    {isVisible && (
-                                                                        <button
-                                                                            type="submit"
-                                                                            className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
-                                                                        >
-                                                                            CONFIRMAR PAGO
-                                                                        </button>
-                                                                    )}
-                                                                </div>
-
-                                                            ) : (
-                                                                <div className='pb-2'>
-                                                                    <button onClick={() => window.location.reload()} className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
-                                                                        IR AL INICIO
-                                                                    </button>
-                                                                </div>
-                                                            )} */}
-
                                                             <div className='pb-2'>
                                                                 {isVisible && (
                                                                     <button
@@ -962,21 +925,7 @@ const DebitoInmediato = () => {
                                                                 )}
                                                             </div>
 
-                                                            {(timeLeft == 0) && (
-                                                                <div className='flex flex-row pb-2 items-center justify-center'>
-                                                                    <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
-                                                                        IR AL INICIO
-                                                                    </button>
-                                                                </div>
-                                                            )}
-
-                                                            {(error) && (
-                                                                <div className='flex flex-row pb-2 items-center justify-center'>
-                                                                    <button onClick={() => window.location.reload()} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
-                                                                        IR AL INICIO
-                                                                    </button>
-                                                                </div>
-                                                            )}
+                                                            {(timeLeft == 0 || error) && <RefreshButton />}
 
                                                         </form>
                                                     </div>
@@ -997,14 +946,8 @@ const DebitoInmediato = () => {
                         </div>
                     </div >
                 </div >
-
             )}
-
-
-
         </>
-
-
     )
 };
 
