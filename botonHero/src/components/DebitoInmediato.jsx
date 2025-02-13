@@ -126,22 +126,70 @@ const DebitoInmediato = () => {
         setMonto(e.target.value);
     };
 
+
+    // Función para establecer una cookie
+    const setCookie = (name, value, days) => {
+        var expires = "";
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            expires = "; expires=" + date.toUTCString();
+        }
+        document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    // Función para obtener una cookie
+    const getCookie = (name) => {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+    }
+
+    const deleteAllCookies = () => {
+        var cookies = document.cookie.split(";");
+
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            var eqPos = cookie.indexOf("=");
+            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + '=; Max-Age=-99999999;';
+        }
+    }
+
     useEffect(() => {
 
+        // Para Android:
         const mensajeOtp = localStorage.getItem('mensajeOtp');
         const dataFormulario = JSON.parse(localStorage.getItem('dataFormulario'));
         const formulario1 = localStorage.getItem('formulario1');
         const formulario2 = localStorage.getItem('formulario2');
 
         if (mensajeOtp != null) {
-            /*             console.log(mensajeOtp);
-                        console.log(dataFormulario);
-                        console.log(formulario1);
-                        console.log(formulario2); */
+
             setMsjOtp(mensajeOtp);
             setDataForm(dataFormulario);
             setShowOtpForm1(formulario1);
             setShowOtpForm2(formulario2);
+        }
+
+        // Para ios:
+        // Recuperar datos de cookies
+        const mensajeOtp_2 = getCookie('mensajeOtp');
+        const dataFormulario_2 = getCookie('dataFormulario');
+        const formulario1_2 = getCookie('formulario1') === 'true';
+        const formulario2_2 = getCookie('formulario2') === 'true';
+
+        if (mensajeOtp_2 != null) {
+
+            setMsjOtp(mensajeOtp_2);
+            setDataForm(dataFormulario_2);
+            setShowOtpForm1(formulario1_2);
+            setShowOtpForm2(formulario2_2);
         }
 
     }, [])
@@ -149,6 +197,7 @@ const DebitoInmediato = () => {
     const handledestruir = () => {
 
         localStorage.clear(); // Esto eliminará todas las claves y valores almacenados en localStorage
+        deleteAllCookies();
     }
 
     useEffect(() => {
@@ -291,10 +340,18 @@ const DebitoInmediato = () => {
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
+            // Para Android
             localStorage.setItem('mensajeOtp', `En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
             localStorage.setItem('dataFormulario', JSON.stringify(postData));
             localStorage.setItem('formulario1', false);
             localStorage.setItem('formulario2', true);
+
+            // para ios
+            // Almacenar datos en cookies
+            setCookie('mensajeOtp', `En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`, 7); // Dura 7 días
+            setCookie('dataFormulario', JSON.stringify(postData), 7);
+            setCookie('formulario1', 'false', 7);
+            setCookie('formulario2', 'true', 7);
 
         } catch (err) {
             setError(err);
