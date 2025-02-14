@@ -778,7 +778,7 @@ const DebitoInmediato = () => {
                                                             ) : (
                                                                 <>
 
-                                                                    {vieneForm1 == true && (
+                                                                    {(vieneForm1 === true || so !== 'iOS') && (
                                                                         <>
                                                                             <p className='text-sm text-center font-semibold'>{msjOtp}</p>
                                                                             <p className='text-sm text-center'>
