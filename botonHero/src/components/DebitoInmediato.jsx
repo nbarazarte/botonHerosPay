@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import platform from 'platform'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import copy from "copy-to-clipboard";
@@ -16,6 +17,7 @@ import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
 
+    const [so, setSO] = useState('');
     const [mensajeApis, setMensajeApis] = useState('');
     const [textoBoton, setTextoBoton] = useState('Copiar Token')
     const [numeroFactura, setNumeroFactura] = useState(null)
@@ -124,6 +126,9 @@ const DebitoInmediato = () => {
     const handledestruir = () => { localStorage.clear(); }
 
     useEffect(() => {
+
+        const soInfo = platform.os.family;
+        setSO(soInfo);
 
         const mensajeOtp = localStorage.getItem('mensajeOtp');
         const mensajeOtp2 = localStorage.getItem('mensajeOtp2');
@@ -555,6 +560,7 @@ const DebitoInmediato = () => {
 
                                         <div className="justify-center items-center text-center pt-3 pb-3">
                                             <h1 className="text-lg">Pago Débito Inmediato</h1>
+                                            <p>Tu sistema operativo es: {so}</p>
                                         </div>
                                     )}
 
