@@ -125,11 +125,11 @@ const DebitoInmediato = () => {
 
     useEffect(() => {
 
-        const mensajeOtp = sessionStorage.getItem('mensajeOtp');
-        const mensajeOtp2 = sessionStorage.getItem('mensajeOtp2');
-        const dataFormulario = JSON.parse(sessionStorage.getItem('dataFormulario'));
-        const formulario1 = sessionStorage.getItem('formulario1');
-        const formulario2 = sessionStorage.getItem('formulario2');
+        const mensajeOtp = window.localStorage.getItem('mensajeOtp');
+        const mensajeOtp2 = window.localStorage.getItem('mensajeOtp2');
+        const dataFormulario = JSON.parse(window.localStorage.getItem('dataFormulario'));
+        const formulario1 = window.localStorage.getItem('formulario1');
+        const formulario2 = window.localStorage.getItem('formulario2');
 
         if (mensajeOtp != null) {
 
@@ -227,11 +227,11 @@ const DebitoInmediato = () => {
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
-            sessionStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
-            sessionStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
-            sessionStorage.setItem('dataFormulario', JSON.stringify(postData));
-            sessionStorage.setItem('formulario1', false);
-            sessionStorage.setItem('formulario2', true);
+            window.localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
+            window.localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
+            window.localStorage.setItem('dataFormulario', JSON.stringify(postData));
+            window.localStorage.setItem('formulario1', false);
+            window.localStorage.setItem('formulario2', true);
 
         } catch (err) {
             setError(err);
