@@ -121,6 +121,8 @@ const DebitoInmediato = () => {
 
     const handleChangeMonto = (e) => { setMonto(e.target.value); };
 
+    const handledestruir = () => { localStorage.clear(); }
+
     useEffect(() => {
 
         const mensajeOtp = localStorage.getItem('mensajeOtp');
@@ -139,12 +141,6 @@ const DebitoInmediato = () => {
             setTimeLeft(0);
         }
 
-    }, [])
-
-    const handledestruir = () => { localStorage.clear(); }
-
-    useEffect(() => {
-
         const fetchBanksAndMonto = async () => {
 
             // Pido el monto de débito inmediato y en caso de fallar muestra una pantalla
@@ -152,6 +148,10 @@ const DebitoInmediato = () => {
             try {
 
                 monto = await axios.get(`${url}debitoinmediato`, { headers });
+                const sitio = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
+                setIdentificadorAp(sitio.data.id);
+                const bancos = await axios.get(`${url}bancosDebitoInmediato`, { headers });
+                setBankOptions(bancos.data);
 
             } catch (error) {
 
@@ -189,18 +189,6 @@ const DebitoInmediato = () => {
                 setError('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
                 setErrorApiR4('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
                 return null;
-            }
-
-            try {
-
-                const sitio = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
-                setIdentificadorAp(sitio.data.id);
-
-                const bancos = await axios.get(`${url}bancosDebitoInmediato`, { headers });
-                setBankOptions(bancos.data);
-
-            } catch (error) {
-                console.error("Error:", error);
             }
 
         };

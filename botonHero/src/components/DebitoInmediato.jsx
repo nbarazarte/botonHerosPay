@@ -121,13 +121,15 @@ const DebitoInmediato = () => {
 
     const handleChangeMonto = (e) => { setMonto(e.target.value); };
 
+    const handledestruir = () => { localStorage.clear(); }
+
     useEffect(() => {
 
-        const mensajeOtp = localStorage.getItem('mensajeOtp');
-        const mensajeOtp2 = localStorage.getItem('mensajeOtp2');
-        const dataFormulario = JSON.parse(localStorage.getItem('dataFormulario'));
-        const formulario1 = localStorage.getItem('formulario1');
-        const formulario2 = localStorage.getItem('formulario2');
+        const mensajeOtp = sessionStorage.getItem('mensajeOtp');
+        const mensajeOtp2 = sessionStorage.getItem('mensajeOtp2');
+        const dataFormulario = JSON.parse(sessionStorage.getItem('dataFormulario'));
+        const formulario1 = sessionStorage.getItem('formulario1');
+        const formulario2 = sessionStorage.getItem('formulario2');
 
         if (mensajeOtp != null) {
 
@@ -139,12 +141,6 @@ const DebitoInmediato = () => {
             setTimeLeft(0);
         }
 
-    }, [])
-
-    const handledestruir = () => { localStorage.clear(); }
-
-    useEffect(() => {
-
         const fetchBanksAndMonto = async () => {
 
             // Pido el monto de débito inmediato y en caso de fallar muestra una pantalla
@@ -152,6 +148,10 @@ const DebitoInmediato = () => {
             try {
 
                 monto = await axios.get(`${url}debitoinmediato`, { headers });
+                const sitio = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
+                setIdentificadorAp(sitio.data.id);
+                const bancos = await axios.get(`${url}bancosDebitoInmediato`, { headers });
+                setBankOptions(bancos.data);
 
             } catch (error) {
 
@@ -191,18 +191,6 @@ const DebitoInmediato = () => {
                 return null;
             }
 
-            try {
-
-                const sitio = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
-                setIdentificadorAp(sitio.data.id);
-
-                const bancos = await axios.get(`${url}bancosDebitoInmediato`, { headers });
-                setBankOptions(bancos.data);
-
-            } catch (error) {
-                console.error("Error:", error);
-            }
-
         };
 
         fetchBanksAndMonto();
@@ -239,11 +227,11 @@ const DebitoInmediato = () => {
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
-            localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
-            localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
-            localStorage.setItem('dataFormulario', JSON.stringify(postData));
-            localStorage.setItem('formulario1', false);
-            localStorage.setItem('formulario2', true);
+            sessionStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
+            sessionStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
+            sessionStorage.setItem('dataFormulario', JSON.stringify(postData));
+            sessionStorage.setItem('formulario1', false);
+            sessionStorage.setItem('formulario2', true);
 
         } catch (err) {
             setError(err);
