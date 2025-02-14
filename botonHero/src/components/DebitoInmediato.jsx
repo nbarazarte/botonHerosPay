@@ -125,19 +125,25 @@ const DebitoInmediato = () => {
 
     useEffect(() => {
 
-        const mensajeOtp = window.localStorage.getItem('mensajeOtp');
-        const mensajeOtp2 = window.localStorage.getItem('mensajeOtp2');
-        const dataFormulario = JSON.parse(window.localStorage.getItem('dataFormulario'));
-        const formulario1 = window.localStorage.getItem('formulario1');
-        const formulario2 = window.localStorage.getItem('formulario2');
+        const getCookieValue = (name) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+            return null;
+        };
+
+        const mensajeOtp = getCookieValue('mensajeOtp');
+        const mensajeOtp2 = getCookieValue('mensajeOtp2');
+        const dataFormulario = JSON.parse(getCookieValue('dataFormulario'));
+        const formulario1 = getCookieValue('formulario1');
+        const formulario2 = getCookieValue('formulario2');
 
         if (mensajeOtp != null) {
-
             setMsjOtp(mensajeOtp);
             setMsjOtp2(mensajeOtp2);
             setDataForm(dataFormulario);
-            setShowOtpForm1(formulario1);
-            setShowOtpForm2(formulario2);
+            setShowOtpForm1(formulario1 === 'true');
+            setShowOtpForm2(formulario2 === 'true');
             setTimeLeft(0);
         }
 
@@ -227,11 +233,11 @@ const DebitoInmediato = () => {
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
-            window.localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
-            window.localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
-            window.localStorage.setItem('dataFormulario', JSON.stringify(postData));
-            window.localStorage.setItem('formulario1', false);
-            window.localStorage.setItem('formulario2', true);
+            document.cookie = `mensajeOtp=${encodeURIComponent(`Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)}; path=/`;
+            document.cookie = `mensajeOtp2=${encodeURIComponent(`Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)}; path=/`;
+            document.cookie = `dataFormulario=${encodeURIComponent(JSON.stringify(postData))}; path=/`;
+            document.cookie = `formulario1=false; path=/`;
+            document.cookie = `formulario2=true; path=/`;
 
         } catch (err) {
             setError(err);
