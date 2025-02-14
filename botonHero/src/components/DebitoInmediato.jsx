@@ -24,6 +24,7 @@ const DebitoInmediato = () => {
     const [pagoExitoso, setPagoExitoso] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [msjOtp, setMsjOtp] = useState('');
+    const [msjOtp2, setMsjOtp2] = useState('');
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
     const nacionalidad = ['V', 'E', 'J'];
     const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
@@ -127,44 +128,45 @@ const DebitoInmediato = () => {
     };
 
 
-    // Función para establecer una cookie
-    const setCookie = (name, value, days) => {
-        var expires = "";
-        if (days) {
-            var date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
+    /*     // Función para establecer una cookie
+        const setCookie = (name, value, days) => {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
         }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-
-    // Función para obtener una cookie
-    const getCookie = (name) => {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    
+        // Función para obtener una cookie
+        const getCookie = (name) => {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
         }
-        return null;
-    }
-
-    const deleteAllCookies = () => {
-        var cookies = document.cookie.split(";");
-
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i];
-            var eqPos = cookie.indexOf("=");
-            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-            document.cookie = name + '=; Max-Age=-99999999;';
+    
+        const deleteAllCookies = () => {
+            var cookies = document.cookie.split(";");
+    
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                var eqPos = cookie.indexOf("=");
+                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + '=; Max-Age=-99999999;';
+            }
         }
-    }
-
+     */
     useEffect(() => {
 
         // Para Android:
         const mensajeOtp = localStorage.getItem('mensajeOtp');
+        const mensajeOtp2 = localStorage.getItem('mensajeOtp2');
         const dataFormulario = JSON.parse(localStorage.getItem('dataFormulario'));
         const formulario1 = localStorage.getItem('formulario1');
         const formulario2 = localStorage.getItem('formulario2');
@@ -172,32 +174,35 @@ const DebitoInmediato = () => {
         if (mensajeOtp != null) {
 
             setMsjOtp(mensajeOtp);
+            setMsjOtp2(mensajeOtp2);
             setDataForm(dataFormulario);
             setShowOtpForm1(formulario1);
             setShowOtpForm2(formulario2);
+            setTimeLeft(0);
         }
 
-        // Para ios:
-        // Recuperar datos de cookies
-        const mensajeOtp_2 = getCookie('mensajeOtp');
-        const dataFormulario_2 = getCookie('dataFormulario');
-        const formulario1_2 = getCookie('formulario1') === 'true';
-        const formulario2_2 = getCookie('formulario2') === 'true';
-
-        if (mensajeOtp_2 != null) {
-
-            setMsjOtp(mensajeOtp_2);
-            setDataForm(dataFormulario_2);
-            setShowOtpForm1(formulario1_2);
-            setShowOtpForm2(formulario2_2);
-        }
+        /*         // Para ios:
+                // Recuperar datos de cookies
+                const mensajeOtp_2 = getCookie('mensajeOtp');
+                const dataFormulario_2 = getCookie('dataFormulario');
+                const formulario1_2 = getCookie('formulario1') === 'true';
+                const formulario2_2 = getCookie('formulario2') === 'true';
+        
+                if (mensajeOtp_2 != null) {
+        
+                    setMsjOtp(mensajeOtp_2);
+                    setDataForm(dataFormulario_2);
+                    setShowOtpForm1(formulario1_2);
+                    setShowOtpForm2(formulario2_2);
+                    setTimeLeft(0);
+                } */
 
     }, [])
 
     const handledestruir = () => {
 
         localStorage.clear(); // Esto eliminará todas las claves y valores almacenados en localStorage
-        deleteAllCookies();
+        //deleteAllCookies();
     }
 
     useEffect(() => {
@@ -335,23 +340,26 @@ const DebitoInmediato = () => {
             const data1 = await handleGenerarOtp(postData);
             //console.log(data1.success);
             //console.log(postData);
-            setMsjOtp(`En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
+            setMsjOtp(`En breve recibirá un mensaje al número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
+
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
             // Para Android
-            localStorage.setItem('mensajeOtp', `En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
+            localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
+            localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
             localStorage.setItem('dataFormulario', JSON.stringify(postData));
             localStorage.setItem('formulario1', false);
             localStorage.setItem('formulario2', true);
 
-            // para ios
-            // Almacenar datos en cookies
-            setCookie('mensajeOtp', `En breve recibirá un mensaje al ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`, 7); // Dura 7 días
-            setCookie('dataFormulario', JSON.stringify(postData), 7);
-            setCookie('formulario1', 'false', 7);
-            setCookie('formulario2', 'true', 7);
+            /*             // para ios
+                        // Almacenar datos en cookies
+                        setCookie('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`, 1); // Dura 1 día
+                        setCookie('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`, 1);
+                        setCookie('dataFormulario', JSON.stringify(postData), 1);
+                        setCookie('formulario1', 'false', 1);
+                        setCookie('formulario2', 'true', 1); */
 
         } catch (err) {
             setError(err);
@@ -372,7 +380,7 @@ const DebitoInmediato = () => {
             return;
         }
 
-        setTimeLeft(60);
+        setTimeLeft(59);
         setIsVisible(false);
         setLoading(true);
         setLoadingBankWait(true);
@@ -996,7 +1004,9 @@ const DebitoInmediato = () => {
                                                             ) : (
                                                                 <>
                                                                     <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                                                    <p className='text-sm text-center'>Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos.</p>
+                                                                    <p className='text-sm text-center'>
+                                                                        {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
+                                                                    </p>
                                                                     {(timeLeft == 0 || error) && <RefreshButton />}
                                                                     <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                                                         <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
