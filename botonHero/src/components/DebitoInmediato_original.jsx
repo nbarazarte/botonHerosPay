@@ -58,11 +58,13 @@ const DebitoInmediato = () => {
     const urlMibanco3 = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
     const urlMibancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
     const urlMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
+    const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
-    const headers = { 'Authorization': `Bearer ${import.meta.env.REACT_APP_TOKEN}` };
+    const headers = { 'Authorization': `Bearer ${tokenApi}` };
     // ###################################################################
 
     const handleCopy = () => {
+        //console.log('copiando');
         copy(token.token, {
             debug: true,
             message: "Press #{key} to copy"
@@ -110,7 +112,9 @@ const DebitoInmediato = () => {
         setNumTelefono(selectedCodigoArea + onlyNumbers);
     };
 
-    const handleChangeConcepto = (e) => { setConcepto(e.target.value); };
+    const handleChangeConcepto = (e) => {
+        setConcepto(e.target.value);
+    };
 
     const handleChangeOtp = (e) => {
         setError('');
@@ -119,10 +123,48 @@ const DebitoInmediato = () => {
         setIsVisible(true);
     };
 
-    const handleChangeMonto = (e) => { setMonto(e.target.value); };
+    const handleChangeMonto = (e) => {
+        setMonto(e.target.value);
+    };
 
+
+    /*     // Función para establecer una cookie
+        const setCookie = (name, value, days) => {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+    
+        // Función para obtener una cookie
+        const getCookie = (name) => {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+    
+        const deleteAllCookies = () => {
+            var cookies = document.cookie.split(";");
+    
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i];
+                var eqPos = cookie.indexOf("=");
+                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + '=; Max-Age=-99999999;';
+            }
+        }
+     */
     useEffect(() => {
 
+        // Para Android:
         const mensajeOtp = localStorage.getItem('mensajeOtp');
         const mensajeOtp2 = localStorage.getItem('mensajeOtp2');
         const dataFormulario = JSON.parse(localStorage.getItem('dataFormulario'));
@@ -139,22 +181,41 @@ const DebitoInmediato = () => {
             setTimeLeft(0);
         }
 
+        /*         // Para ios:
+                // Recuperar datos de cookies
+                const mensajeOtp_2 = getCookie('mensajeOtp');
+                const dataFormulario_2 = getCookie('dataFormulario');
+                const formulario1_2 = getCookie('formulario1') === 'true';
+                const formulario2_2 = getCookie('formulario2') === 'true';
+        
+                if (mensajeOtp_2 != null) {
+        
+                    setMsjOtp(mensajeOtp_2);
+                    setDataForm(dataFormulario_2);
+                    setShowOtpForm1(formulario1_2);
+                    setShowOtpForm2(formulario2_2);
+                    setTimeLeft(0);
+                } */
+
     }, [])
 
-    const handledestruir = () => { localStorage.clear(); }
+    const handledestruir = () => {
+
+        localStorage.clear(); // Esto eliminará todas las claves y valores almacenados en localStorage
+        //deleteAllCookies();
+    }
 
     useEffect(() => {
 
         const fetchBanksAndMonto = async () => {
 
             // Pido el monto de débito inmediato y en caso de fallar muestra una pantalla
-            let monto;
+            let response;
             try {
-
-                monto = await axios.get(`${url}debitoinmediato`, { headers });
+                response = await axios.get(`${url}debitoinmediato`, { headers });
 
             } catch (error) {
-
+                //console.error("Error obteniendo monto:", error);
                 setMensajeApis('Falla de conexión con el Servidor');
                 setError('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
                 setErrorApiR4('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
@@ -173,15 +234,24 @@ const DebitoInmediato = () => {
 
                 const fechaValor = obtenerFechaValor();
                 const dataToHash = `${fechaValor}USD`;
-                const headersMiBanco = headersR4(dataToHash)
+                const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+                const hmac = hash.toString(CryptoJS.enc.Hex);
 
                 const postData = {
                     Moneda: "USD",
                     Fechavalor: fechaValor
                 }
 
+                const headersMiBanco = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${hmac}`,
+                    'Commerce': `${tokenCommerce}`
+                };
+
                 const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
-                setMonto((monto.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
+
+                //console.log(tasaBcv.data.tipocambio);
+                setMonto((response.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
 
             } catch (error) {
                 //console.error('Error al realizar la solicitud:', error);
@@ -192,15 +262,21 @@ const DebitoInmediato = () => {
             }
 
             try {
-
-                const sitio = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
-                setIdentificadorAp(sitio.data.id);
-
-                const bancos = await axios.get(`${url}bancosDebitoInmediato`, { headers });
-                setBankOptions(bancos.data);
+                //console.log('IDsitio:', idSitio);
+                const response = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
+                //console.log(response.data.id);
+                setIdentificadorAp(response.data.id);
 
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error obteniendo id del Sitio:", error);
+            }
+
+            // Pido los bancos que usan solo debito inmediato
+            try {
+                const response = await axios.get(`${url}bancosDebitoInmediato`, { headers });
+                setBankOptions(response.data);
+            } catch (error) {
+                console.error("Error obteniendo bancos:", error);
             }
 
         };
@@ -212,15 +288,32 @@ const DebitoInmediato = () => {
         e.preventDefault();
 
         // Intento de obtención del token
+        let token;
         try {
+            token = await axios.get(`${url}buscar_token`, { headers });
+            //console.log(token.data.id);
 
-            const token = await axios.get(`${url}buscar_token`, { headers });
-            if (!token.data) { setError(`No hay tokens disponibles, \n intente luego.`); return }
-            if (!selectedBank) { setError('Seleccione un Banco'); return; }
-            if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
-            if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
+            if (token.data == '') {
+                let msj = `No hay tokens disponibles, \n intente luego.`;
+                //console.log(msj, error);
+                setError(msj);
+                return
+            }
 
-            setLoading(true);
+        } catch (error) {
+            let msj = 'Fallo obteniendo token';
+            //console.log(msj, error);
+            setError(msj);
+            return
+        }
+
+        if (!selectedBank) { setError('Seleccione un Banco'); return; }
+        if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
+        if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
+
+        setLoading(true);
+
+        try {
 
             const postData = {
                 Banco: selectedBank,
@@ -230,23 +323,47 @@ const DebitoInmediato = () => {
                 Concepto: concepto
             };
 
-            // Obtener nombre del banco usando el codigo del banco
-            const banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
-            await handleGenerarOtp(postData);
+            setError('');
+            setMsjOtp('');
 
+            // Obtener nombre del banco usando el codigo del banco
+            let banco;
+            try {
+                banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
+            } catch (error) {
+                let msj = 'Error id del banco';
+                //console.log(msj, error);
+                setError(msj);
+                return
+            }
+
+            const data1 = await handleGenerarOtp(postData);
+            //console.log(data1.success);
+            //console.log(postData);
             setMsjOtp(`En breve recibirá un mensaje al número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
+
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
+            // Para Android
             localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
             localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
             localStorage.setItem('dataFormulario', JSON.stringify(postData));
             localStorage.setItem('formulario1', false);
             localStorage.setItem('formulario2', true);
 
+            /*             // para ios
+                        // Almacenar datos en cookies
+                        setCookie('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`, 1); // Dura 1 día
+                        setCookie('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`, 1);
+                        setCookie('dataFormulario', JSON.stringify(postData), 1);
+                        setCookie('formulario1', 'false', 1);
+                        setCookie('formulario2', 'true', 1); */
+
         } catch (err) {
             setError(err);
+            console.error("Error-->:", err);
             setToken(null);
         } finally {
             setLoading(false); // Oculta el loading
@@ -263,6 +380,7 @@ const DebitoInmediato = () => {
             return;
         }
 
+        setTimeLeft(59);
         setIsVisible(false);
         setLoading(true);
         setLoadingBankWait(true);
@@ -279,8 +397,12 @@ const DebitoInmediato = () => {
                 Otp: otp
             };
 
+            setError('');
+
             const data1 = await handleDebitoInmediato(postData);
             let data2 = {}
+            //console.log(data1);
+
             if (data1.code === 'AC00') {
 
                 const maxRetries = 20;
@@ -290,71 +412,157 @@ const DebitoInmediato = () => {
                 const retryConsulta = async (id) => {
                     while (attempts < maxRetries) {
                         attempts++;
-                        data2 = await handleConsulta(id);
-                        if (data2.code !== 'AC00') { break; } // esto lo hago porque la respuesta de la consulta no es la esperada
+                        try {
+                            data2 = await handleConsulta(id);
+                            //console.log(data2);
+
+                            if (data2.code !== 'AC00') {// esto lo hago porque la respuesta de la consulta no es la esperada
+                                break;
+                            }
+                        } catch (error) {
+                            console.error("Error en la consulta:", error);
+                        }
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 };
 
                 await retryConsulta(data1.id);
 
-                // Si el pago fue aceptado
                 if (data2.code === 'ACCP') {
+                    try {
+                        // Intento de obtención del token
+                        let token;
+                        try {
+                            token = await axios.get(`${url}buscar_token`, { headers });
 
-                    // Intento de obtención del token
-                    const token = await axios.get(`${url}buscar_token`, { headers });
-                    if (!token.data) { setError('No hay tokens disponibles'); return }
-                    setToken(token.data);
+                            if (token.data == '') {
+                                let msj = 'No hay tokens disponibles';
+                                //console.log(msj, error);
+                                setError(msj);
+                                return
+                            }
 
-                    // Actualización del token
-                    await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
+                        } catch (error) {
+                            let msj = 'Fallo obteniendo token';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
 
-                    // Obtener id del banco usando el codigo del banco
-                    const banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
+                        //console.log(token.data);
 
-                    // Obtener id del cliente usando la cedula
-                    let cliente = null;
-                    let cliente_id = null;
-                    cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
+                        setToken(token.data);
+                        setError('');
 
-                    if (cliente.data.id) {
-                        cliente_id = cliente.data.id;
-                    } else {
-                        // Guardo al cliente:
-                        cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
-                        cliente_id = cliente.data.id;
+                        // Actualización del token
+                        try {
+                            await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
+                        } catch (error) {
+                            let msj = 'No se actualizó el token';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+
+                        // Obtener id del banco usando el codigo del banco
+                        let banco;
+                        try {
+                            banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
+                        } catch (error) {
+                            let msj = 'Error id del banco';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+
+                        let cliente = null;
+                        let cliente_id = null;
+
+                        // Obtener id del cliente usando la cedula
+                        try {
+                            cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
+                        } catch (error) {
+                            let msj = 'Error id del cliente';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+
+                        if (cliente.data.id) {
+                            cliente_id = cliente.data.id;
+                        } else {
+                            // Guardo al cliente:
+                            try {
+                                cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
+                            } catch (error) {
+                                let msj = 'Error guardar cliente';
+                                //console.log(msj, error);
+                                setError(msj);
+                                return
+                            }
+                            cliente_id = cliente.data.id;
+                        }
+
+                        // Guardo el cliente_id y token_id
+                        let cliente_token;
+                        try {
+                            cliente_token = await axios.post(`${url}cliente_tokens`, {
+                                cliente_id: cliente_id,
+                                token_id: token.data.id
+                            }, { headers });
+                        } catch (error) {
+                            let msj = 'Error guardar cliente_token';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+                        //console.log(cliente_token.data);
+
+                        // Guardo la transacción
+                        let transac;
+                        try {
+                            transac = await axios.post(`${url}crear_transac`, {
+                                cliente_token_id: cliente_token.data.id,
+                                telefono: postData.Telefono,
+                                banco_id: banco.data.id,
+                                monto: postData.Monto,
+                                referencia: data2.reference,
+                                descripcion: postData.Concepto,
+                                pasarela_id: 1,
+                                sitio_id: identificadorAp
+                            }, { headers });
+
+                            let numeroFactura = transac.data.id.toString().padStart(5, '0');
+                            console.log(numeroFactura);
+                            setNumeroFactura(numeroFactura);
+
+                        } catch (error) {
+                            let msj = 'Error guardar transacción';
+                            //console.log(msj, error);
+                            setError(msj);
+                            return
+                        }
+                        //console.log(transac.data);
+                        setPagoExitoso(true);
+
+                    } catch (err) {
+                        setError("Ha ocurrido un error con el token");
+                        setToken(null);
                     }
-
-                    // Guardo el cliente_id y token_id
-                    const cliente_token = await axios.post(`${url}cliente_tokens`, {
-                        cliente_id: cliente_id,
-                        token_id: token.data.id
-                    }, { headers });
-
-                    // Guardo la transacción
-                    const transac = await axios.post(`${url}crear_transac`, {
-                        cliente_token_id: cliente_token.data.id,
-                        telefono: postData.Telefono,
-                        banco_id: banco.data.id,
-                        monto: postData.Monto,
-                        referencia: data2.reference,
-                        descripcion: postData.Concepto,
-                        pasarela_id: 1,
-                        sitio_id: identificadorAp
-                    }, { headers });
-
-                    setNumeroFactura(transac.data.id.toString().padStart(5, '0'));
-                    setPagoExitoso(true);
-
                 } else {
+
+                    setError('');
+                    //console.log(data2.message);
                     setError(data2.message);
                     setErrorPago(data2.code);
                     return
                 }
 
             } else {
-
+                //console.log(data1.message);
+                //setError(data1.message);
                 setError('La longitd del campo OTP recibida es incorrecta');
+                setOtp('');
                 setIsVisible(true);
                 return
             }
@@ -362,8 +570,8 @@ const DebitoInmediato = () => {
         } catch (err) {
 
             setError(err);
+            console.error("Error", err);
             setToken(null);
-
         } finally {
             setLoading(false); // Oculta el loading
             setLoadingBankWait(false);
@@ -372,12 +580,18 @@ const DebitoInmediato = () => {
     };
 
     const handleGenerarOtp = async (postData) => {
-
         try {
 
             const { Banco, Cedula, Telefono, Monto, Concepto } = postData;
-            const dataToHash = `${Banco}${Monto}${Telefono}${Cedula}`;
-            const headersMiBanco = headersR4(dataToHash);
+            const dataToHash2 = `${Banco}${Monto}${Telefono}${Cedula}`;
+            const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
+            const hmac2 = hash2.toString(CryptoJS.enc.Hex);
+
+            const headersMiBanco2 = {
+                'Content-Type': 'application/json',
+                'Authorization': `${hmac2}`,
+                'Commerce': `${tokenCommerce}`
+            };
 
             const data = {
                 Banco: Banco,
@@ -386,7 +600,9 @@ const DebitoInmediato = () => {
                 Cedula: Cedula
             }
 
-            const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco });
+            const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco2 });
+            //console.log(miBancoGenerarOtp.data);
+            setError('');
 
             if (timeLeft > 0) {
                 const interval = setInterval(() => {
@@ -414,12 +630,21 @@ const DebitoInmediato = () => {
     };
 
     const handleDebitoInmediato = async (postData) => {
-
         try {
             const { Banco, Cedula, Telefono, Monto, Concepto, Otp } = postData;
             const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}${Otp}`;
-            const headersMiBanco = headersR4(dataToHash)
+            const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+            const hmac = hash.toString(CryptoJS.enc.Hex);
+
+            const headersMiBanco = {
+                'Content-Type': 'application/json',
+                'Authorization': `${hmac}`,
+                'Commerce': `${tokenCommerce}`
+            };
+
             const miBanco = await axios.post(`${urlMibanco2}`, postData, { headers: headersMiBanco });
+
+            setError('');
             return miBanco.data;
 
         } catch (error) {
@@ -433,10 +658,23 @@ const DebitoInmediato = () => {
     const handleConsulta = async (id) => {
         try {
 
-            const dataToHash = `${id}`;
-            const headersMiBanco = headersR4(dataToHash)
-            const data = { id: `${id}` }
-            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco });
+            const dataToHash2 = `${id}`;
+            const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
+            const hmac2 = hash2.toString(CryptoJS.enc.Hex);
+
+            const headersMiBanco2 = {
+                'Content-Type': 'application/json',
+                'Authorization': `${hmac2}`,
+                'Commerce': `${tokenCommerce}`
+            };
+
+            const data = {
+                id: `${id}`
+            }
+
+            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco2 });
+
+            setError('');
             return miBancoConsulta.data;
 
         } catch (error) {
@@ -448,6 +686,14 @@ const DebitoInmediato = () => {
     };
 
     const RefreshButton = () => (
+        /*         <div className='flex flex-row pb-2 items-center justify-center'>
+                    <button onClick={() => {
+                        handledestruir();
+                        window.location.reload();
+                    }} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
+                        IR AL INICIO
+                    </button>
+                </div> */
 
         <a onClick={() => {
             handledestruir();
@@ -458,23 +704,10 @@ const DebitoInmediato = () => {
 
     );
 
-    const headersR4 = (dataToHash) => {
-
-        const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-        const hmac2 = hash2.toString(CryptoJS.enc.Hex);
-
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `${hmac2}`,
-            'Commerce': `${tokenCommerce}`
-        };
-
-        return headers
-    }
-
     return (
 
         <>
+
             {errorApiR4 ? (
 
                 <>
@@ -803,6 +1036,8 @@ const DebitoInmediato = () => {
                                                                     </button>
                                                                 )}
                                                             </div>
+
+                                                            {/* {(timeLeft == 0 || error) && <RefreshButton />} */}
 
                                                         </form>
                                                     </div>
