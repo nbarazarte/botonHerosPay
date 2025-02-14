@@ -256,6 +256,8 @@ const DebitoInmediato = () => {
         try {
 
             let data1 = {};
+            let postData = {};
+
             if (so !== 'iOS') {
 
                 if (!otp) {
@@ -270,7 +272,7 @@ const DebitoInmediato = () => {
 
                 const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
 
-                const postData = {
+                postData = {
                     Banco: Banco,
                     Monto: Monto,
                     Telefono: Telefono,
@@ -278,8 +280,6 @@ const DebitoInmediato = () => {
                     Concepto: Concepto,
                     Otp: otp
                 };
-
-                data1 = await handleDebitoInmediato(postData);
             }
 
             if (so === 'iOS') {
@@ -299,7 +299,7 @@ const DebitoInmediato = () => {
                 setLoading(true);
                 setLoadingBankWait(true);
 
-                const postData = {
+                postData = {
                     Banco: selectedBank,
                     Monto: monto,
                     Telefono: numTelefono,
@@ -308,8 +308,9 @@ const DebitoInmediato = () => {
                     Otp: otp
                 };
 
-                data1 = await handleDebitoInmediato(postData);
             }
+
+            data1 = await handleDebitoInmediato(postData);
 
             let data2 = {}
             if (data1.code === 'AC00') {
