@@ -282,7 +282,7 @@ const DebitoInmediato = () => {
                 data1 = await handleDebitoInmediato(postData);
             }
 
-            if (so == 'iOS') {
+            if (so === 'iOS') {
 
                 const token = await axios.get(`${url}buscar_token`, { headers });
                 if (!token.data) { setError(`No hay tokens disponibles, \n intente luego.`); return }
