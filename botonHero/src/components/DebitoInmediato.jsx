@@ -304,7 +304,8 @@ const DebitoInmediato = () => {
                     Monto: monto,
                     Telefono: numTelefono,
                     Cedula: nacionalidadCedula,
-                    Concepto: concepto
+                    Concepto: concepto,
+                    Otp: otp
                 };
 
                 data1 = await handleDebitoInmediato(postData);
