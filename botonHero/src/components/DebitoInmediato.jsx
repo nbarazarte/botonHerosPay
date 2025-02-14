@@ -264,18 +264,46 @@ const DebitoInmediato = () => {
         setLoadingBankWait(true);
 
         try {
-            const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
 
-            const postData = {
-                Banco: Banco,
-                Monto: Monto,
-                Telefono: Telefono,
-                Cedula: Cedula,
-                Concepto: Concepto,
-                Otp: otp
-            };
+            console.log(so);
+            let data1 = {};
+            if (so !== 'iOS') {
 
-            const data1 = await handleDebitoInmediato(postData);
+                const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
+
+                const postData = {
+                    Banco: Banco,
+                    Monto: Monto,
+                    Telefono: Telefono,
+                    Cedula: Cedula,
+                    Concepto: Concepto,
+                    Otp: otp
+                };
+
+                data1 = await handleDebitoInmediato(postData);
+            }
+
+            if (so == 'iOS') {
+
+                const token = await axios.get(`${url}buscar_token`, { headers });
+                if (!token.data) { setError(`No hay tokens disponibles, \n intente luego.`); return }
+                if (!selectedBank) { setError('Seleccione un Banco'); return; }
+                if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
+                if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
+
+                setLoading(true);
+
+                const postData = {
+                    Banco: selectedBank,
+                    Monto: monto,
+                    Telefono: numTelefono,
+                    Cedula: nacionalidadCedula,
+                    Concepto: concepto
+                };
+
+                data1 = await handleDebitoInmediato(postData);
+            }
+
             let data2 = {}
             if (data1.code === 'AC00') {
 
