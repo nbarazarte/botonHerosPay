@@ -635,6 +635,7 @@ const DebitoInmediato = () => {
                                         showOtpForm1 === true && (
                                             <div className="pt-10 flex flex-1 h-full justify-center items-center">
                                                 <form className="mt-1" onSubmit={handleSubmitSinOtp}>
+
                                                     <label htmlFor="bank" className="block">
                                                         <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
                                                             <option value="" disabled className='text-center'>Seleccione el Banco</option>
@@ -725,19 +726,28 @@ const DebitoInmediato = () => {
                                                         <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
                                                     </div>
 
-                                                    {/*                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
-                    <input id="concepto" type="text"
-                        value={concepto}
-                        onChange={handleChangeConcepto}
-                        readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                    <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
-                </div> */}
-
                                                     <div className='pb-2'>
                                                         <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
                                                             ENVIAR DATOS DE PAGO
                                                         </button>
                                                     </div>
+
+                                                    {
+                                                        so == 'iOS' &&
+                                                        (
+                                                            <div className='pb-2'>
+                                                                <a onClick={() => {
+                                                                    setShowOtpForm1(false)
+                                                                    setShowOtpForm2(true)
+
+                                                                }} className="mt-4 text-blue-700 font-sans font-semibold text-lg text-center block  cursor-pointer">
+                                                                    Ya tengo un código
+                                                                </a>
+
+                                                            </div>
+
+                                                        )
+                                                    }
 
                                                 </form>
                                             </div>
@@ -764,14 +774,119 @@ const DebitoInmediato = () => {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                                                    <p className='text-sm text-center'>
-                                                                        {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
-                                                                    </p>
-                                                                    {(timeLeft == 0 || error) && <RefreshButton />}
-                                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                                                        <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
-                                                                    </div>
+
+                                                                    {so == 'Windows' && (
+                                                                        <>
+                                                                            <p className='text-sm text-center font-semibold'>{msjOtp}</p>
+                                                                            <p className='text-sm text-center'>
+                                                                                {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
+                                                                            </p>
+                                                                            {(timeLeft == 0 || error) && <RefreshButton />}
+                                                                            <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                                                                <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                                                            </div>
+                                                                        </>
+
+                                                                    )}
+
+                                                                    {so == 'iOS' && (
+                                                                        <>
+
+                                                                            <label htmlFor="bank" className="block">
+                                                                                <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
+                                                                                    <option value="" disabled className='text-center'>Seleccione el Banco</option>
+                                                                                    {bankOptions.map((bank) => (
+                                                                                        <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
+                                                                                    ))}
+                                                                                </select>
+                                                                            </label>
+
+                                                                            <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+
+                                                                                <div className="relative flex-1 flex items-center">
+                                                                                    <label htmlFor="nacionalidad" className="block">
+                                                                                        <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
+                                                                                            className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
+
+                                                                                            <option value="" disabled className='text-center'>N/J</option>
+                                                                                            {nacionalidad.map((nacio, index) => (
+                                                                                                <option key={index} value={nacio} className='text-center'>{nacio}</option>
+                                                                                            ))}
+                                                                                        </select>
+                                                                                    </label>
+                                                                                </div>
+
+                                                                                <div className="relative flex-1 flex items-center">
+                                                                                    <input id="cedula" type="number"
+                                                                                        value={cedula}
+                                                                                        placeholder="Cédula/RIF."
+                                                                                        onChange={handleChangeCedula}
+                                                                                        //maxLength={8} 
+                                                                                        onInput={(e) => {
+                                                                                            const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
+                                                                                            e.target.value = e.target.value.slice(0, maxLength);
+                                                                                        }}
+                                                                                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                                                    <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+                                                                                <div className="relative flex-1 flex items-center">
+                                                                                    <label htmlFor="codigosArea" className="block">
+                                                                                        <select
+                                                                                            value={selectedCodigoArea}
+                                                                                            onChange={handleSelectChangeCodigoArea}
+                                                                                            className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
+                                                                                            id="codigosArea"
+                                                                                        >
+                                                                                            <option value="" disabled className="text-center">
+                                                                                                Cód.
+                                                                                            </option>
+                                                                                            {codigosArea.map((codigoArea, index) => (
+                                                                                                <option key={index} value={codigoArea} className="text-center">
+                                                                                                    {codigoArea}
+                                                                                                </option>
+                                                                                            ))}
+                                                                                        </select>
+                                                                                    </label>
+                                                                                </div>
+
+                                                                                <div className="relative flex-1 flex items-center">
+                                                                                    <input
+                                                                                        id="telefono"
+                                                                                        type="number"
+                                                                                        value={telefono}
+                                                                                        placeholder="Teléfono"
+                                                                                        onChange={handleChangeTelefono}
+                                                                                        // maxLength={7}
+                                                                                        onInput={(e) => {
+                                                                                            e.target.value = e.target.value.slice(0, 7);
+                                                                                        }}
+                                                                                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
+                                                                                    />
+                                                                                    <label
+                                                                                        htmlFor="telefono"
+                                                                                        className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                                                                                    >
+                                                                                        Teléfono
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="mt-8 relative flex flex-row pl-1 pr-1">
+                                                                                <input id="monto" type="text"
+                                                                                    value={`Bs.${monto}`}
+                                                                                    onChange={handleChangeMonto}
+                                                                                    readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                                                <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
+                                                                            </div>
+
+
+                                                                        </>
+
+                                                                    )}
+
                                                                 </>
                                                             )}
 
