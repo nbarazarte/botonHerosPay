@@ -17,6 +17,7 @@ import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
 
+    const [vieneForm1, setVieneForm1] = useState(false);
     const [so, setSO] = useState('');
     const [mensajeApis, setMensajeApis] = useState('');
     const [textoBoton, setTextoBoton] = useState('Copiar Token')
@@ -231,6 +232,8 @@ const DebitoInmediato = () => {
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
             setShowOtpForm1(false)
             setShowOtpForm2(true)
+
+            setVieneForm1(true)
 
             localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
             localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
@@ -775,7 +778,7 @@ const DebitoInmediato = () => {
                                                             ) : (
                                                                 <>
 
-                                                                    {so == 'Windows' && (
+                                                                    {vieneForm1 == true && (
                                                                         <>
                                                                             <p className='text-sm text-center font-semibold'>{msjOtp}</p>
                                                                             <p className='text-sm text-center'>
