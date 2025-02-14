@@ -253,21 +253,20 @@ const DebitoInmediato = () => {
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
 
-        if (!otp) {
-            setError('Indique el OTP recibido');
-            setIsVisible(true);
-            return;
-        }
-
-        setIsVisible(false);
-        setLoading(true);
-        setLoadingBankWait(true);
-
         try {
 
-            console.log(so);
             let data1 = {};
             if (so !== 'iOS') {
+
+                if (!otp) {
+                    setError('Indique el OTP recibido');
+                    setIsVisible(true);
+                    return;
+                }
+
+                setIsVisible(false);
+                setLoading(true);
+                setLoadingBankWait(true);
 
                 const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
 
@@ -287,11 +286,18 @@ const DebitoInmediato = () => {
 
                 const token = await axios.get(`${url}buscar_token`, { headers });
                 if (!token.data) { setError(`No hay tokens disponibles, \n intente luego.`); return }
+                if (!otp) {
+                    setError('Indique el OTP recibido');
+                    setIsVisible(true);
+                    return;
+                }
                 if (!selectedBank) { setError('Seleccione un Banco'); return; }
                 if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
                 if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
 
+                setIsVisible(false);
                 setLoading(true);
+                setLoadingBankWait(true);
 
                 const postData = {
                     Banco: selectedBank,
