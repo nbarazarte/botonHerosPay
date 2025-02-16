@@ -760,7 +760,7 @@ const DebitoInmediato = () => {
                                                                     setShowOtpForm2(true)
 
                                                                 }} className="mt-4 text-blue-700 font-sans font-semibold text-lg text-center block  cursor-pointer">
-                                                                    Ya tengo un código
+                                                                    <FontAwesomeIcon icon="fa-brands fa-apple" /> Ya tengo un código OTP
                                                                 </a>
 
                                                             </div>
@@ -807,7 +807,7 @@ const DebitoInmediato = () => {
 
                                                                     )}
 
-                                                                    {!vieneForm1 || so == 'iOS' && (<Form1 />)}
+                                                                    {!vieneForm1 || so === 'iOS' && (<Form1 />)}
                                                                 </>
                                                             )}
 
