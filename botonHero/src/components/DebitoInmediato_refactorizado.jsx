@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import platform from 'platform'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import copy from "copy-to-clipboard";
@@ -16,6 +17,8 @@ import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
 
+    const [vieneForm1, setVieneForm1] = useState(false);
+    const [so, setSO] = useState('');
     const [mensajeApis, setMensajeApis] = useState('');
     const [textoBoton, setTextoBoton] = useState('Copiar Token')
     const [numeroFactura, setNumeroFactura] = useState(null)
@@ -125,6 +128,9 @@ const DebitoInmediato = () => {
 
     useEffect(() => {
 
+        const soInfo = platform.os.family;
+        setSO(soInfo);
+
         const mensajeOtp = localStorage.getItem('mensajeOtp');
         const mensajeOtp2 = localStorage.getItem('mensajeOtp2');
         const dataFormulario = JSON.parse(localStorage.getItem('dataFormulario'));
@@ -227,6 +233,8 @@ const DebitoInmediato = () => {
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
+            setVieneForm1(true)
+
             localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
             localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
             localStorage.setItem('dataFormulario', JSON.stringify(postData));
@@ -245,29 +253,41 @@ const DebitoInmediato = () => {
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
 
-        if (!otp) {
-            setError('Indique el OTP recibido');
-            setIsVisible(true);
-            return;
-        }
-
-        setIsVisible(false);
-        setLoading(true);
-        setLoadingBankWait(true);
-
         try {
-            const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
 
-            const postData = {
-                Banco: Banco,
-                Monto: Monto,
-                Telefono: Telefono,
-                Cedula: Cedula,
-                Concepto: Concepto,
-                Otp: otp
-            };
+            if (!otp) {
+                setError('Indique el OTP recibido');
+                setIsVisible(true);
+                return;
+            }
+            setIsVisible(false);
+            setLoading(true);
+            setLoadingBankWait(true);
+
+            let postData = {};
+
+            if (so !== 'iOS') {
+                const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
+                postData = { Banco, Monto, Telefono, Cedula, Concepto, Otp: otp };
+            } else {
+                const token = await axios.get(`${url}buscar_token`, { headers });
+                if (!token.data) { setError('No hay tokens disponibles, intente luego.'); return }
+                if (!selectedBank) { setError('Seleccione un Banco'); return; }
+                if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
+                if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
+
+                postData = {
+                    Banco: selectedBank,
+                    Monto: monto,
+                    Telefono: numTelefono,
+                    Cedula: nacionalidadCedula,
+                    Concepto: concepto,
+                    Otp: otp
+                };
+            }
 
             const data1 = await handleDebitoInmediato(postData);
+
             let data2 = {}
             if (data1.code === 'AC00') {
 
@@ -301,14 +321,10 @@ const DebitoInmediato = () => {
                     const banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
 
                     // Obtener id del cliente usando la cedula
-                    let cliente = null;
-                    let cliente_id = null;
-                    cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
+                    let cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
+                    let cliente_id = cliente.data.id;
 
-                    if (cliente.data.id) {
-                        cliente_id = cliente.data.id;
-                    } else {
-                        // Guardo al cliente:
+                    if (!cliente_id) {
                         cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
                         cliente_id = cliente.data.id;
                     }
@@ -460,6 +476,102 @@ const DebitoInmediato = () => {
         return headers
     }
 
+    const Form1 = () => (
+
+        <>
+            <label htmlFor="bank" className="block">
+                <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
+                    <option value="" disabled className='text-center'>Seleccione el Banco</option>
+                    {bankOptions.map((bank) => (
+                        <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
+                    ))}
+                </select>
+            </label>
+
+            <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+
+                <div className="relative flex-1 flex items-center">
+                    <label htmlFor="nacionalidad" className="block">
+                        <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
+                            className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
+
+                            <option value="" disabled className='text-center'>N/J</option>
+                            {nacionalidad.map((nacio, index) => (
+                                <option key={index} value={nacio} className='text-center'>{nacio}</option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+
+                <div className="relative flex-1 flex items-center">
+                    <input id="cedula" type="number"
+                        value={cedula}
+                        placeholder="Cédula/RIF."
+                        onChange={handleChangeCedula}
+                        //maxLength={8} 
+                        onInput={(e) => {
+                            const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
+                            e.target.value = e.target.value.slice(0, maxLength);
+                        }}
+                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                    <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
+                </div>
+            </div>
+
+            <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+                <div className="relative flex-1 flex items-center">
+                    <label htmlFor="codigosArea" className="block">
+                        <select
+                            value={selectedCodigoArea}
+                            onChange={handleSelectChangeCodigoArea}
+                            className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
+                            id="codigosArea"
+                        >
+                            <option value="" disabled className="text-center">
+                                Cód.
+                            </option>
+                            {codigosArea.map((codigoArea, index) => (
+                                <option key={index} value={codigoArea} className="text-center">
+                                    {codigoArea}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </div>
+
+                <div className="relative flex-1 flex items-center">
+                    <input
+                        id="telefono"
+                        type="number"
+                        value={telefono}
+                        placeholder="Teléfono"
+                        onChange={handleChangeTelefono}
+                        // maxLength={7}
+                        onInput={(e) => {
+                            e.target.value = e.target.value.slice(0, 7);
+                        }}
+                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
+                    />
+                    <label
+                        htmlFor="telefono"
+                        className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                    >
+                        Teléfono
+                    </label>
+                </div>
+            </div>
+
+            <div className="mt-8 relative flex flex-row pl-1 pr-1">
+                <input id="monto" type="text"
+                    value={`Bs.${monto}`}
+                    onChange={handleChangeMonto}
+                    readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
+            </div>
+        </>
+
+    )
+
     return (
 
         <>
@@ -555,6 +667,7 @@ const DebitoInmediato = () => {
 
                                         <div className="justify-center items-center text-center pt-3 pb-3">
                                             <h1 className="text-lg">Pago Débito Inmediato</h1>
+                                            {/* <p>Tu sistema operativo es: {so}</p> */}
                                         </div>
                                     )}
 
@@ -629,109 +742,31 @@ const DebitoInmediato = () => {
                                         showOtpForm1 === true && (
                                             <div className="pt-10 flex flex-1 h-full justify-center items-center">
                                                 <form className="mt-1" onSubmit={handleSubmitSinOtp}>
-                                                    <label htmlFor="bank" className="block">
-                                                        <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
-                                                            <option value="" disabled className='text-center'>Seleccione el Banco</option>
-                                                            {bankOptions.map((bank) => (
-                                                                <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
-                                                            ))}
-                                                        </select>
-                                                    </label>
 
-                                                    <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
-
-                                                        <div className="relative flex-1 flex items-center">
-                                                            <label htmlFor="nacionalidad" className="block">
-                                                                <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
-                                                                    className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
-
-                                                                    <option value="" disabled className='text-center'>N/J</option>
-                                                                    {nacionalidad.map((nacio, index) => (
-                                                                        <option key={index} value={nacio} className='text-center'>{nacio}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </label>
-                                                        </div>
-
-                                                        <div className="relative flex-1 flex items-center">
-                                                            <input id="cedula" type="number"
-                                                                value={cedula}
-                                                                placeholder="Cédula/RIF."
-                                                                onChange={handleChangeCedula}
-                                                                //maxLength={8} 
-                                                                onInput={(e) => {
-                                                                    const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
-                                                                    e.target.value = e.target.value.slice(0, maxLength);
-                                                                }}
-                                                                className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                            <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
-                                                        <div className="relative flex-1 flex items-center">
-                                                            <label htmlFor="codigosArea" className="block">
-                                                                <select
-                                                                    value={selectedCodigoArea}
-                                                                    onChange={handleSelectChangeCodigoArea}
-                                                                    className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
-                                                                    id="codigosArea"
-                                                                >
-                                                                    <option value="" disabled className="text-center">
-                                                                        Cód.
-                                                                    </option>
-                                                                    {codigosArea.map((codigoArea, index) => (
-                                                                        <option key={index} value={codigoArea} className="text-center">
-                                                                            {codigoArea}
-                                                                        </option>
-                                                                    ))}
-                                                                </select>
-                                                            </label>
-                                                        </div>
-
-                                                        <div className="relative flex-1 flex items-center">
-                                                            <input
-                                                                id="telefono"
-                                                                type="number"
-                                                                value={telefono}
-                                                                placeholder="Teléfono"
-                                                                onChange={handleChangeTelefono}
-                                                                // maxLength={7}
-                                                                onInput={(e) => {
-                                                                    e.target.value = e.target.value.slice(0, 7);
-                                                                }}
-                                                                className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
-                                                            />
-                                                            <label
-                                                                htmlFor="telefono"
-                                                                className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
-                                                            >
-                                                                Teléfono
-                                                            </label>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1">
-                                                        <input id="monto" type="text"
-                                                            value={`Bs.${monto}`}
-                                                            onChange={handleChangeMonto}
-                                                            readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                        <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
-                                                    </div>
-
-                                                    {/*                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
-                    <input id="concepto" type="text"
-                        value={concepto}
-                        onChange={handleChangeConcepto}
-                        readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                    <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
-                </div> */}
+                                                    <Form1 />
 
                                                     <div className='pb-2'>
                                                         <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
                                                             ENVIAR DATOS DE PAGO
                                                         </button>
                                                     </div>
+
+                                                    {
+                                                        so == 'iOS' &&
+                                                        (
+                                                            <div className='pb-2'>
+                                                                <a onClick={() => {
+                                                                    setShowOtpForm1(false)
+                                                                    setShowOtpForm2(true)
+
+                                                                }} className="mt-4 text-blue-700 font-sans font-semibold text-lg text-center block  cursor-pointer">
+                                                                    Ya tengo un código
+                                                                </a>
+
+                                                            </div>
+
+                                                        )
+                                                    }
 
                                                 </form>
                                             </div>
@@ -758,14 +793,21 @@ const DebitoInmediato = () => {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                                                    <p className='text-sm text-center'>
-                                                                        {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
-                                                                    </p>
-                                                                    {(timeLeft == 0 || error) && <RefreshButton />}
-                                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                                                        <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
-                                                                    </div>
+                                                                    {(vieneForm1 === true || so !== 'iOS') && (
+                                                                        <>
+                                                                            <p className='text-sm text-center font-semibold'>{msjOtp}</p>
+                                                                            <p className='text-sm text-center'>
+                                                                                {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
+                                                                            </p>
+                                                                            {(timeLeft == 0 || error) && <RefreshButton />}
+                                                                            <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                                                                <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                                                            </div>
+                                                                        </>
+
+                                                                    )}
+
+                                                                    {!vieneForm1 || so == 'iOS' && (<Form1 />)}
                                                                 </>
                                                             )}
 

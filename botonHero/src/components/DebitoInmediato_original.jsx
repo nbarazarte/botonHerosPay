@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import platform from 'platform'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import copy from "copy-to-clipboard";
@@ -16,6 +17,8 @@ import CryptoJS from 'crypto-js';
 
 const DebitoInmediato = () => {
 
+    const [vieneForm1, setVieneForm1] = useState(false);
+    const [so, setSO] = useState('');
     const [mensajeApis, setMensajeApis] = useState('');
     const [textoBoton, setTextoBoton] = useState('Copiar Token')
     const [numeroFactura, setNumeroFactura] = useState(null)
@@ -58,13 +61,11 @@ const DebitoInmediato = () => {
     const urlMibanco3 = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
     const urlMibancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
     const urlMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
-    const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
-    const headers = { 'Authorization': `Bearer ${tokenApi}` };
+    const headers = { 'Authorization': `Bearer ${import.meta.env.REACT_APP_TOKEN}` };
     // ###################################################################
 
     const handleCopy = () => {
-        //console.log('copiando');
         copy(token.token, {
             debug: true,
             message: "Press #{key} to copy"
@@ -112,9 +113,7 @@ const DebitoInmediato = () => {
         setNumTelefono(selectedCodigoArea + onlyNumbers);
     };
 
-    const handleChangeConcepto = (e) => {
-        setConcepto(e.target.value);
-    };
+    const handleChangeConcepto = (e) => { setConcepto(e.target.value); };
 
     const handleChangeOtp = (e) => {
         setError('');
@@ -123,48 +122,15 @@ const DebitoInmediato = () => {
         setIsVisible(true);
     };
 
-    const handleChangeMonto = (e) => {
-        setMonto(e.target.value);
-    };
+    const handleChangeMonto = (e) => { setMonto(e.target.value); };
 
+    const handledestruir = () => { localStorage.clear(); }
 
-    /*     // Función para establecer una cookie
-        const setCookie = (name, value, days) => {
-            var expires = "";
-            if (days) {
-                var date = new Date();
-                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-                expires = "; expires=" + date.toUTCString();
-            }
-            document.cookie = name + "=" + (value || "") + expires + "; path=/";
-        }
-    
-        // Función para obtener una cookie
-        const getCookie = (name) => {
-            var nameEQ = name + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-            }
-            return null;
-        }
-    
-        const deleteAllCookies = () => {
-            var cookies = document.cookie.split(";");
-    
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i];
-                var eqPos = cookie.indexOf("=");
-                var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                document.cookie = name + '=; Max-Age=-99999999;';
-            }
-        }
-     */
     useEffect(() => {
 
-        // Para Android:
+        const soInfo = platform.os.family;
+        setSO(soInfo);
+
         const mensajeOtp = localStorage.getItem('mensajeOtp');
         const mensajeOtp2 = localStorage.getItem('mensajeOtp2');
         const dataFormulario = JSON.parse(localStorage.getItem('dataFormulario'));
@@ -181,41 +147,20 @@ const DebitoInmediato = () => {
             setTimeLeft(0);
         }
 
-        /*         // Para ios:
-                // Recuperar datos de cookies
-                const mensajeOtp_2 = getCookie('mensajeOtp');
-                const dataFormulario_2 = getCookie('dataFormulario');
-                const formulario1_2 = getCookie('formulario1') === 'true';
-                const formulario2_2 = getCookie('formulario2') === 'true';
-        
-                if (mensajeOtp_2 != null) {
-        
-                    setMsjOtp(mensajeOtp_2);
-                    setDataForm(dataFormulario_2);
-                    setShowOtpForm1(formulario1_2);
-                    setShowOtpForm2(formulario2_2);
-                    setTimeLeft(0);
-                } */
-
-    }, [])
-
-    const handledestruir = () => {
-
-        localStorage.clear(); // Esto eliminará todas las claves y valores almacenados en localStorage
-        //deleteAllCookies();
-    }
-
-    useEffect(() => {
-
         const fetchBanksAndMonto = async () => {
 
             // Pido el monto de débito inmediato y en caso de fallar muestra una pantalla
-            let response;
+            let monto;
             try {
-                response = await axios.get(`${url}debitoinmediato`, { headers });
+
+                monto = await axios.get(`${url}debitoinmediato`, { headers });
+                const sitio = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
+                setIdentificadorAp(sitio.data.id);
+                const bancos = await axios.get(`${url}bancosDebitoInmediato`, { headers });
+                setBankOptions(bancos.data);
 
             } catch (error) {
-                //console.error("Error obteniendo monto:", error);
+
                 setMensajeApis('Falla de conexión con el Servidor');
                 setError('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
                 setErrorApiR4('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
@@ -234,24 +179,15 @@ const DebitoInmediato = () => {
 
                 const fechaValor = obtenerFechaValor();
                 const dataToHash = `${fechaValor}USD`;
-                const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-                const hmac = hash.toString(CryptoJS.enc.Hex);
+                const headersMiBanco = headersR4(dataToHash)
 
                 const postData = {
                     Moneda: "USD",
                     Fechavalor: fechaValor
                 }
 
-                const headersMiBanco = {
-                    'Content-Type': 'application/json',
-                    'Authorization': `${hmac}`,
-                    'Commerce': `${tokenCommerce}`
-                };
-
                 const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
-
-                //console.log(tasaBcv.data.tipocambio);
-                setMonto((response.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
+                setMonto((monto.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
 
             } catch (error) {
                 //console.error('Error al realizar la solicitud:', error);
@@ -259,24 +195,6 @@ const DebitoInmediato = () => {
                 setError('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
                 setErrorApiR4('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
                 return null;
-            }
-
-            try {
-                //console.log('IDsitio:', idSitio);
-                const response = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
-                //console.log(response.data.id);
-                setIdentificadorAp(response.data.id);
-
-            } catch (error) {
-                console.error("Error obteniendo id del Sitio:", error);
-            }
-
-            // Pido los bancos que usan solo debito inmediato
-            try {
-                const response = await axios.get(`${url}bancosDebitoInmediato`, { headers });
-                setBankOptions(response.data);
-            } catch (error) {
-                console.error("Error obteniendo bancos:", error);
             }
 
         };
@@ -288,32 +206,15 @@ const DebitoInmediato = () => {
         e.preventDefault();
 
         // Intento de obtención del token
-        let token;
         try {
-            token = await axios.get(`${url}buscar_token`, { headers });
-            //console.log(token.data.id);
 
-            if (token.data == '') {
-                let msj = `No hay tokens disponibles, \n intente luego.`;
-                //console.log(msj, error);
-                setError(msj);
-                return
-            }
+            const token = await axios.get(`${url}buscar_token`, { headers });
+            if (!token.data) { setError(`No hay tokens disponibles, \n intente luego.`); return }
+            if (!selectedBank) { setError('Seleccione un Banco'); return; }
+            if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
+            if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
 
-        } catch (error) {
-            let msj = 'Fallo obteniendo token';
-            //console.log(msj, error);
-            setError(msj);
-            return
-        }
-
-        if (!selectedBank) { setError('Seleccione un Banco'); return; }
-        if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
-        if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
-
-        setLoading(true);
-
-        try {
+            setLoading(true);
 
             const postData = {
                 Banco: selectedBank,
@@ -323,47 +224,25 @@ const DebitoInmediato = () => {
                 Concepto: concepto
             };
 
-            setError('');
-            setMsjOtp('');
-
             // Obtener nombre del banco usando el codigo del banco
-            let banco;
-            try {
-                banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
-            } catch (error) {
-                let msj = 'Error id del banco';
-                //console.log(msj, error);
-                setError(msj);
-                return
-            }
+            const banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
+            await handleGenerarOtp(postData);
 
-            const data1 = await handleGenerarOtp(postData);
-            //console.log(data1.success);
-            //console.log(postData);
             setMsjOtp(`En breve recibirá un mensaje al número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
-
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
             setShowOtpForm1(false)
             setShowOtpForm2(true)
 
-            // Para Android
+            setVieneForm1(true)
+
             localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
             localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
             localStorage.setItem('dataFormulario', JSON.stringify(postData));
             localStorage.setItem('formulario1', false);
             localStorage.setItem('formulario2', true);
 
-            /*             // para ios
-                        // Almacenar datos en cookies
-                        setCookie('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`, 1); // Dura 1 día
-                        setCookie('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`, 1);
-                        setCookie('dataFormulario', JSON.stringify(postData), 1);
-                        setCookie('formulario1', 'false', 1);
-                        setCookie('formulario2', 'true', 1); */
-
         } catch (err) {
             setError(err);
-            console.error("Error-->:", err);
             setToken(null);
         } finally {
             setLoading(false); // Oculta el loading
@@ -374,35 +253,66 @@ const DebitoInmediato = () => {
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
 
-        if (!otp) {
-            setError('Indique el OTP recibido');
-            setIsVisible(true);
-            return;
-        }
-
-        setTimeLeft(59);
-        setIsVisible(false);
-        setLoading(true);
-        setLoadingBankWait(true);
-
         try {
-            const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
 
-            const postData = {
-                Banco: Banco,
-                Monto: Monto,
-                Telefono: Telefono,
-                Cedula: Cedula,
-                Concepto: Concepto,
-                Otp: otp
-            };
+            let data1 = {};
+            let postData = {};
 
-            setError('');
+            if (so !== 'iOS') {
 
-            const data1 = await handleDebitoInmediato(postData);
+                if (!otp) {
+                    setError('Indique el OTP recibido');
+                    setIsVisible(true);
+                    return;
+                }
+
+                setIsVisible(false);
+                setLoading(true);
+                setLoadingBankWait(true);
+
+                const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
+
+                postData = {
+                    Banco: Banco,
+                    Monto: Monto,
+                    Telefono: Telefono,
+                    Cedula: Cedula,
+                    Concepto: Concepto,
+                    Otp: otp
+                };
+            }
+
+            if (so === 'iOS') {
+
+                const token = await axios.get(`${url}buscar_token`, { headers });
+                if (!token.data) { setError(`No hay tokens disponibles, \n intente luego.`); return }
+                if (!otp) {
+                    setError('Indique el OTP recibido');
+                    setIsVisible(true);
+                    return;
+                }
+                if (!selectedBank) { setError('Seleccione un Banco'); return; }
+                if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
+                if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
+
+                setIsVisible(false);
+                setLoading(true);
+                setLoadingBankWait(true);
+
+                postData = {
+                    Banco: selectedBank,
+                    Monto: monto,
+                    Telefono: numTelefono,
+                    Cedula: nacionalidadCedula,
+                    Concepto: concepto,
+                    Otp: otp
+                };
+
+            }
+
+            data1 = await handleDebitoInmediato(postData);
+
             let data2 = {}
-            //console.log(data1);
-
             if (data1.code === 'AC00') {
 
                 const maxRetries = 20;
@@ -412,157 +322,71 @@ const DebitoInmediato = () => {
                 const retryConsulta = async (id) => {
                     while (attempts < maxRetries) {
                         attempts++;
-                        try {
-                            data2 = await handleConsulta(id);
-                            //console.log(data2);
-
-                            if (data2.code !== 'AC00') {// esto lo hago porque la respuesta de la consulta no es la esperada
-                                break;
-                            }
-                        } catch (error) {
-                            console.error("Error en la consulta:", error);
-                        }
+                        data2 = await handleConsulta(id);
+                        if (data2.code !== 'AC00') { break; } // esto lo hago porque la respuesta de la consulta no es la esperada
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 };
 
                 await retryConsulta(data1.id);
 
+                // Si el pago fue aceptado
                 if (data2.code === 'ACCP') {
-                    try {
-                        // Intento de obtención del token
-                        let token;
-                        try {
-                            token = await axios.get(`${url}buscar_token`, { headers });
 
-                            if (token.data == '') {
-                                let msj = 'No hay tokens disponibles';
-                                //console.log(msj, error);
-                                setError(msj);
-                                return
-                            }
+                    // Intento de obtención del token
+                    const token = await axios.get(`${url}buscar_token`, { headers });
+                    if (!token.data) { setError('No hay tokens disponibles'); return }
+                    setToken(token.data);
 
-                        } catch (error) {
-                            let msj = 'Fallo obteniendo token';
-                            //console.log(msj, error);
-                            setError(msj);
-                            return
-                        }
+                    // Actualización del token
+                    await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
 
-                        //console.log(token.data);
+                    // Obtener id del banco usando el codigo del banco
+                    const banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
 
-                        setToken(token.data);
-                        setError('');
+                    // Obtener id del cliente usando la cedula
+                    let cliente = null;
+                    let cliente_id = null;
+                    cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
 
-                        // Actualización del token
-                        try {
-                            await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
-                        } catch (error) {
-                            let msj = 'No se actualizó el token';
-                            //console.log(msj, error);
-                            setError(msj);
-                            return
-                        }
-
-                        // Obtener id del banco usando el codigo del banco
-                        let banco;
-                        try {
-                            banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
-                        } catch (error) {
-                            let msj = 'Error id del banco';
-                            //console.log(msj, error);
-                            setError(msj);
-                            return
-                        }
-
-                        let cliente = null;
-                        let cliente_id = null;
-
-                        // Obtener id del cliente usando la cedula
-                        try {
-                            cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
-                        } catch (error) {
-                            let msj = 'Error id del cliente';
-                            //console.log(msj, error);
-                            setError(msj);
-                            return
-                        }
-
-                        if (cliente.data.id) {
-                            cliente_id = cliente.data.id;
-                        } else {
-                            // Guardo al cliente:
-                            try {
-                                cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
-                            } catch (error) {
-                                let msj = 'Error guardar cliente';
-                                //console.log(msj, error);
-                                setError(msj);
-                                return
-                            }
-                            cliente_id = cliente.data.id;
-                        }
-
-                        // Guardo el cliente_id y token_id
-                        let cliente_token;
-                        try {
-                            cliente_token = await axios.post(`${url}cliente_tokens`, {
-                                cliente_id: cliente_id,
-                                token_id: token.data.id
-                            }, { headers });
-                        } catch (error) {
-                            let msj = 'Error guardar cliente_token';
-                            //console.log(msj, error);
-                            setError(msj);
-                            return
-                        }
-                        //console.log(cliente_token.data);
-
-                        // Guardo la transacción
-                        let transac;
-                        try {
-                            transac = await axios.post(`${url}crear_transac`, {
-                                cliente_token_id: cliente_token.data.id,
-                                telefono: postData.Telefono,
-                                banco_id: banco.data.id,
-                                monto: postData.Monto,
-                                referencia: data2.reference,
-                                descripcion: postData.Concepto,
-                                pasarela_id: 1,
-                                sitio_id: identificadorAp
-                            }, { headers });
-
-                            let numeroFactura = transac.data.id.toString().padStart(5, '0');
-                            console.log(numeroFactura);
-                            setNumeroFactura(numeroFactura);
-
-                        } catch (error) {
-                            let msj = 'Error guardar transacción';
-                            //console.log(msj, error);
-                            setError(msj);
-                            return
-                        }
-                        //console.log(transac.data);
-                        setPagoExitoso(true);
-
-                    } catch (err) {
-                        setError("Ha ocurrido un error con el token");
-                        setToken(null);
+                    if (cliente.data.id) {
+                        cliente_id = cliente.data.id;
+                    } else {
+                        // Guardo al cliente:
+                        cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
+                        cliente_id = cliente.data.id;
                     }
-                } else {
 
-                    setError('');
-                    //console.log(data2.message);
+                    // Guardo el cliente_id y token_id
+                    const cliente_token = await axios.post(`${url}cliente_tokens`, {
+                        cliente_id: cliente_id,
+                        token_id: token.data.id
+                    }, { headers });
+
+                    // Guardo la transacción
+                    const transac = await axios.post(`${url}crear_transac`, {
+                        cliente_token_id: cliente_token.data.id,
+                        telefono: postData.Telefono,
+                        banco_id: banco.data.id,
+                        monto: postData.Monto,
+                        referencia: data2.reference,
+                        descripcion: postData.Concepto,
+                        pasarela_id: 1,
+                        sitio_id: identificadorAp
+                    }, { headers });
+
+                    setNumeroFactura(transac.data.id.toString().padStart(5, '0'));
+                    setPagoExitoso(true);
+
+                } else {
                     setError(data2.message);
                     setErrorPago(data2.code);
                     return
                 }
 
             } else {
-                //console.log(data1.message);
-                //setError(data1.message);
+
                 setError('La longitd del campo OTP recibida es incorrecta');
-                setOtp('');
                 setIsVisible(true);
                 return
             }
@@ -570,8 +394,8 @@ const DebitoInmediato = () => {
         } catch (err) {
 
             setError(err);
-            console.error("Error", err);
             setToken(null);
+
         } finally {
             setLoading(false); // Oculta el loading
             setLoadingBankWait(false);
@@ -580,18 +404,12 @@ const DebitoInmediato = () => {
     };
 
     const handleGenerarOtp = async (postData) => {
+
         try {
 
             const { Banco, Cedula, Telefono, Monto, Concepto } = postData;
-            const dataToHash2 = `${Banco}${Monto}${Telefono}${Cedula}`;
-            const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
-            const hmac2 = hash2.toString(CryptoJS.enc.Hex);
-
-            const headersMiBanco2 = {
-                'Content-Type': 'application/json',
-                'Authorization': `${hmac2}`,
-                'Commerce': `${tokenCommerce}`
-            };
+            const dataToHash = `${Banco}${Monto}${Telefono}${Cedula}`;
+            const headersMiBanco = headersR4(dataToHash);
 
             const data = {
                 Banco: Banco,
@@ -600,9 +418,7 @@ const DebitoInmediato = () => {
                 Cedula: Cedula
             }
 
-            const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco2 });
-            //console.log(miBancoGenerarOtp.data);
-            setError('');
+            const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco });
 
             if (timeLeft > 0) {
                 const interval = setInterval(() => {
@@ -630,21 +446,12 @@ const DebitoInmediato = () => {
     };
 
     const handleDebitoInmediato = async (postData) => {
+
         try {
             const { Banco, Cedula, Telefono, Monto, Concepto, Otp } = postData;
             const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}${Otp}`;
-            const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-            const hmac = hash.toString(CryptoJS.enc.Hex);
-
-            const headersMiBanco = {
-                'Content-Type': 'application/json',
-                'Authorization': `${hmac}`,
-                'Commerce': `${tokenCommerce}`
-            };
-
+            const headersMiBanco = headersR4(dataToHash)
             const miBanco = await axios.post(`${urlMibanco2}`, postData, { headers: headersMiBanco });
-
-            setError('');
             return miBanco.data;
 
         } catch (error) {
@@ -658,23 +465,10 @@ const DebitoInmediato = () => {
     const handleConsulta = async (id) => {
         try {
 
-            const dataToHash2 = `${id}`;
-            const hash2 = CryptoJS.HmacSHA256(dataToHash2, tokenCommerce);
-            const hmac2 = hash2.toString(CryptoJS.enc.Hex);
-
-            const headersMiBanco2 = {
-                'Content-Type': 'application/json',
-                'Authorization': `${hmac2}`,
-                'Commerce': `${tokenCommerce}`
-            };
-
-            const data = {
-                id: `${id}`
-            }
-
-            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco2 });
-
-            setError('');
+            const dataToHash = `${id}`;
+            const headersMiBanco = headersR4(dataToHash)
+            const data = { id: `${id}` }
+            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco });
             return miBancoConsulta.data;
 
         } catch (error) {
@@ -686,14 +480,6 @@ const DebitoInmediato = () => {
     };
 
     const RefreshButton = () => (
-        /*         <div className='flex flex-row pb-2 items-center justify-center'>
-                    <button onClick={() => {
-                        handledestruir();
-                        window.location.reload();
-                    }} className="mt-5 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full/2 cursor-pointer">
-                        IR AL INICIO
-                    </button>
-                </div> */
 
         <a onClick={() => {
             handledestruir();
@@ -704,10 +490,23 @@ const DebitoInmediato = () => {
 
     );
 
+    const headersR4 = (dataToHash) => {
+
+        const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+        const hmac2 = hash2.toString(CryptoJS.enc.Hex);
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `${hmac2}`,
+            'Commerce': `${tokenCommerce}`
+        };
+
+        return headers
+    }
+
     return (
 
         <>
-
             {errorApiR4 ? (
 
                 <>
@@ -800,6 +599,7 @@ const DebitoInmediato = () => {
 
                                         <div className="justify-center items-center text-center pt-3 pb-3">
                                             <h1 className="text-lg">Pago Débito Inmediato</h1>
+                                            {/* <p>Tu sistema operativo es: {so}</p> */}
                                         </div>
                                     )}
 
@@ -874,6 +674,7 @@ const DebitoInmediato = () => {
                                         showOtpForm1 === true && (
                                             <div className="pt-10 flex flex-1 h-full justify-center items-center">
                                                 <form className="mt-1" onSubmit={handleSubmitSinOtp}>
+
                                                     <label htmlFor="bank" className="block">
                                                         <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
                                                             <option value="" disabled className='text-center'>Seleccione el Banco</option>
@@ -964,19 +765,28 @@ const DebitoInmediato = () => {
                                                         <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
                                                     </div>
 
-                                                    {/*                                             <div className="mt-8 relative flex flex-row pl-1 pr-1">
-                    <input id="concepto" type="text"
-                        value={concepto}
-                        onChange={handleChangeConcepto}
-                        readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                    <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
-                </div> */}
-
                                                     <div className='pb-2'>
                                                         <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
                                                             ENVIAR DATOS DE PAGO
                                                         </button>
                                                     </div>
+
+                                                    {
+                                                        so == 'iOS' &&
+                                                        (
+                                                            <div className='pb-2'>
+                                                                <a onClick={() => {
+                                                                    setShowOtpForm1(false)
+                                                                    setShowOtpForm2(true)
+
+                                                                }} className="mt-4 text-blue-700 font-sans font-semibold text-lg text-center block  cursor-pointer">
+                                                                    Ya tengo un código
+                                                                </a>
+
+                                                            </div>
+
+                                                        )
+                                                    }
 
                                                 </form>
                                             </div>
@@ -1003,14 +813,125 @@ const DebitoInmediato = () => {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                                                    <p className='text-sm text-center'>
-                                                                        {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
-                                                                    </p>
-                                                                    {(timeLeft == 0 || error) && <RefreshButton />}
-                                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                                                        <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
-                                                                    </div>
+
+                                                                    {(vieneForm1 === true || so !== 'iOS') && (
+                                                                        <>
+                                                                            <p className='text-sm text-center font-semibold'>{msjOtp}</p>
+                                                                            <p className='text-sm text-center'>
+                                                                                {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
+                                                                            </p>
+                                                                            {(timeLeft == 0 || error) && <RefreshButton />}
+                                                                            <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                                                                <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                                                            </div>
+                                                                        </>
+
+                                                                    )}
+
+                                                                    {!vieneForm1 && (
+
+                                                                        <>
+                                                                            {so == 'iOS' && (
+
+                                                                                <>
+                                                                                    <label htmlFor="bank" className="block">
+                                                                                        <select value={selectedBank} onChange={handleSelectChange} className="text-lg bg-white pl-1 pr-1 w-56 mt-0 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="bank">
+                                                                                            <option value="" disabled className='text-center'>Seleccione el Banco</option>
+                                                                                            {bankOptions.map((bank) => (
+                                                                                                <option key={bank.codigo_banco} value={bank.codigo_banco}>{`${bank.codigo_banco} - ${bank.nombre_banco}`}</option>
+                                                                                            ))}
+                                                                                        </select>
+                                                                                    </label>
+
+                                                                                    <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+
+                                                                                        <div className="relative flex-1 flex items-center">
+                                                                                            <label htmlFor="nacionalidad" className="block">
+                                                                                                <select value={selectedNacionalidad} onChange={handleSelectChangeNacionalidad}
+                                                                                                    className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove" id="nacionalidad">
+
+                                                                                                    <option value="" disabled className='text-center'>N/J</option>
+                                                                                                    {nacionalidad.map((nacio, index) => (
+                                                                                                        <option key={index} value={nacio} className='text-center'>{nacio}</option>
+                                                                                                    ))}
+                                                                                                </select>
+                                                                                            </label>
+                                                                                        </div>
+
+                                                                                        <div className="relative flex-1 flex items-center">
+                                                                                            <input id="cedula" type="number"
+                                                                                                value={cedula}
+                                                                                                placeholder="Cédula/RIF."
+                                                                                                onChange={handleChangeCedula}
+                                                                                                //maxLength={8} 
+                                                                                                onInput={(e) => {
+                                                                                                    const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
+                                                                                                    e.target.value = e.target.value.slice(0, maxLength);
+                                                                                                }}
+                                                                                                className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                                                            <label htmlFor="cedula" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Cédula/RIF.</label>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+                                                                                        <div className="relative flex-1 flex items-center">
+                                                                                            <label htmlFor="codigosArea" className="block">
+                                                                                                <select
+                                                                                                    value={selectedCodigoArea}
+                                                                                                    onChange={handleSelectChangeCodigoArea}
+                                                                                                    className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
+                                                                                                    id="codigosArea"
+                                                                                                >
+                                                                                                    <option value="" disabled className="text-center">
+                                                                                                        Cód.
+                                                                                                    </option>
+                                                                                                    {codigosArea.map((codigoArea, index) => (
+                                                                                                        <option key={index} value={codigoArea} className="text-center">
+                                                                                                            {codigoArea}
+                                                                                                        </option>
+                                                                                                    ))}
+                                                                                                </select>
+                                                                                            </label>
+                                                                                        </div>
+
+                                                                                        <div className="relative flex-1 flex items-center">
+                                                                                            <input
+                                                                                                id="telefono"
+                                                                                                type="number"
+                                                                                                value={telefono}
+                                                                                                placeholder="Teléfono"
+                                                                                                onChange={handleChangeTelefono}
+                                                                                                // maxLength={7}
+                                                                                                onInput={(e) => {
+                                                                                                    e.target.value = e.target.value.slice(0, 7);
+                                                                                                }}
+                                                                                                className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
+                                                                                            />
+                                                                                            <label
+                                                                                                htmlFor="telefono"
+                                                                                                className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                                                                                            >
+                                                                                                Teléfono
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    <div className="mt-8 relative flex flex-row pl-1 pr-1">
+                                                                                        <input id="monto" type="text"
+                                                                                            value={`Bs.${monto}`}
+                                                                                            onChange={handleChangeMonto}
+                                                                                            readOnly className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
+                                                                                        <label htmlFor="monto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Monto</label>
+                                                                                    </div>
+
+                                                                                </>
+
+                                                                            )}
+
+                                                                        </>
+
+                                                                    )}
+
                                                                 </>
                                                             )}
 
@@ -1036,8 +957,6 @@ const DebitoInmediato = () => {
                                                                     </button>
                                                                 )}
                                                             </div>
-
-                                                            {/* {(timeLeft == 0 || error) && <RefreshButton />} */}
 
                                                         </form>
                                                     </div>
