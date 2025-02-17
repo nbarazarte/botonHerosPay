@@ -909,12 +909,12 @@ const DebitoInmediato = () => {
                                                                 </div>
                                                             )}
 
-                                                            <div className='pb-5'>
+                                                            <div className='pb-2'>
                                                                 {isVisible && (
                                                                     <>
                                                                         <button
                                                                             type="submit"
-                                                                            className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
+                                                                            className="pb-5 mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
                                                                         >
                                                                             CONFIRMAR PAGO
                                                                         </button>
