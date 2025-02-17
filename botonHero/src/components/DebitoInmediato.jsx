@@ -920,6 +920,8 @@ const DebitoInmediato = () => {
                                                                 )}
                                                             </div>
 
+                                                            <RefreshButton />
+
                                                         </form>
                                                     </div>
 
