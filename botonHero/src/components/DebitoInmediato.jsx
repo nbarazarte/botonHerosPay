@@ -909,7 +909,7 @@ const DebitoInmediato = () => {
                                                                 </div>
                                                             )}
 
-                                                            <div className='pb-3'>
+                                                            <div className='pb-5'>
                                                                 {isVisible && (
                                                                     <button
                                                                         type="submit"
