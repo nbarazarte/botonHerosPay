@@ -920,7 +920,7 @@ const DebitoInmediato = () => {
                                                                 )}
                                                             </div>
 
-                                                            <RefreshButton />
+                                                            {(vieneForm1 === false && so === 'iOS') && <RefreshButton />}
 
                                                         </form>
                                                     </div>
