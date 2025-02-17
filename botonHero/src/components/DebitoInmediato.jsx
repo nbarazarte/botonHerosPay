@@ -799,8 +799,7 @@ const DebitoInmediato = () => {
 
                                                                     )}
 
-                                                                    {(!vieneForm1 || so === 'iOS') &&
-
+                                                                    {(vieneForm1 === false && so === 'iOS') &&
 
                                                                         <>
                                                                             <label htmlFor="bank" className="block">
