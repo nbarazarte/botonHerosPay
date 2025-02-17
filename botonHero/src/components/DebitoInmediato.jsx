@@ -911,16 +911,19 @@ const DebitoInmediato = () => {
 
                                                             <div className='pb-5'>
                                                                 {isVisible && (
-                                                                    <button
-                                                                        type="submit"
-                                                                        className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
-                                                                    >
-                                                                        CONFIRMAR PAGO
-                                                                    </button>
+                                                                    <>
+                                                                        <button
+                                                                            type="submit"
+                                                                            className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
+                                                                        >
+                                                                            CONFIRMAR PAGO
+                                                                        </button>
+
+                                                                        {(vieneForm1 === false && so === 'iOS') && <RefreshButton />}
+                                                                    </>
+
                                                                 )}
                                                             </div>
-
-                                                            {(vieneForm1 === false && so === 'iOS') && <RefreshButton />}
 
                                                         </form>
                                                     </div>
