@@ -33,7 +33,7 @@ const DebitoInmediato = () => {
     const [selectedNacionalidad, setSelectedNacionalidad] = useState(nacionalidad[0]);
     const [cedula, setCedula] = useState('');
     const [nacionalidadCedula, setNacionalidadCedula] = useState('');
-    const [selectedCodigoArea, setSelectedCodigoArea] = useState(codigosArea[0]);
+    const [selectedCodigoArea, setSelectedCodigoArea] = useState('');
     const [telefono, setTelefono] = useState('');
     const [numTelefono, setNumTelefono] = useState('');
     const [monto, setMonto] = useState('1.00');
@@ -695,8 +695,8 @@ const DebitoInmediato = () => {
                                                                     className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
                                                                     id="codigosArea"
                                                                 >
-                                                                    <option value="" disabled className="text-center">
-                                                                        Cód.
+                                                                    <option value="" className="text-center">
+                                                                        04**
                                                                     </option>
                                                                     {codigosArea.map((codigoArea, index) => (
                                                                         <option key={index} value={codigoArea} className="text-center">
@@ -850,8 +850,8 @@ const DebitoInmediato = () => {
                                                                                             className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
                                                                                             id="codigosArea"
                                                                                         >
-                                                                                            <option value="" disabled className="text-center">
-                                                                                                Cód.
+                                                                                            <option value="" className="text-center">
+                                                                                                04**
                                                                                             </option>
                                                                                             {codigosArea.map((codigoArea, index) => (
                                                                                                 <option key={index} value={codigoArea} className="text-center">
