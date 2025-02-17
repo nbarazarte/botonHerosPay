@@ -914,12 +914,14 @@ const DebitoInmediato = () => {
                                                                     <>
                                                                         <button
                                                                             type="submit"
-                                                                            className="pb-5 mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
+                                                                            className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
                                                                         >
                                                                             CONFIRMAR PAGO
                                                                         </button>
 
-                                                                        {(vieneForm1 === false && so === 'iOS') && <RefreshButton />}
+                                                                        <div className='pt-5'>
+                                                                            {(vieneForm1 === false && so === 'iOS') && <RefreshButton />}
+                                                                        </div>
                                                                     </>
 
                                                                 )}
