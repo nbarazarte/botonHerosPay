@@ -8,35 +8,106 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import logo from '../assets/images/logo_heros.png';
 import avatar from '../assets/images/logo_heros.jpg';
+import CryptoJS from 'crypto-js';
 
 const DataTable = () => {
+    const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
     const urlApiBoton = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
+    const urlMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
     const [url, setUrl] = useState(urlApiBoton);
     const tokenApi = import.meta.env.REACT_APP_TOKEN;
     const headers = { 'Authorization': `Bearer ${tokenApi}` };
     const [data, setData] = useState([]);
     const [searchTerms, setSearchTerms] = useState({
-        nombre: '',
-        identificador: '',
-        tipo: '',
-        token: '',
-        cedula: '',
-        telefono: '',
-        banco: '',
-        codigo_banco: '',
-        monto: '',
-        referencia: '',
-        descripcion: '',
-        fecha: '',
+        error_code: '',
+        error_message: '',
+        error_name: '',
+        url: '',
+        api: '',
         hora: ''
     });
 
     useEffect(() => {
+        const interval = setInterval(() => {
+            window.location.reload();
+        }, 300000); // 60000 ms = 60 segundos, puse 5 minutos
 
-        axios.get(`${url}buscar_transacciones`, { headers })
+        return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
+    }, []);
+
+    useEffect(() => {
+
+        const fetchLogs = async () => {
+
+            try {
+
+                function obtenerFechaValor() {
+                    const fechaActual = new Date();
+                    const año = fechaActual.getFullYear();
+                    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                    const dia = String(fechaActual.getDate()).padStart(2, '0');
+                    return `${año}-${mes}-${dia}`;
+                }
+
+                const fechaValor = obtenerFechaValor();
+                const dataToHash = `${fechaValor}USD`;
+                const headersMiBanco = headersR4(dataToHash)
+
+                const postData = {
+                    Moneda: "USD",
+                    Fechavalor: fechaValor
+                }
+
+                const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
+
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+
+                function obtenerFechaValor() {
+                    const fechaActual = new Date();
+                    const año = fechaActual.getFullYear();
+                    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                    const dia = String(fechaActual.getDate()).padStart(2, '0');
+                    const horas = String(fechaActual.getHours()).padStart(2, '0');
+                    const minutos = String(fechaActual.getMinutes()).padStart(2, '0');
+                    const segundos = String(fechaActual.getSeconds()).padStart(2, '0');
+                    //return `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+                    return `${año}-${mes}-${dia} ${horas}:${minutos}`;
+                }
+
+                const hora = obtenerFechaValor();
+                /*                 // Verifica si ya se ha guardado un error similar antes de guardarlo
+                                const duplicateCheck = await axios.get(`${url}error-logs?hora=${hora}`, { headers });
+                                //console.log(duplicateCheck);
+                
+                                if (duplicateCheck.data.length === 0) {
+                                    await axios.post(`${url}error-logs`, {
+                                        error_code: error.code,
+                                        error_message: error.message,
+                                        error_name: error.name,
+                                        url: error.config.url,
+                                        api: 'R4',
+                                        hora: hora
+                                    }, { headers });
+                                } */
+
+                await axios.post(`${url}error-logs`, {
+                    error_code: error.code,
+                    error_message: error.message,
+                    error_name: error.name,
+                    url: error.config.url,
+                    api: 'R4',
+                    hora: hora
+                }, { headers });
+            }
+
+        }
+        fetchLogs();
+
+        axios.get(`${url}buscar_logs`, { headers })
             .then(response => {
                 const modifiedData = response.data.map(item => {
-                    const date = new Date(item.fecha_creacion);
+                    const date = new Date(item.hora);
                     return {
                         ...item,
                         fecha: date.toLocaleDateString(),
@@ -48,7 +119,22 @@ const DataTable = () => {
             .catch(error => {
                 console.error('Error fetching data: ', error);
             });
+
     }, []);
+
+    const headersR4 = (dataToHash) => {
+
+        const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+        const hmac2 = hash2.toString(CryptoJS.enc.Hex);
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `${hmac2}`,
+            'Commerce': `${tokenCommerce}`
+        };
+
+        return headers
+    }
 
     const columns = [
         {
@@ -58,31 +144,13 @@ const DataTable = () => {
                 </Box>
             )
         },
-
         {
-            field: 'tipo', headerName: 'TIPO', width: 50, renderHeader: () => (
+            field: 'error_code', headerName: 'ERROR_CODE', width: 150, renderHeader: () => (
                 <Box className="flex flex-col items-center">
-                    <div>TIPO</div>
+                    <div>ERROR_CODE</div>
                     <TextField
-                        name="tipo"
-                        value={searchTerms.tipo}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
-
-
-        {
-            field: 'token', headerName: 'TOKEN', width: 100, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>TOKEN</div>
-                    <TextField
-                        name="token"
-                        value={searchTerms.token}
+                        name="error_code"
+                        value={searchTerms.error_code}
                         onChange={handleSearch}
                         placeholder=""
                         variant="standard"
@@ -92,12 +160,12 @@ const DataTable = () => {
             )
         },
         {
-            field: 'cedula', headerName: 'CÉDULA', width: 120, renderHeader: () => (
+            field: 'error_message', headerName: 'ERROR_MESSAGE', width: 150, renderHeader: () => (
                 <Box className="flex flex-col items-center">
-                    <div>CÉDULA</div>
+                    <div>ERROR_MESSAGE</div>
                     <TextField
-                        name="cedula"
-                        value={searchTerms.cedula}
+                        name="error_message"
+                        value={searchTerms.error_message}
                         onChange={handleSearch}
                         placeholder=""
                         variant="standard"
@@ -107,12 +175,12 @@ const DataTable = () => {
             )
         },
         {
-            field: 'telefono', headerName: 'TELÉFONO', width: 120, renderHeader: () => (
+            field: 'error_name', headerName: 'ERROR_NAME', width: 170, renderHeader: () => (
                 <Box className="flex flex-col items-center">
-                    <div>TELÉFONO</div>
+                    <div>ERROR_NAME</div>
                     <TextField
-                        name="telefono"
-                        value={searchTerms.telefono}
+                        name="error_name"
+                        value={searchTerms.error_name}
                         onChange={handleSearch}
                         placeholder=""
                         variant="standard"
@@ -122,42 +190,12 @@ const DataTable = () => {
             )
         },
         {
-            field: 'banco', headerName: 'BANCO', width: 220, renderHeader: () => (
+            field: 'url', headerName: 'URL', width: 300, renderHeader: () => (
                 <Box className="flex flex-col items-center">
-                    <div>BANCO</div>
+                    <div>URL</div>
                     <TextField
-                        name="banco"
-                        value={searchTerms.banco}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
-        /*         {
-                    field: 'codigo_banco', headerName: 'COD.', width: 90, renderHeader: () => (
-                        <Box className="flex flex-col items-center">
-                            <div>COD.</div>
-                            <TextField
-                                name="codigo_banco"
-                                value={searchTerms.codigo_banco}
-                                onChange={handleSearch}
-                                placeholder=""
-                                variant="standard"
-                                fullWidth
-                            />
-                        </Box>
-                    )
-                }, */
-        {
-            field: 'monto', headerName: 'MONTO', width: 100, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>MONTO</div>
-                    <TextField
-                        name="monto"
-                        value={searchTerms.monto}
+                        name="url"
+                        value={searchTerms.url}
                         onChange={handleSearch}
                         placeholder=""
                         variant="standard"
@@ -167,42 +205,12 @@ const DataTable = () => {
             )
         },
         {
-            field: 'referencia', headerName: 'REF.', width: 120, renderHeader: () => (
+            field: 'api', headerName: 'API', width: 100, renderHeader: () => (
                 <Box className="flex flex-col items-center">
-                    <div>REF.</div>
+                    <div>API</div>
                     <TextField
-                        name="referencia"
-                        value={searchTerms.referencia}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
-        /*         {
-                    field: 'descripcion', headerName: 'DESCRIPCIÓN', width: 220, renderHeader: () => (
-                        <Box className="flex flex-col items-center">
-                            <div>DESCRIPCIÓN</div>
-                            <TextField
-                                name="descripcion"
-                                value={searchTerms.descripcion}
-                                onChange={handleSearch}
-                                placeholder=""
-                                variant="standard"
-                                fullWidth
-                            />
-                        </Box>
-                    )
-                }, */
-        {
-            field: 'fecha', headerName: 'FECHA', width: 100, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>FECHA</div>
-                    <TextField
-                        name="fecha"
-                        value={searchTerms.fecha}
+                        name="api"
+                        value={searchTerms.api}
                         onChange={handleSearch}
                         placeholder=""
                         variant="standard"
@@ -226,37 +234,7 @@ const DataTable = () => {
                 </Box>
             )
         },
-        {
-            field: 'nombre', headerName: 'NOMBRE', width: 220, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>SITIO</div>
-                    <TextField
-                        name="nombre"
-                        value={searchTerms.nombre}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
 
-        {
-            field: 'identificador', headerName: 'IDENTIFICADOR', width: 130, renderHeader: () => (
-                <Box className="flex flex-col items-center">
-                    <div>IDENTIFICADOR</div>
-                    <TextField
-                        name="identificador"
-                        value={searchTerms.identificador}
-                        onChange={handleSearch}
-                        placeholder=""
-                        variant="standard"
-                        fullWidth
-                    />
-                </Box>
-            )
-        },
     ];
 
     const handleSearch = (event) => {
@@ -268,18 +246,11 @@ const DataTable = () => {
     };
 
     const filteredData = data.filter(item =>
-        item.nombre.toLowerCase().includes(searchTerms.nombre.toLowerCase()) &&
-        item.identificador.toLowerCase().includes(searchTerms.identificador.toLowerCase()) &&
-        item.tipo.toLowerCase().includes(searchTerms.tipo.toLowerCase()) &&
-        item.token.toLowerCase().includes(searchTerms.token.toLowerCase()) &&
-        item.cedula.toLowerCase().includes(searchTerms.cedula.toLowerCase()) &&
-        item.telefono.toLowerCase().includes(searchTerms.telefono.toLowerCase()) &&
-        item.banco.toLowerCase().includes(searchTerms.banco.toLowerCase()) &&
-        item.codigo_banco.toLowerCase().includes(searchTerms.codigo_banco.toLowerCase()) &&
-        item.monto.toLowerCase().includes(searchTerms.monto.toLowerCase()) &&
-        item.referencia.toLowerCase().includes(searchTerms.referencia.toLowerCase()) &&
-        item.descripcion.toLowerCase().includes(searchTerms.descripcion.toLowerCase()) &&
-        item.fecha.toLowerCase().includes(searchTerms.fecha.toLowerCase()) &&
+        item.error_code.toLowerCase().includes(searchTerms.error_code.toLowerCase()) &&
+        item.error_message.toLowerCase().includes(searchTerms.error_message.toLowerCase()) &&
+        item.error_name.toLowerCase().includes(searchTerms.error_name.toLowerCase()) &&
+        item.url.toLowerCase().includes(searchTerms.url.toLowerCase()) &&
+        item.api.toLowerCase().includes(searchTerms.api.toLowerCase()) &&
         item.hora.toLowerCase().includes(searchTerms.hora.toLowerCase())
     );
 
@@ -294,7 +265,7 @@ const DataTable = () => {
 
         <Box className="h-full pt-2">
             <div className="flex flex-row justify-between items-center">
-                <h1 className="text-2xl font-bold">Transacciones de la pasarela de pagos HerosPay</h1>
+                <h1 className="text-2xl font-bold">Logs de la pasarela de pagos HerosPay</h1>
                 <div className='flex justify-end items-end'>
                     <Button variant="contained" color="primary" onClick={handleExport} className="mt-4">Exportar a Excel</Button>
                 </div>
@@ -305,7 +276,7 @@ const DataTable = () => {
     );
 };
 
-const Vista = () => {
+const Logs = () => {
     const navigate = useNavigate();
     const username = localStorage.getItem('username');
 
@@ -486,4 +457,4 @@ const Vista = () => {
 
 };
 
-export default Vista;
+export default Logs;

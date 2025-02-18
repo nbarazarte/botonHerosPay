@@ -7,6 +7,7 @@ import { far as regularIcons } from '@fortawesome/free-regular-svg-icons';
 import CreditoInmediato from './components/CreditoInmediato';
 import DebitoInmediato from './components/DebitoInmediato';
 import Vista from './components/Vista';
+import Logs from './components/Logs';
 import Login from './components/Login';
 import Register from './components/Register';
 library.add(solidIcons, brandIcons, regularIcons); // Añade conjuntos de íconos
@@ -41,6 +42,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/vista" element={token ? <Vista /> : <Navigate to="/login" />} />
+          <Route path="/logs" element={token ? <Logs /> : <Navigate to="/login" />} />
         </Routes>
       </div>
     </Router>

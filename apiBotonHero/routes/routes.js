@@ -199,7 +199,7 @@ router.post('/crear_transac', async (req, res) => {
     }
 });
 
-// Buscar transaacciones un token
+// Buscar transaacciones
 router.get('/buscar_transacciones', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM public.view_transacciones order by fecha_creacion desc');
@@ -207,6 +207,45 @@ router.get('/buscar_transacciones', async (req, res) => {
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
+    }
+});
+
+// Buscar logs
+router.get('/buscar_logs', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM public.view_logs order by hora desc');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Endpoint para consultar los logs de errores
+router.get('/error-logs', async (req, res) => {
+    try {
+        const { hora } = req.query;
+        const result = await pool.query('SELECT * FROM error_logs WHERE hora = $1 ORDER BY timestamp DESC', [hora]);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al obtener los logs de errores');
+    }
+});
+
+// Endpoint para guardar los logs de errores
+router.post('/error-logs', async (req, res) => {
+    const { error_code, error_message, error_name, url, api, hora } = req.body;
+
+    try {
+        await pool.query(
+            'INSERT INTO error_logs (error_code, error_message, error_name, url, api, hora) VALUES ($1, $2, $3, $4, $5, $6)',
+            [error_code, error_message, error_name, url, api, hora]
+        );
+        res.status(201).send('Error log guardado');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error guardando log');
     }
 });
 

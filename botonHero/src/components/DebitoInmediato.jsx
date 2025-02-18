@@ -161,10 +161,12 @@ const DebitoInmediato = () => {
                 setBankOptions(bancos.data);
 
             } catch (error) {
-
+                //console.log(error);
+                //console.log(error.code, error.message, error.name, error.config.url);
                 setMensajeApis('Falla de conexión con el Servidor');
-                setError('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
-                setErrorApiR4('En estos momentos, el servidor no está disponible. Por favor, intente más tarde.');
+                let mensaje = 'En estos momentos, el servidor no está disponible. Por favor, intente más tarde.'
+                setError(mensaje);
+                setErrorApiR4(mensaje);
                 return null;
             }
 
@@ -191,10 +193,41 @@ const DebitoInmediato = () => {
                 setMonto((monto.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
 
             } catch (error) {
-                //console.error('Error al realizar la solicitud:', error);
+                //console.log(error);
+                //console.log(error.code, error.message, error.name, error.config.url);
+
+                /*                 function obtenerFechaValor() {
+                                    const fechaActual = new Date();
+                                    const año = fechaActual.getFullYear();
+                                    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+                                    const dia = String(fechaActual.getDate()).padStart(2, '0');
+                                    const horas = String(fechaActual.getHours()).padStart(2, '0');
+                                    const minutos = String(fechaActual.getMinutes()).padStart(2, '0');
+                                    const segundos = String(fechaActual.getSeconds()).padStart(2, '0');
+                                    //return `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+                                    return `${año}-${mes}-${dia} ${horas}:${minutos}`;
+                                }
+                
+                                const hora = obtenerFechaValor();
+                                // Verifica si ya se ha guardado un error similar antes de guardarlo
+                                const duplicateCheck = await axios.get(`${url}error-logs?hora=${hora}`, { headers });
+                                //console.log(duplicateCheck);
+                
+                                if (duplicateCheck.data.length === 0) {
+                                    await axios.post(`${url}error-logs`, {
+                                        error_code: error.code,
+                                        error_message: error.message,
+                                        error_name: error.name,
+                                        url: error.config.url,
+                                        api: 'R4',
+                                        hora: hora
+                                    }, { headers });
+                                } */
+
                 setMensajeApis('Falla de conexión con el Banco');
-                setError('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
-                setErrorApiR4('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
+                let mensaje = 'En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.'
+                setError(mensaje);
+                setErrorApiR4(mensaje);
                 return null;
             }
 
@@ -323,9 +356,9 @@ const DebitoInmediato = () => {
 
                     // Obtener id del cliente usando la cedula
                     let cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
-                    
+
                     if (!cliente.data.id) {
-                        cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });                        
+                        cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
                     }
 
                     // Guardo el cliente_id y token_id
