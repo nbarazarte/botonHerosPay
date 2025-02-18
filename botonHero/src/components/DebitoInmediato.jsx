@@ -323,16 +323,14 @@ const DebitoInmediato = () => {
 
                     // Obtener id del cliente usando la cedula
                     let cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
-                    let cliente_id = cliente.data.id;
-
-                    if (!cliente_id) {
-                        cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
-                        cliente_id = cliente.data.id;
+                    
+                    if (!cliente.data.id) {
+                        cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });                        
                     }
 
                     // Guardo el cliente_id y token_id
                     const cliente_token = await axios.post(`${url}cliente_tokens`, {
-                        cliente_id: cliente_id,
+                        cliente_id: cliente.data.id,
                         token_id: token.data.id
                     }, { headers });
 
