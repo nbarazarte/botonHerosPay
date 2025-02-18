@@ -66,67 +66,6 @@ const DebitoInmediato = () => {
     const headers = { 'Authorization': `Bearer ${import.meta.env.REACT_APP_TOKEN}` };
     // ###################################################################
 
-    const handleCopy = () => {
-        copy(token.token, {
-            debug: true,
-            message: "Press #{key} to copy"
-        });
-        setCopied(true);
-        setTextoBoton('¡Token Copiado!');
-        handledestruir();
-        setTimeout(() => setCopied(false), 3000); // Reset after 3 seconds
-    };
-
-    const handleSelectChange = (event) => { setSelectedBank(event.target.value); setError(''); };
-
-    const handleSelectChangeNacionalidad = (e) => {
-        setError('');
-        setSelectedNacionalidad(e.target.value);
-        setNacionalidadCedula(e.target.value + cedula);
-
-        // Limpiar el input de cedula si se selecciona 'V' o 'E'
-        if (e.target.value === 'V' || e.target.value === 'E' || e.target.value === 'J') {
-            setCedula('');
-        }
-    };
-
-    const handleChangeCedula = (e) => {
-        setError('');
-        const value = e.target.value;
-        // Permitir solo números (0-9)
-        const onlyNumbers = value.replace(/[^0-9]/g, '');
-        setCedula(onlyNumbers);
-        setNacionalidadCedula(selectedNacionalidad + onlyNumbers);
-    };
-
-    const handleSelectChangeCodigoArea = (e) => {
-        setError('');
-        setSelectedCodigoArea(e.target.value);
-        setNumTelefono(e.target.value + telefono);
-    };
-
-    const handleChangeTelefono = (e) => {
-        setError('');
-        const value = e.target.value;
-        // Permitir solo números (0-9)
-        const onlyNumbers = value.replace(/[^0-9]/g, '');
-        setTelefono(onlyNumbers);
-        setNumTelefono(selectedCodigoArea + onlyNumbers);
-    };
-
-    const handleChangeConcepto = (e) => { setConcepto(e.target.value); };
-
-    const handleChangeOtp = (e) => {
-        setError('');
-        setErrorPago('');
-        setOtp(e.target.value);
-        setIsVisible(true);
-    };
-
-    const handleChangeMonto = (e) => { setMonto(e.target.value); };
-
-    const handledestruir = () => { localStorage.clear(); }
-
     useEffect(() => {
 
         const soInfo = platform.os.family;
@@ -161,8 +100,7 @@ const DebitoInmediato = () => {
                 setBankOptions(bancos.data);
 
             } catch (error) {
-                //console.log(error);
-                //console.log(error.code, error.message, error.name, error.config.url);
+
                 setMensajeApis('Falla de conexión con el Servidor');
                 let mensaje = 'En estos momentos, el servidor no está disponible. Por favor, intente más tarde.'
                 setError(mensaje);
@@ -193,36 +131,6 @@ const DebitoInmediato = () => {
                 setMonto((monto.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
 
             } catch (error) {
-                //console.log(error);
-                //console.log(error.code, error.message, error.name, error.config.url);
-
-                /*                 function obtenerFechaValor() {
-                                    const fechaActual = new Date();
-                                    const año = fechaActual.getFullYear();
-                                    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-                                    const dia = String(fechaActual.getDate()).padStart(2, '0');
-                                    const horas = String(fechaActual.getHours()).padStart(2, '0');
-                                    const minutos = String(fechaActual.getMinutes()).padStart(2, '0');
-                                    const segundos = String(fechaActual.getSeconds()).padStart(2, '0');
-                                    //return `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
-                                    return `${año}-${mes}-${dia} ${horas}:${minutos}`;
-                                }
-                
-                                const hora = obtenerFechaValor();
-                                // Verifica si ya se ha guardado un error similar antes de guardarlo
-                                const duplicateCheck = await axios.get(`${url}error-logs?hora=${hora}`, { headers });
-                                //console.log(duplicateCheck);
-                
-                                if (duplicateCheck.data.length === 0) {
-                                    await axios.post(`${url}error-logs`, {
-                                        error_code: error.code,
-                                        error_message: error.message,
-                                        error_name: error.name,
-                                        url: error.config.url,
-                                        api: 'R4',
-                                        hora: hora
-                                    }, { headers });
-                                } */
 
                 setMensajeApis('Falla de conexión con el Banco');
                 let mensaje = 'En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.'
@@ -235,6 +143,26 @@ const DebitoInmediato = () => {
 
         fetchBanksAndMonto();
     }, []);
+
+    const handleCopy = () => {
+        copy(token.token, {
+            debug: true,
+            message: "Press #{key} to copy"
+        });
+        setCopied(true);
+        setTextoBoton('¡Token Copiado!');
+        handledestruir();
+        setTimeout(() => setCopied(false), 3000); // Reset after 3 seconds
+    };
+
+    const handleChangeOtp = (e) => {
+        setError('');
+        setErrorPago('');
+        setOtp(e.target.value);
+        setIsVisible(true);
+    };
+
+    const handledestruir = () => { localStorage.clear(); }
 
     const handleSubmitSinOtp = async (e) => {
         e.preventDefault();
@@ -681,20 +609,24 @@ const DebitoInmediato = () => {
 
                                                     <FormFields
                                                         selectedBank={selectedBank}
-                                                        handleSelectChange={handleSelectChange}
                                                         bankOptions={bankOptions}
                                                         selectedNacionalidad={selectedNacionalidad}
-                                                        handleSelectChangeNacionalidad={handleSelectChangeNacionalidad}
                                                         nacionalidad={nacionalidad}
                                                         cedula={cedula}
-                                                        handleChangeCedula={handleChangeCedula}
+                                                        setCedula={setCedula}
                                                         selectedCodigoArea={selectedCodigoArea}
-                                                        handleSelectChangeCodigoArea={handleSelectChangeCodigoArea}
                                                         codigosArea={codigosArea}
                                                         telefono={telefono}
-                                                        handleChangeTelefono={handleChangeTelefono}
+                                                        setTelefono={setTelefono}
                                                         monto={monto}
-                                                        handleChangeMonto={handleChangeMonto}
+                                                        setMonto={setMonto}
+                                                        setError={setError}
+                                                        setSelectedBank={setSelectedBank}
+                                                        setSelectedNacionalidad={setSelectedNacionalidad}
+                                                        setNacionalidadCedula={setNacionalidadCedula}
+                                                        setSelectedCodigoArea={setSelectedCodigoArea}
+                                                        setNumTelefono={setNumTelefono}
+                                                        setConcepto={setConcepto}
                                                     />
 
                                                     <div className='pb-2'>
@@ -763,20 +695,24 @@ const DebitoInmediato = () => {
 
                                                                         <FormFields
                                                                             selectedBank={selectedBank}
-                                                                            handleSelectChange={handleSelectChange}
                                                                             bankOptions={bankOptions}
                                                                             selectedNacionalidad={selectedNacionalidad}
-                                                                            handleSelectChangeNacionalidad={handleSelectChangeNacionalidad}
                                                                             nacionalidad={nacionalidad}
                                                                             cedula={cedula}
-                                                                            handleChangeCedula={handleChangeCedula}
+                                                                            setCedula={setCedula}
                                                                             selectedCodigoArea={selectedCodigoArea}
-                                                                            handleSelectChangeCodigoArea={handleSelectChangeCodigoArea}
                                                                             codigosArea={codigosArea}
                                                                             telefono={telefono}
-                                                                            handleChangeTelefono={handleChangeTelefono}
+                                                                            setTelefono={setTelefono}
                                                                             monto={monto}
-                                                                            handleChangeMonto={handleChangeMonto}
+                                                                            setMonto={setMonto}
+                                                                            setError={setError}
+                                                                            setSelectedBank={setSelectedBank}
+                                                                            setSelectedNacionalidad={setSelectedNacionalidad}
+                                                                            setNacionalidadCedula={setNacionalidadCedula}
+                                                                            setSelectedCodigoArea={setSelectedCodigoArea}
+                                                                            setNumTelefono={setNumTelefono}
+                                                                            setConcepto={setConcepto}
                                                                         />
                                                                     }
                                                                 </>
