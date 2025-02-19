@@ -45,10 +45,7 @@ const DebitoInmediato = () => {
     const [bankOptions, setBankOptions] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingBankWait, setLoadingBankWait] = useState(false);
-    const [text, setText] = useState("");
     const [copied, setCopied] = useState(false);
-    const [idCreditoInmediato, setIdCreditoInmediato] = useState();
-    const [hmac, setHmac] = useState('');
     const [timeLeft, setTimeLeft] = useState(59);
     const [showOtpForm1, setShowOtpForm1] = useState(true);
     const [showOtpForm2, setShowOtpForm2] = useState(false);
@@ -74,7 +71,6 @@ const DebitoInmediato = () => {
         const formulario2 = localStorage.getItem('formulario2');
 
         if (mensajeOtp != null) {
-
             setMsjOtp(mensajeOtp);
             setMsjOtp2(mensajeOtp2);
             setDataForm(dataFormulario);
@@ -127,7 +123,6 @@ const DebitoInmediato = () => {
                 setMonto((monto.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
 
             } catch (error) {
-
                 setMensajeApis('Falla de conexión con el Banco');
                 let mensaje = 'En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.'
                 setError(mensaje);
@@ -138,253 +133,6 @@ const DebitoInmediato = () => {
 
         fetchBanksAndMonto();
     }, []);
-
-    const handleSubmitSinOtp = async (e) => {
-        e.preventDefault();
-
-        // Intento de obtención del token
-        try {
-
-            const token = await axios.get(`${url}buscar_token`, { headers });
-            if (!token.data) { setError(`No hay tokens disponibles, \n intente luego.`); return }
-            if (!selectedBank) { setError('Seleccione un Banco'); return; }
-            if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
-            if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
-
-            setLoading(true);
-
-            const postData = {
-                Banco: selectedBank,
-                Monto: monto,
-                Telefono: numTelefono,
-                Cedula: nacionalidadCedula,
-                Concepto: concepto
-            };
-
-            // Obtener nombre del banco usando el codigo del banco
-            const banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
-            await handleGenerarOtp(postData);
-
-            setMsjOtp(`En breve recibirá un mensaje al número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`)
-            setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
-            setShowOtpForm1(false)
-            setShowOtpForm2(true)
-            setVieneForm1(true)
-
-            localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
-            localStorage.setItem('mensajeOtp2', `Si no recibió el mensaje, verifique sus datos ingresados, e intente nuevamente.`)
-            localStorage.setItem('dataFormulario', JSON.stringify(postData));
-            localStorage.setItem('formulario1', false);
-            localStorage.setItem('formulario2', true);
-
-        } catch (err) {
-            setError(err);
-            setToken(null);
-        } finally {
-            setLoading(false); // Oculta el loading
-        }
-
-    };
-
-    const handleSubmitConOtp = async (e) => {
-        e.preventDefault();
-
-        try {
-
-            if (!otp) {
-                setError('Indique el OTP recibido');
-                setIsVisible(true);
-                return;
-            }
-            setIsVisible(false);
-            setLoading(true);
-            setLoadingBankWait(true);
-
-            let postData = {};
-
-            if (so !== 'iOS') {
-                const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
-                postData = { Banco, Monto, Telefono, Cedula, Concepto, Otp: otp };
-            } else {
-                const token = await axios.get(`${url}buscar_token`, { headers });
-                if (!token.data) { setError('No hay tokens disponibles, intente luego.'); return }
-                if (!selectedBank) { setError('Seleccione un Banco'); return; }
-                if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
-                if (!selectedCodigoArea || !telefono) { setError('Indique Teléfono'); return; }
-
-                postData = {
-                    Banco: selectedBank,
-                    Monto: monto,
-                    Telefono: numTelefono,
-                    Cedula: nacionalidadCedula,
-                    Concepto: concepto,
-                    Otp: otp
-                };
-            }
-
-            const data1 = await handleDebitoInmediato(postData);
-
-            let data2 = {}
-            if (data1.code === 'AC00') {
-
-                const maxRetries = 20;
-                const delay = 1000; // 1 segundo
-                let attempts = 0;
-
-                const retryConsulta = async (id) => {
-                    while (attempts < maxRetries) {
-                        attempts++;
-                        data2 = await handleConsulta(id);
-                        if (data2.code !== 'AC00') { break; } // esto lo hago porque la respuesta de la consulta no es la esperada
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                    }
-                };
-
-                await retryConsulta(data1.id);
-
-                // Si el pago fue aceptado
-                if (data2.code === 'ACCP') {
-
-                    // Intento de obtención del token
-                    const token = await axios.get(`${url}buscar_token`, { headers });
-                    if (!token.data) { setError('No hay tokens disponibles'); return }
-                    setToken(token.data);
-
-                    // Actualización del token
-                    await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
-
-                    // Obtener id del banco usando el codigo del banco
-                    const banco = await axios.get(`${url}buscar_banco?codigo=${postData.Banco}`, { headers });
-
-                    // Obtener id del cliente usando la cedula
-                    let cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
-
-                    if (!cliente.data.id) {
-                        cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
-                    }
-
-                    // Guardo el cliente_id y token_id
-                    const cliente_token = await axios.post(`${url}cliente_tokens`, {
-                        cliente_id: cliente.data.id,
-                        token_id: token.data.id
-                    }, { headers });
-
-                    // Guardo la transacción
-                    const transac = await axios.post(`${url}crear_transac`, {
-                        cliente_token_id: cliente_token.data.id,
-                        telefono: postData.Telefono,
-                        banco_id: banco.data.id,
-                        monto: postData.Monto,
-                        referencia: data2.reference,
-                        descripcion: postData.Concepto,
-                        pasarela_id: 1,
-                        sitio_id: identificadorAp,
-                        sistema_operativo:so
-                    }, { headers });
-
-                    setNumeroFactura(transac.data.id.toString().padStart(5, '0'));
-                    setPagoExitoso(true);
-
-                } else {
-                    setError(data2.message);
-                    setErrorPago(data2.code);
-                    return
-                }
-
-            } else {
-
-                setError('La longitd del campo OTP recibida es incorrecta');
-                setIsVisible(true);
-                return
-            }
-
-        } catch (err) {
-
-            setError(err);
-            setToken(null);
-
-        } finally {
-            setLoading(false); // Oculta el loading
-            setLoadingBankWait(false);
-            setIsVisible(true);
-        }
-    };
-
-    const handleGenerarOtp = async (postData) => {
-
-        try {
-
-            const { Banco, Cedula, Telefono, Monto, Concepto } = postData;
-            const dataToHash = `${Banco}${Monto}${Telefono}${Cedula}`;
-            const headersMiBanco = headersR4(dataToHash);
-
-            const data = {
-                Banco: Banco,
-                Monto: Monto,
-                Telefono: Telefono,
-                Cedula: Cedula
-            }
-
-            const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco });
-
-            if (timeLeft > 0) {
-                const interval = setInterval(() => {
-                    setTimeLeft((prevTime) => {
-                        if (prevTime - 1 <= 0) {
-                            clearInterval(interval);
-                            return 0;
-                        }
-                        return prevTime - 1;
-                    });
-                }, 1000);
-
-                return () => clearInterval(interval);
-            }
-
-            return miBancoGenerarOtp.data;
-
-        } catch (error) {
-
-            console.error('Error al realizar la consulta:', error);
-            setError('Ocurrió un error al procesar la consulta');
-            setErrorApiR4('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
-            return null;
-        }
-    };
-
-    const handleDebitoInmediato = async (postData) => {
-
-        try {
-            const { Banco, Cedula, Telefono, Monto, Concepto, Otp } = postData;
-            const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}${Otp}`;
-            const headersMiBanco = headersR4(dataToHash)
-            const miBanco = await axios.post(`${urlMibanco2}`, postData, { headers: headersMiBanco });
-            return miBanco.data;
-
-        } catch (error) {
-            console.error('Error al realizar la solicitud:', error);
-            setError('Ocurrió un error al procesar la solicitud');
-            setErrorApiR4('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
-            return null;
-        }
-    }
-
-    const handleConsulta = async (id) => {
-        try {
-
-            const dataToHash = `${id}`;
-            const headersMiBanco = headersR4(dataToHash)
-            const data = { id: `${id}` }
-            const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco });
-            return miBancoConsulta.data;
-
-        } catch (error) {
-            console.error('Error al realizar la consulta:', error);
-            setError('Ocurrió un error al procesar la consulta');
-            setErrorApiR4('En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.');
-            return null;
-        }
-    };
 
     const headersR4 = (dataToHash) => {
 
@@ -459,7 +207,11 @@ const DebitoInmediato = () => {
                                     {showOtpForm1 === true && (
 
                                         <Form1
-                                            handleSubmitSinOtp={handleSubmitSinOtp}
+                                            setLoading={setLoading}
+                                            setToken={setToken}
+                                            setVieneForm1={setVieneForm1}
+                                            setDataForm={setDataForm}
+                                            setMsjOtp={setMsjOtp}
                                             setShowOtpForm1={setShowOtpForm1}
                                             setShowOtpForm2={setShowOtpForm2}
                                             selectedBank={selectedBank}
@@ -478,10 +230,20 @@ const DebitoInmediato = () => {
                                             setSelectedBank={setSelectedBank}
                                             setSelectedNacionalidad={setSelectedNacionalidad}
                                             setNacionalidadCedula={setNacionalidadCedula}
+                                            nacionalidadCedula={nacionalidadCedula}
                                             setSelectedCodigoArea={setSelectedCodigoArea}
                                             setNumTelefono={setNumTelefono}
+                                            numTelefono={numTelefono}
                                             setConcepto={setConcepto}
                                             so={so}
+                                            url={url}
+                                            urlMibanco3={urlMibanco3}
+                                            concepto={concepto}
+                                            setErrorApiR4={setErrorApiR4}
+                                            setTimeLeft={setTimeLeft}
+                                            timeLeft={timeLeft}
+                                            tokenCommerce={tokenCommerce}
+                                            headers={headers}
                                         />
                                     )}
 
@@ -489,7 +251,6 @@ const DebitoInmediato = () => {
 
                                         <Form2
                                             pagoExitoso={pagoExitoso}
-                                            handleSubmitConOtp={handleSubmitConOtp}
                                             loading={loading}
                                             vieneForm1={vieneForm1}
                                             so={so}
@@ -521,6 +282,19 @@ const DebitoInmediato = () => {
                                             setErrorPago={setErrorPago}
                                             setIsVisible={setIsVisible}
                                             setOtp={setOtp}
+                                            setLoading={setLoading}
+                                            setLoadingBankWait={setLoadingBankWait}
+                                            dataForm={dataForm}
+                                            setPagoExitoso={setPagoExitoso}
+                                            setErrorApiR4={setErrorApiR4}
+                                            tokenCommerce={tokenCommerce}
+                                            urlMibanco2={urlMibanco2}
+                                            urlMibancoConsulta={urlMibancoConsulta}
+                                            url={url}
+                                            headers={headers}
+                                            identificadorAp={identificadorAp}
+                                            setNumeroFactura={setNumeroFactura}
+                                            setToken={setToken}
                                         />
                                     )}
                                 </>
