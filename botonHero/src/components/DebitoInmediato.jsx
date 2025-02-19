@@ -2,19 +2,17 @@ import { useParams } from 'react-router-dom';
 import platform from 'platform'
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import copy from "copy-to-clipboard";
 import Swal from 'sweetalert2'
 import Lottie from "lottie-react";
-import paySuccess from "../assets/LottieFiles/Animation - 1737322786287.json";
-import wifi from "../assets/LottieFiles/Animation - 1737384712836.json";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
 import sms from "../assets/LottieFiles/Animation - 1738195342163.json";
 import bankWait from "../assets/LottieFiles/Animation - 1738285370531.json";
-import bankError from "../assets/LottieFiles/x bonita.json";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
 import FormFields from './FormFields';
+import ErrorApiR4 from './ErrorApiR4';
+import Success from './Success';
 
 const DebitoInmediato = () => {
 
@@ -144,25 +142,12 @@ const DebitoInmediato = () => {
         fetchBanksAndMonto();
     }, []);
 
-    const handleCopy = () => {
-        copy(token.token, {
-            debug: true,
-            message: "Press #{key} to copy"
-        });
-        setCopied(true);
-        setTextoBoton('¡Token Copiado!');
-        handledestruir();
-        setTimeout(() => setCopied(false), 3000); // Reset after 3 seconds
-    };
-
     const handleChangeOtp = (e) => {
         setError('');
         setErrorPago('');
         setOtp(e.target.value);
         setIsVisible(true);
     };
-
-    const handledestruir = () => { localStorage.clear(); }
 
     const handleSubmitSinOtp = async (e) => {
         e.preventDefault();
@@ -441,58 +426,10 @@ const DebitoInmediato = () => {
         <>
             {errorApiR4 ? (
 
-                <>
-                    <div className="relative z-10">
-                        <div
-                            className="fixed inset-0 bg-gray-300 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                        />
-
-                        <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                            <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-                                <div
-                                    className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                                >
-                                    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                        <div className="sm:flex sm:items-start">
-
-                                            <div className="mt-3 text-center">
-                                                <div className="text-base font-semibold text-gray-900 justify-center items-center">
-
-                                                    <div className='flex flex-col justify-center items-center text-black gap-1'>
-                                                        <div className="flex size-12 items-center justify-center rounded-full bg-red-400 ">
-                                                            <Lottie animationData={bankError} loop={true} style={{ width: '100%', height: '100%' }} />
-                                                        </div>
-                                                        <p className='text-lg'>{mensajeApis}</p>
-
-                                                    </div>
-
-                                                </div>
-                                                <div className="mt-2">
-                                                    <p className="text-md text-black">
-                                                        {errorApiR4}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                    <div className="bg-gray-50 py-3 flex flex-row-reverse px-6 justify-center items-center">
-                                        <button
-                                            type="button"
-                                            onClick={() => window.location.reload()}
-                                            className="inline-flex  justify-center rounded-md bg-naranjaMove px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-orange-300 sm:ml-3 sm:w-auto"
-                                        >
-                                            Refrescar Página
-                                        </button>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </>
+                <ErrorApiR4
+                    mensajeApis={mensajeApis}
+                    errorApiR4={errorApiR4}
+                />
 
             ) : (
 
@@ -537,65 +474,13 @@ const DebitoInmediato = () => {
 
                                     {token && (
 
-                                        <div className="relative z-10">
-                                            <div
-                                                className="fixed inset-0 bg-gray-300 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-                                            />
-
-                                            <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-                                                <div className="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-                                                    <div
-                                                        className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95"
-                                                    >
-                                                        <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                                            <div className="sm:flex sm:items-start">
-
-                                                                <div className="mt-3 text-center">
-                                                                    <div className="text-base font-semibold text-gray-900 justify-center items-center">
-
-                                                                        <div className='flex flex-row justify-center items-center text-black gap-1'>
-                                                                            <div className="flex size-12 items-center justify-center rounded-full bg-green-100 ">
-                                                                                <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
-                                                                            </div>
-                                                                            <p className='text-lg'>¡Pago Aprobado!</p>
-
-                                                                        </div>
-                                                                        <p className='text-base'>N°{numeroFactura}</p>
-
-                                                                    </div>
-                                                                    <div className="mt-2">
-                                                                        <p className="text-md text-gray-500">
-                                                                            Por favor, copie el token de acceso asignado en la casilla <span className='font-bold text-black'>Token *</span> que aparece en la parte inferior de esta pantalla para conectarse a la red.
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-
-                                                            </div>
-
-                                                            <div className="flex flex-row justify-center items-center">
-                                                                <div className="justify-center items-center">
-                                                                    <Lottie animationData={wifi} loop={true} style={{ width: '30px', height: '30px' }} />
-                                                                </div>
-                                                                <p className="text-lg justify-center items-center">
-                                                                    Token de Acceso: <span className='font-bold'>{token.token}</span>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="bg-gray-50 py-3 flex flex-row-reverse px-6 justify-center items-center">
-                                                            <button
-                                                                type="button"
-                                                                onClick={handleCopy}
-                                                                className="inline-flex  justify-center rounded-md bg-naranjaMove px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-orange-300 sm:ml-3 sm:w-auto"
-                                                            >
-                                                                {textoBoton}
-                                                            </button>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
+                                        <Success
+                                            numeroFactura={numeroFactura}
+                                            token={token}
+                                            textoBoton={textoBoton}
+                                            setCopied={setCopied}
+                                            setTextoBoton={setTextoBoton}
+                                        />
                                     )}
                                 </>
                             )}
@@ -604,6 +489,7 @@ const DebitoInmediato = () => {
                                 <>
                                     {
                                         showOtpForm1 === true && (
+                                            
                                             <div className="pt-10 flex flex-1 h-full justify-center items-center">
                                                 <form className="mt-1" onSubmit={handleSubmitSinOtp}>
 
@@ -646,9 +532,7 @@ const DebitoInmediato = () => {
                                                                 }} className="mt-4 text-blue-700 font-sans font-semibold text-lg text-center block  cursor-pointer">
                                                                     <FontAwesomeIcon icon="fa-brands fa-apple" /> Ya tengo un código OTP
                                                                 </a>
-
                                                             </div>
-
                                                         )
                                                     }
 
@@ -750,7 +634,6 @@ const DebitoInmediato = () => {
 
                                                         </form>
                                                     </div>
-
                                                 )}
 
                                             </>
