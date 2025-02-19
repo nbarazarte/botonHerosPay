@@ -491,8 +491,7 @@ const DebitoInmediato = () => {
                                             setConcepto={setConcepto}
                                             so={so}
                                         />
-                                    )
-                                    }
+                                    )}
 
                                     {showOtpForm2 && (
 
@@ -529,8 +528,7 @@ const DebitoInmediato = () => {
                                             setConcepto={setConcepto}
                                             error={error}
                                         />
-                                    )
-                                    }
+                                    )}
                                 </>
                             ) : (
                                 <div className="flex flex-1 h-full justify-center items-center">
