@@ -28,7 +28,8 @@ const DataTable = () => {
         referencia: '',
         descripcion: '',
         fecha: '',
-        hora: ''
+        hora: '',
+        sistema_operativo: ''
     });
 
     useEffect(() => {
@@ -257,6 +258,21 @@ const DataTable = () => {
                 </Box>
             )
         },
+        {
+            field: 'sistema_operativo', headerName: 'SISTEMA OPERATIVO', width: 170, renderHeader: () => (
+                <Box className="flex flex-col items-center">
+                    <div>SISTEMA OPERATIVO</div>
+                    <TextField
+                        name="sistema_operativo"
+                        value={searchTerms.sistema_operativo}
+                        onChange={handleSearch}
+                        placeholder=""
+                        variant="standard"
+                        fullWidth
+                    />
+                </Box>
+            )
+        },
     ];
 
     const handleSearch = (event) => {
@@ -280,7 +296,8 @@ const DataTable = () => {
         item.referencia.toLowerCase().includes(searchTerms.referencia.toLowerCase()) &&
         item.descripcion.toLowerCase().includes(searchTerms.descripcion.toLowerCase()) &&
         item.fecha.toLowerCase().includes(searchTerms.fecha.toLowerCase()) &&
-        item.hora.toLowerCase().includes(searchTerms.hora.toLowerCase())
+        item.hora.toLowerCase().includes(searchTerms.hora.toLowerCase()) &&
+        item.sistema_operativo.toLowerCase().includes(searchTerms.sistema_operativo.toLowerCase())
     );
 
     const handleExport = () => {
@@ -329,7 +346,7 @@ const Vista = () => {
     ]
 
     const userNavigation = [
-        { name: 'Vista', href: '/vista', onclick: '' },
+        { name: 'Transacciones', href: '/vista', onclick: '' },
         { name: 'Logs', href: '/logs', onclick: '' },
         { name: 'Salir', href: '#', onclick: handleLogout },
     ]

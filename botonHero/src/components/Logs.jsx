@@ -300,7 +300,7 @@ const Logs = () => {
     ]
 
     const userNavigation = [
-        { name: 'Vista', href: '/vista', onclick: '' },
+        { name: 'Transacciones', href: '/vista', onclick: '' },
         { name: 'Logs', href: '/logs', onclick: '' },
         { name: 'Salir', href: '#', onclick: handleLogout },
     ]
