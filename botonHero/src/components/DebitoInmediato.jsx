@@ -6,13 +6,11 @@ import Swal from 'sweetalert2'
 import Lottie from "lottie-react";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
-import sms from "../assets/LottieFiles/Animation - 1738195342163.json";
-import bankWait from "../assets/LottieFiles/Animation - 1738285370531.json";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import CryptoJS from 'crypto-js';
-import FormFields from './FormFields';
 import ErrorApiR4 from './ErrorApiR4';
 import Success from './Success';
+import Form1 from './Form1';
+import Form2 from './Form2';
 
 const DebitoInmediato = () => {
 
@@ -54,7 +52,7 @@ const DebitoInmediato = () => {
     const [timeLeft, setTimeLeft] = useState(59);
     const [showOtpForm1, setShowOtpForm1] = useState(true);
     const [showOtpForm2, setShowOtpForm2] = useState(false);
-    // ###########################  NOTA  ###############################
+    // ###########################  URLS  ###############################
     const url = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
     const urlMibanco2 = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
     const urlMibanco3 = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
@@ -396,17 +394,6 @@ const DebitoInmediato = () => {
         }
     };
 
-    const RefreshButton = () => (
-
-        <a onClick={() => {
-            handledestruir();
-            window.location.reload();
-        }} className="  text-blue-700 font-sans font-semibold text-xl text-center block  cursor-pointer">
-            Ir al inicio
-        </a>
-
-    );
-
     const headersR4 = (dataToHash) => {
 
         const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
@@ -422,7 +409,6 @@ const DebitoInmediato = () => {
     }
 
     return (
-
         <>
             {errorApiR4 ? (
 
@@ -430,18 +416,15 @@ const DebitoInmediato = () => {
                     mensajeApis={mensajeApis}
                     errorApiR4={errorApiR4}
                 />
-
             ) : (
 
                 <div className="flex flex-1 w-screen h-screen justify-center items-start justify-items-center">
-
                     <div className="w-64 rounded-3xl mx-auto overflow-hidden "> {/* shadow-xl */}
                         <div className="bg-white pb-0 rounded-tr-4xl">
 
                             {loading ? (
                                 <>
                                     {loadingBankWait ? (
-
                                         <div className="flex justify-center items-center pt-24">
                                             <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
                                         </div>
@@ -450,22 +433,17 @@ const DebitoInmediato = () => {
                                             <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
                                         </div>
                                     )}
-
                                 </>
-
                             ) : (
-
                                 <>
                                     {error ? (
                                         <div className="flex justify-center items-center pt-3">
-
                                             <div className="flex flex-row justify-center items-center gap-1 bg-orange-200 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60">
                                                 <Lottie animationData={formError} loop={true} style={{ width: '40px', height: '40px' }} />
                                                 <p className="text-sm">{error}</p>
                                             </div>
                                         </div>
                                     ) : (
-
                                         <div className="justify-center items-center text-center pt-3 pb-3">
                                             <h1 className="text-lg">Pago Débito Inmediato</h1>
                                             {/* <p>Tu sistema operativo es: {so}</p> */}
@@ -473,7 +451,6 @@ const DebitoInmediato = () => {
                                     )}
 
                                     {token && (
-
                                         <Success
                                             numeroFactura={numeroFactura}
                                             token={token}
@@ -487,166 +464,79 @@ const DebitoInmediato = () => {
 
                             {!bankOptions.length == 0 ? (
                                 <>
-                                    {
-                                        showOtpForm1 === true && (
-                                            
-                                            <div className="pt-10 flex flex-1 h-full justify-center items-center">
-                                                <form className="mt-1" onSubmit={handleSubmitSinOtp}>
+                                    {showOtpForm1 === true && (
 
-                                                    <FormFields
-                                                        selectedBank={selectedBank}
-                                                        bankOptions={bankOptions}
-                                                        selectedNacionalidad={selectedNacionalidad}
-                                                        nacionalidad={nacionalidad}
-                                                        cedula={cedula}
-                                                        setCedula={setCedula}
-                                                        selectedCodigoArea={selectedCodigoArea}
-                                                        codigosArea={codigosArea}
-                                                        telefono={telefono}
-                                                        setTelefono={setTelefono}
-                                                        monto={monto}
-                                                        setMonto={setMonto}
-                                                        setError={setError}
-                                                        setSelectedBank={setSelectedBank}
-                                                        setSelectedNacionalidad={setSelectedNacionalidad}
-                                                        setNacionalidadCedula={setNacionalidadCedula}
-                                                        setSelectedCodigoArea={setSelectedCodigoArea}
-                                                        setNumTelefono={setNumTelefono}
-                                                        setConcepto={setConcepto}
-                                                    />
-
-                                                    <div className='pb-2'>
-                                                        <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
-                                                            ENVIAR DATOS DE PAGO
-                                                        </button>
-                                                    </div>
-
-                                                    {
-                                                        so == 'iOS' &&
-                                                        (
-                                                            <div className='pb-2'>
-                                                                <a onClick={() => {
-                                                                    setShowOtpForm1(false)
-                                                                    setShowOtpForm2(true)
-
-                                                                }} className="mt-4 text-blue-700 font-sans font-semibold text-lg text-center block  cursor-pointer">
-                                                                    <FontAwesomeIcon icon="fa-brands fa-apple" /> Ya tengo un código OTP
-                                                                </a>
-                                                            </div>
-                                                        )
-                                                    }
-
-                                                </form>
-                                            </div>
-                                        )
+                                        <Form1
+                                            handleSubmitSinOtp={handleSubmitSinOtp}
+                                            setShowOtpForm1={setShowOtpForm1}
+                                            setShowOtpForm2={setShowOtpForm2}
+                                            selectedBank={selectedBank}
+                                            bankOptions={bankOptions}
+                                            selectedNacionalidad={selectedNacionalidad}
+                                            nacionalidad={nacionalidad}
+                                            cedula={cedula}
+                                            setCedula={setCedula}
+                                            selectedCodigoArea={selectedCodigoArea}
+                                            codigosArea={codigosArea}
+                                            telefono={telefono}
+                                            setTelefono={setTelefono}
+                                            monto={monto}
+                                            setMonto={setMonto}
+                                            setError={setError}
+                                            setSelectedBank={setSelectedBank}
+                                            setSelectedNacionalidad={setSelectedNacionalidad}
+                                            setNacionalidadCedula={setNacionalidadCedula}
+                                            setSelectedCodigoArea={setSelectedCodigoArea}
+                                            setNumTelefono={setNumTelefono}
+                                            setConcepto={setConcepto}
+                                            so={so}
+                                        />
+                                    )
                                     }
 
-                                    {
-                                        showOtpForm2 && (
+                                    {showOtpForm2 && (
 
-                                            <>
-                                                {!pagoExitoso && (
-
-                                                    <div className="flex flex-1 h-full justify-center items-center">
-
-                                                        <form className="mt-1" onSubmit={handleSubmitConOtp}>
-
-                                                            {loading ? (
-                                                                <>
-                                                                    <p className='text-lg text-center font-semibold'>Por favor espere mientras el banco procesa la solicitud.</p>
-                                                                    <div className="flex flex-1 justify-center items-center">
-
-                                                                        <Lottie animationData={bankWait} loop={true} style={{ width: '150px', height: '150px' }} />
-                                                                    </div>
-                                                                </>
-                                                            ) : (
-                                                                <>
-                                                                    {(vieneForm1 === true || so !== 'iOS') && (
-                                                                        <>
-                                                                            <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                                                            <p className='text-sm text-center'>
-                                                                                {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
-                                                                            </p>
-                                                                            {(timeLeft == 0 || error) && <RefreshButton />}
-                                                                            <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                                                                <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
-                                                                            </div>
-                                                                        </>
-
-                                                                    )}
-
-                                                                    {(vieneForm1 === false && so === 'iOS') &&
-
-                                                                        <FormFields
-                                                                            selectedBank={selectedBank}
-                                                                            bankOptions={bankOptions}
-                                                                            selectedNacionalidad={selectedNacionalidad}
-                                                                            nacionalidad={nacionalidad}
-                                                                            cedula={cedula}
-                                                                            setCedula={setCedula}
-                                                                            selectedCodigoArea={selectedCodigoArea}
-                                                                            codigosArea={codigosArea}
-                                                                            telefono={telefono}
-                                                                            setTelefono={setTelefono}
-                                                                            monto={monto}
-                                                                            setMonto={setMonto}
-                                                                            setError={setError}
-                                                                            setSelectedBank={setSelectedBank}
-                                                                            setSelectedNacionalidad={setSelectedNacionalidad}
-                                                                            setNacionalidadCedula={setNacionalidadCedula}
-                                                                            setSelectedCodigoArea={setSelectedCodigoArea}
-                                                                            setNumTelefono={setNumTelefono}
-                                                                            setConcepto={setConcepto}
-                                                                        />
-                                                                    }
-                                                                </>
-                                                            )}
-
-                                                            {isVisible && (
-                                                                <div className="mt-8 relative flex flex-row pl-1 pr-1">
-                                                                    <input id="otp" type="number"
-                                                                        value={otp}
-                                                                        placeholder=""
-                                                                        onChange={handleChangeOtp}
-                                                                        onInput={(e) => { e.target.value = e.target.value.slice(0, 10) }}
-                                                                        className="w-56 peer h-10 border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove" />
-                                                                    <label htmlFor="otp" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Ingrese el código recibido</label>
-                                                                </div>
-                                                            )}
-
-                                                            <div className='pb-2'>
-                                                                {isVisible && (
-                                                                    <>
-                                                                        <button
-                                                                            type="submit"
-                                                                            className="mt-10 px-4 py-2 rounded-xl bg-naranjaMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer"
-                                                                        >
-                                                                            CONFIRMAR PAGO
-                                                                        </button>
-
-                                                                        <div className='pt-5'>
-                                                                            {(vieneForm1 === false && so === 'iOS') && <RefreshButton />}
-                                                                        </div>
-                                                                    </>
-
-                                                                )}
-                                                            </div>
-
-                                                        </form>
-                                                    </div>
-                                                )}
-
-                                            </>
-                                        )
+                                        <Form2
+                                            pagoExitoso={pagoExitoso}
+                                            handleSubmitConOtp={handleSubmitConOtp}
+                                            loading={loading}
+                                            vieneForm1={vieneForm1}
+                                            so={so}
+                                            msjOtp={msjOtp}
+                                            msjOtp2={msjOtp2}
+                                            timeLeft={timeLeft}
+                                            isVisible={isVisible}
+                                            otp={otp}
+                                            handleChangeOtp={handleChangeOtp}
+                                            selectedBank={selectedBank}
+                                            bankOptions={bankOptions}
+                                            selectedNacionalidad={selectedNacionalidad}
+                                            nacionalidad={nacionalidad}
+                                            cedula={cedula}
+                                            setCedula={setCedula}
+                                            selectedCodigoArea={selectedCodigoArea}
+                                            codigosArea={codigosArea}
+                                            telefono={telefono}
+                                            setTelefono={setTelefono}
+                                            monto={monto}
+                                            setMonto={setMonto}
+                                            setError={setError}
+                                            setSelectedBank={setSelectedBank}
+                                            setSelectedNacionalidad={setSelectedNacionalidad}
+                                            setNacionalidadCedula={setNacionalidadCedula}
+                                            setSelectedCodigoArea={setSelectedCodigoArea}
+                                            setNumTelefono={setNumTelefono}
+                                            setConcepto={setConcepto}
+                                            error={error}
+                                        />
+                                    )
                                     }
                                 </>
-
                             ) : (
                                 <div className="flex flex-1 h-full justify-center items-center">
                                     <Lottie animationData={loadingLottie} loop={false} style={{ width: '100px', height: '100px' }} />
                                 </div>
                             )}
-
                         </div>
                     </div >
                 </div >
