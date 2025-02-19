@@ -16,7 +16,6 @@ export const Form2 = ({
     timeLeft,
     isVisible,
     otp,
-    handleChangeOtp,
     selectedBank,
     bankOptions,
     selectedNacionalidad,
@@ -36,9 +35,19 @@ export const Form2 = ({
     setSelectedCodigoArea,
     setNumTelefono,
     setConcepto,
-    error
+    error,
+    setErrorPago,
+    setIsVisible,
+    setOtp
 
 }) => {
+
+    const handleChangeOtp = (e) => {
+        setError('');
+        setErrorPago('');
+        setOtp(e.target.value);
+        setIsVisible(true);
+    };
 
     const RefreshButton = () => (
 

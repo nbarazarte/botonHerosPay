@@ -187,10 +187,10 @@ router.post('/cliente_tokens', async (req, res) => {
 // Insertar en transac
 router.post('/crear_transac', async (req, res) => {
     try {
-        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id } = req.body;
+        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo } = req.body;
         const result = await pool.query(
-            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP) RETURNING *',
-            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id]
+            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP) RETURNING *',
+            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {

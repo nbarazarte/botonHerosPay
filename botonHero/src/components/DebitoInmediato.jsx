@@ -134,18 +134,10 @@ const DebitoInmediato = () => {
                 setErrorApiR4(mensaje);
                 return null;
             }
-
         };
 
         fetchBanksAndMonto();
     }, []);
-
-    const handleChangeOtp = (e) => {
-        setError('');
-        setErrorPago('');
-        setOtp(e.target.value);
-        setIsVisible(true);
-    };
 
     const handleSubmitSinOtp = async (e) => {
         e.preventDefault();
@@ -177,7 +169,6 @@ const DebitoInmediato = () => {
             setDataForm(postData) //para usarlo cuando envie con: handleSubmitConOtp
             setShowOtpForm1(false)
             setShowOtpForm2(true)
-
             setVieneForm1(true)
 
             localStorage.setItem('mensajeOtp', `Si ya recibió el mensaje en el número ${postData.Telefono} de ${banco.data.nombre_banco}. Copie y pegue el código recibido.`);
@@ -287,7 +278,8 @@ const DebitoInmediato = () => {
                         referencia: data2.reference,
                         descripcion: postData.Concepto,
                         pasarela_id: 1,
-                        sitio_id: identificadorAp
+                        sitio_id: identificadorAp,
+                        sistema_operativo:so
                     }, { headers });
 
                     setNumeroFactura(transac.data.id.toString().padStart(5, '0'));
@@ -506,7 +498,6 @@ const DebitoInmediato = () => {
                                             timeLeft={timeLeft}
                                             isVisible={isVisible}
                                             otp={otp}
-                                            handleChangeOtp={handleChangeOtp}
                                             selectedBank={selectedBank}
                                             bankOptions={bankOptions}
                                             selectedNacionalidad={selectedNacionalidad}
@@ -527,6 +518,9 @@ const DebitoInmediato = () => {
                                             setNumTelefono={setNumTelefono}
                                             setConcepto={setConcepto}
                                             error={error}
+                                            setErrorPago={setErrorPago}
+                                            setIsVisible={setIsVisible}
+                                            setOtp={setOtp}
                                         />
                                     )}
                                 </>
