@@ -19,7 +19,7 @@ const DebitoInmediato = () => {
     const [mensajeApis, setMensajeApis] = useState('');
     const [textoBoton, setTextoBoton] = useState('Copiar Token')
     const [numeroFactura, setNumeroFactura] = useState(null)
-    const { idSitio } = useParams();
+    const { idSitio, plan, montoPlan } = useParams();
     const [identificadorAp, setIdentificadorAp] = useState(null);
     const [pagoExitoso, setPagoExitoso] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
@@ -120,7 +120,9 @@ const DebitoInmediato = () => {
                 }
 
                 const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
-                setMonto((monto.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
+                //setMonto((monto.data[0].monto * tasaBcv.data.tipocambio).toFixed(2));
+                //console.log(montoPlan);
+                setMonto((Number(montoPlan) * tasaBcv.data.tipocambio).toFixed(2));
 
             } catch (error) {
                 setMensajeApis('Falla de conexión con el Banco');
@@ -186,6 +188,7 @@ const DebitoInmediato = () => {
                                     ) : (
                                         <div className="justify-center items-center text-center pt-3 pb-3">
                                             <h1 className="text-lg">Pago Débito Inmediato</h1>
+                                            <p className="text-sm">{plan}</p>
                                             {/* <p>Tu sistema operativo es: {so}</p> */}
                                         </div>
                                     )}
