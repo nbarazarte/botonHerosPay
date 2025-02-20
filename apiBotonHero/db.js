@@ -3,7 +3,7 @@
 // Asegúrate de especificar la ruta correcta si tu archivo .env no está en el directorio raíz
 //dotenv.config({ path: './.env' });
 
-//process.loadEnvFile('./.env'); //si no le pasas nada lee el .env por defecto
+process.loadEnvFile('./.env'); //si no le pasas nada lee el .env por defecto
 
 const { Pool } = require('pg');
 
