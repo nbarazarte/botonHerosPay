@@ -1,0 +1,39 @@
+para saber si mi version de node es vulnerable
+$ npx is-my-node-vulnerable
+
+
+para compartir mi desarrollo
+npm install -g localtunnel
+lt --port 5173
+
+
+node --watch server.js 
+
+const { styleText } = require('node:util');
+
+ejemplo:
+app.listen(port, () => {
+    console.log(
+        styleText(
+            'blue',
+            styleText(
+                'bold',
+                styleText(
+                    'underline', `Servidor escuchando en http://localhost:${port}`))
+        )
+    );
+});
+
+
+Instalar express-generator globalmente:
+npm install -g express-generator
+
+Crear una nueva aplicación con el generador:
+express mi-api
+
+Instalar las dependencias del proyecto:
+cd mi-api
+npm install
+
+Iniciar el servidor:
+npm start
