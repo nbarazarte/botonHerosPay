@@ -188,7 +188,7 @@ const DebitoInmediato = () => {
                                     ) : (
                                         <div className="justify-center items-center text-center pt-3 pb-3">
                                             <h1 className="text-lg">Pago Débito Inmediato</h1>
-                                            <p className="text-sm">{plan}</p>
+                                            {/* <p className="text-sm">{plan}</p> */}
                                             {/* <p>Tu sistema operativo es: {so}</p> */}
                                         </div>
                                     )}
