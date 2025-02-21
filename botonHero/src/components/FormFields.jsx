@@ -1,65 +1,83 @@
 import React from 'react';
-
-const FormFields = ({
-  selectedBank,
-  bankOptions,
-  selectedNacionalidad,
-  nacionalidad,
-  cedula, setCedula,
-  selectedCodigoArea,
-  codigosArea,
-  telefono,
-  setTelefono,
-  monto,
-  setMonto,
-  setError,
+import { useDispatch, useSelector } from 'react-redux';
+import {
   setSelectedBank,
   setSelectedNacionalidad,
+  setCedula,
   setNacionalidadCedula,
   setSelectedCodigoArea,
+  setTelefono,
   setNumTelefono,
-  setConcepto
-}) => {
+  setMonto,
+  setConcepto,
+  setError
+} from '../store/debitoInmediatoSlice';
 
-  const handleSelectChange = (event) => { setSelectedBank(event.target.value); setError(''); };
+const FormFields = () => {
+  const dispatch = useDispatch();
+  
+  // Constantes
+  const nacionalidad = ['V', 'E', 'J'];
+  const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
+  
+  // Seleccionar estados desde Redux
+  const {
+    selectedBank,
+    bankOptions,
+    selectedNacionalidad,
+    cedula,
+    selectedCodigoArea,
+    telefono,
+    monto
+  } = useSelector(state => state.debitoInmediato);
+
+  const handleSelectChange = (event) => {
+    dispatch(setSelectedBank(event.target.value));
+    dispatch(setError(''));
+  };
 
   const handleSelectChangeNacionalidad = (e) => {
-    setError('');
-    setSelectedNacionalidad(e.target.value);
-    setNacionalidadCedula(e.target.value + cedula);
+    dispatch(setError(''));
+    dispatch(setSelectedNacionalidad(e.target.value));
+    dispatch(setNacionalidadCedula(e.target.value + cedula));
 
     // Limpiar el input de cedula si se selecciona 'V' o 'E'
     if (e.target.value === 'V' || e.target.value === 'E' || e.target.value === 'J') {
-      setCedula('');
+      dispatch(setCedula(''));
     }
   };
 
   const handleChangeCedula = (e) => {
-    setError('');
+    dispatch(setError(''));
     const value = e.target.value;
     // Permitir solo números (0-9)
     const onlyNumbers = value.replace(/[^0-9]/g, '');
-    setCedula(onlyNumbers);
-    setNacionalidadCedula(selectedNacionalidad + onlyNumbers);
+    dispatch(setCedula(onlyNumbers));
+    dispatch(setNacionalidadCedula(selectedNacionalidad + onlyNumbers));
   };
 
   const handleSelectChangeCodigoArea = (e) => {
-    setError('');
-    setSelectedCodigoArea(e.target.value);
-    setNumTelefono(e.target.value + telefono);
+    dispatch(setError(''));
+    dispatch(setSelectedCodigoArea(e.target.value));
+    dispatch(setNumTelefono(e.target.value + telefono));
   };
 
   const handleChangeTelefono = (e) => {
-    setError('');
+    dispatch(setError(''));
     const value = e.target.value;
     // Permitir solo números (0-9)
     const onlyNumbers = value.replace(/[^0-9]/g, '');
-    setTelefono(onlyNumbers);
-    setNumTelefono(selectedCodigoArea + onlyNumbers);
+    dispatch(setTelefono(onlyNumbers));
+    dispatch(setNumTelefono(selectedCodigoArea + onlyNumbers));
   };
 
-  const handleChangeMonto = (e) => { setMonto(e.target.value); };
-  const handleChangeConcepto = (e) => { setConcepto(e.target.value); };
+  const handleChangeMonto = (e) => {
+    dispatch(setMonto(e.target.value));
+  };
+
+  const handleChangeConcepto = (e) => {
+    dispatch(setConcepto(e.target.value));
+  };
 
   return (
     <>
