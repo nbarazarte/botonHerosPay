@@ -130,7 +130,7 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
     };
 
     return (
-        <div className="pt-10 flex flex-1 h-full justify-center items-center">
+        <div className="pt-2 flex flex-1 h-full justify-center items-center">
             <form className="mt-1" onSubmit={handleSubmitSinOtp}>
                 <FormFields />
 

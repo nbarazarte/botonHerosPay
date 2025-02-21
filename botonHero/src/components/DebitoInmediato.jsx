@@ -150,15 +150,22 @@ const DebitoInmediato = () => {
                                 <>
                                     {error ? (
                                         <div className="flex justify-center items-center pt-3">
-                                            <div className="flex flex-row justify-center items-center gap-1 bg-orange-200 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60">
+                                            <div className="flex flex-row justify-center items-center gap-1 bg-orange-50 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60">
                                                 <Lottie animationData={formError} loop={true} style={{ width: '40px', height: '40px' }} />
                                                 <p className="text-sm">{error}</p>
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="justify-center items-center text-center pt-3 pb-3">
-                                            <h1 className="text-lg">Pago Débito Inmediato</h1>
-                                        </div>
+                                        <>
+                                            {/* <div className="justify-center items-center text-center pt-3 pb-3">
+                                                <h1 className="text-lg">Pago Débito Inmediato</h1>
+                                            </div> */}
+                                            <div className="justify-center items-center text-center pt-3">
+                                                <div className="flex flex-row justify-center items-center gap-1  text-black px-4 py-3 ">
+                                                    <h1 className="text-lg font-medium">Pago Débito Inmediato</h1>
+                                                </div>
+                                            </div>
+                                        </>
                                     )}
 
                                     {token && (<Success />)}
