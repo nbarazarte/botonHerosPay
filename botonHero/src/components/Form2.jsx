@@ -98,22 +98,10 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
                 postData = { Banco, Monto, Telefono, Cedula, Concepto, Otp: otp };
             } else {
                 const token = await axios.get(`${url}buscar_token`, { headers });
-                if (!token.data) {
-                    dispatch(setError('No hay tokens disponibles, intente luego.'));
-                    return;
-                }
-                if (!selectedBank) {
-                    dispatch(setError('Seleccione un Banco'));
-                    return;
-                }
-                if (!selectedNacionalidad || !cedula) {
-                    dispatch(setError('Indique Cédula o RIF'));
-                    return;
-                }
-                if (!selectedCodigoArea || !telefono) {
-                    dispatch(setError('Indique Teléfono'));
-                    return;
-                }
+                if (!token.data) { dispatch(setError('No hay tokens disponibles, intente luego.')); return; }
+                if (!selectedBank) { dispatch(setError('Seleccione un Banco')); return; }
+                if (!selectedNacionalidad || !cedula) { dispatch(setError('Indique Cédula o RIF')); return; }
+                if (!selectedCodigoArea || !telefono) { dispatch(setError('Indique Teléfono')); return; }
 
                 postData = {
                     Banco: selectedBank,

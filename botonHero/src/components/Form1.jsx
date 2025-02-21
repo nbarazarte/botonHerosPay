@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import FormFields from './FormFields';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,23 +14,18 @@ import {
     setShowOtpForm2,
     setError,
     setErrorApiR4,
-    setTimeLeft,
     decrementTimeLeft
 } from '../store/debitoInmediatoSlice';
 
 const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
     const dispatch = useDispatch();
-    const timerRef = useRef(null);
 
     // Seleccionar estados desde Redux
     const {
         selectedBank,
-        bankOptions,
         selectedNacionalidad,
-        nacionalidad,
         cedula,
         selectedCodigoArea,
-        codigosArea,
         telefono,
         monto,
         numTelefono,
