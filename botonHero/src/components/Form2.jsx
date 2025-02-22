@@ -5,7 +5,7 @@ import Lottie from "lottie-react";
 import bankWait from "../assets/LottieFiles/Animation - 1738285370531.json";
 import sms from "../assets/LottieFiles/Animation - 1738195342163.json";
 import axios from 'axios';
-import CryptoJS from 'crypto-js';
+import HeadersR4 from './HeadersR4';
 import {
     setError,
     setErrorPago,
@@ -65,17 +65,6 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
 
     const handledestruir = () => {
         localStorage.clear();
-    };
-
-    const headersR4 = (dataToHash) => {
-        const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-        const hmac2 = hash2.toString(CryptoJS.enc.Hex);
-
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `${hmac2}`,
-            'Commerce': `${tokenCommerce}`
-        };
     };
 
     const handleSubmitConOtp = async (e) => {
@@ -195,7 +184,7 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
         try {
             const { Banco, Cedula, Telefono, Monto, Otp } = postData;
             const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}${Otp}`;
-            const headersMiBanco = headersR4(dataToHash);
+            const headersMiBanco = HeadersR4({dataToHash, tokenCommerce});
             const miBanco = await axios.post(`${urlMibanco2}`, postData, { headers: headersMiBanco });
             return miBanco.data;
         } catch (error) {
@@ -208,7 +197,7 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
     const handleConsulta = async (id) => {
         try {
             const dataToHash = `${id}`;
-            const headersMiBanco = headersR4(dataToHash);
+            const headersMiBanco = HeadersR4({dataToHash, tokenCommerce});
             const data = { id: `${id}` };
             const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco });
             return miBancoConsulta.data;

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import FormFields from './FormFields';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
-import CryptoJS from 'crypto-js';
+import HeadersR4 from './HeadersR4';
 import {
     setLoading,
     setToken,
@@ -46,17 +46,6 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
         timerId = setInterval(() => {
             dispatch(decrementTimeLeft());
         }, 1000);
-    };
-
-    const headersR4 = (dataToHash) => {
-        const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-        const hmac2 = hash2.toString(CryptoJS.enc.Hex);
-
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `${hmac2}`,
-            'Commerce': `${tokenCommerce}`
-        };
     };
 
     const handleSubmitSinOtp = async (e) => {
@@ -110,7 +99,7 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
         try {
             const { Banco, Cedula, Telefono, Monto } = postData;
             const dataToHash = `${Banco}${Monto}${Telefono}${Cedula}`;
-            const headersMiBanco = headersR4(dataToHash);
+            const headersMiBanco = HeadersR4({dataToHash, tokenCommerce});
 
             const data = {
                 Banco,

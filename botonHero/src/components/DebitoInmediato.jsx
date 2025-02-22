@@ -6,11 +6,11 @@ import axios from 'axios';
 import Lottie from "lottie-react";
 import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
-import CryptoJS from 'crypto-js';
 import ErrorApiR4 from './ErrorApiR4';
 import Success from './Success';
 import Form1 from './Form1';
 import Form2 from './Form2';
+import HeadersR4 from './HeadersR4';
 import {
     setSO,
     setMensajeApis,
@@ -82,7 +82,7 @@ const DebitoInmediato = () => {
 
                 const fechaValor = obtenerFechaValor();
                 const dataToHash = `${fechaValor}USD`;
-                const headersMiBanco = headersR4(dataToHash);
+                const headersMiBanco = HeadersR4({ dataToHash, tokenCommerce });
                 const postData = { Moneda: "USD", Fechavalor: fechaValor };
                 const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
                 dispatch(setMonto((Number(montoPlan) * tasaBcv.data.tipocambio).toFixed(2)));
@@ -118,17 +118,6 @@ const DebitoInmediato = () => {
         const dia = String(fechaActual.getDate()).padStart(2, '0');
         return `${año}-${mes}-${dia}`;
     }
-
-    const headersR4 = (dataToHash) => {
-        const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-        const hmac2 = hash2.toString(CryptoJS.enc.Hex);
-
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `${hmac2}`,
-            'Commerce': `${tokenCommerce}`
-        };
-    };
 
     return (
         <>
