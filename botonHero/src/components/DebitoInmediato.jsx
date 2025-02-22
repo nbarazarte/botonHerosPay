@@ -80,38 +80,28 @@ const DebitoInmediato = () => {
                 const bancos = await axios.get(`${url}bancosDebitoInmediato`, { headers });
                 dispatch(setBankOptions(bancos.data));
 
-            } catch (error) {
-                dispatch(setMensajeApis('Falla de conexión con el Servidor'));
-                let mensaje = 'En estos momentos, el servidor no está disponible. Por favor, intente más tarde.';
-                dispatch(setError(mensaje));
-                dispatch(setErrorApiR4(mensaje));
-                return null;
-            }
-
-            try {
-                function obtenerFechaValor() {
-                    const fechaActual = new Date();
-                    const año = fechaActual.getFullYear();
-                    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-                    const dia = String(fechaActual.getDate()).padStart(2, '0');
-                    return `${año}-${mes}-${dia}`;
-                }
-
                 const fechaValor = obtenerFechaValor();
                 const dataToHash = `${fechaValor}USD`;
                 const headersMiBanco = headersR4(dataToHash);
-
-                const postData = {
-                    Moneda: "USD",
-                    Fechavalor: fechaValor
-                };
-
+                const postData = { Moneda: "USD", Fechavalor: fechaValor };
                 const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
                 dispatch(setMonto((Number(montoPlan) * tasaBcv.data.tipocambio).toFixed(2)));
 
             } catch (error) {
-                dispatch(setMensajeApis('Falla de conexión con el Banco'));
-                let mensaje = 'En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.';
+
+                const API = error.config.url.includes('r4conecta') ? "R4" : "Heros";
+                let mensaje = '';
+                let mensajeApis = '';
+
+                if (API == 'Heros') {
+                    mensajeApis = 'Falla de conexión con el Servidor';
+                    mensaje = 'En estos momentos, el servidor no está disponible. Por favor, intente más tarde.';
+                } else {
+                    mensajeApis = 'Falla de conexión con el Banco';
+                    mensaje = 'En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.';
+                }
+
+                dispatch(setMensajeApis(mensajeApis));
                 dispatch(setError(mensaje));
                 dispatch(setErrorApiR4(mensaje));
                 return null;
@@ -120,6 +110,14 @@ const DebitoInmediato = () => {
 
         fetchBanksAndMonto();
     }, [dispatch, idSitio, montoPlan, url, urlMiBancoBcv]);
+
+    const obtenerFechaValor = () => {
+        const fechaActual = new Date();
+        const año = fechaActual.getFullYear();
+        const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+        const dia = String(fechaActual.getDate()).padStart(2, '0');
+        return `${año}-${mes}-${dia}`;
+    }
 
     const headersR4 = (dataToHash) => {
         const hash2 = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
@@ -141,32 +139,21 @@ const DebitoInmediato = () => {
                     <div className="w-64 rounded-3xl mx-auto overflow-hidden">
                         <div className="bg-white pb-0 rounded-tr-4xl">
                             {loading ? (
-                                <>
-                                    <div className={`flex justify-center items-center ${loadingBankWait ? 'pt-24' : ''}`}>
-                                        <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
-                                    </div>
-                                </>
+                                <div className={`flex justify-center items-center ${loadingBankWait ? 'pt-24' : ''}`}>
+                                    <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
+                                </div>
                             ) : (
                                 <>
-                                    {error ? (
-                                        <div className="flex justify-center items-center pt-3">
-                                            <div className="flex flex-row justify-center items-center gap-1 bg-orange-50 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60">
-                                                <Lottie animationData={formError} loop={true} style={{ width: '40px', height: '40px' }} />
-                                                <p className="text-sm">{error}</p>
-                                            </div>
+                                    <div className="flex justify-center items-center pt-3">
+                                        <div className={`flex flex-row justify-center items-center gap-1 ${error ? 'bg-orange-50 border-t-4 border-naranjaMove rounded-b text-black px-4 py-3 shadow-md w-60' : 'text-black px-4 py-3'}`}>
+                                            {error ? (
+                                                <>
+                                                    <Lottie animationData={formError} loop={true} style={{ width: '40px', height: '40px' }} />
+                                                    <p className="text-sm">{error}</p>
+                                                </>)
+                                                : (<h1 className="text-lg font-medium">Pago Débito Inmediato</h1>)}
                                         </div>
-                                    ) : (
-                                        <>
-                                            {/* <div className="justify-center items-center text-center pt-3 pb-3">
-                                                <h1 className="text-lg">Pago Débito Inmediato</h1>
-                                            </div> */}
-                                            <div className="justify-center items-center text-center pt-3">
-                                                <div className="flex flex-row justify-center items-center gap-1  text-black px-4 py-3 ">
-                                                    <h1 className="text-lg font-medium">Pago Débito Inmediato</h1>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
+                                    </div>
 
                                     {token && (<Success />)}
                                 </>
