@@ -99,15 +99,8 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
         try {
             const { Banco, Cedula, Telefono, Monto } = postData;
             const dataToHash = `${Banco}${Monto}${Telefono}${Cedula}`;
-            const headersMiBanco = HeadersR4({dataToHash, tokenCommerce});
-
-            const data = {
-                Banco,
-                Monto,
-                Telefono,
-                Cedula
-            };
-
+            const headersMiBanco = HeadersR4({ dataToHash, tokenCommerce });
+            const data = { Banco, Monto, Telefono, Cedula };
             const miBancoGenerarOtp = await axios.post(`${urlMibanco3}`, data, { headers: headersMiBanco });
             return miBancoGenerarOtp.data;
 
