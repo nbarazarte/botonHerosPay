@@ -10,7 +10,7 @@ import ErrorApiR4 from './ErrorApiR4';
 import Success from './Success';
 import Form1 from './Form1';
 import Form2 from './Form2';
-import HeadersR4 from './HeadersR4';
+import { HeadersR4, obtenerFechaValor } from './utils';
 import {
     setSO,
     setMensajeApis,
@@ -110,14 +110,6 @@ const DebitoInmediato = () => {
 
         fetchBanksAndMonto();
     }, [dispatch, idSitio, montoPlan, url, urlMiBancoBcv]);
-
-    const obtenerFechaValor = () => {
-        const fechaActual = new Date();
-        const año = fechaActual.getFullYear();
-        const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-        const dia = String(fechaActual.getDate()).padStart(2, '0');
-        return `${año}-${mes}-${dia}`;
-    }
 
     return (
         <>

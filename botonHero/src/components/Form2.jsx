@@ -5,7 +5,7 @@ import Lottie from "lottie-react";
 import bankWait from "../assets/LottieFiles/Animation - 1738285370531.json";
 import sms from "../assets/LottieFiles/Animation - 1738195342163.json";
 import axios from 'axios';
-import HeadersR4 from './HeadersR4';
+import { HeadersR4 } from './utils';
 import {
     setError,
     setErrorPago,
@@ -56,16 +56,12 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
 
     const RefreshButton = () => (
         <a onClick={() => {
-            handledestruir();
+            localStorage.clear();
             window.location.reload();
         }} className="text-blue-700 font-sans font-semibold text-xl text-center block cursor-pointer">
             Ir al inicio
         </a>
     );
-
-    const handledestruir = () => {
-        localStorage.clear();
-    };
 
     const handleSubmitConOtp = async (e) => {
         e.preventDefault();
@@ -184,7 +180,7 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
         try {
             const { Banco, Cedula, Telefono, Monto, Otp } = postData;
             const dataToHash = `${Banco}${Cedula}${Telefono}${Monto}${Otp}`;
-            const headersMiBanco = HeadersR4({dataToHash, tokenCommerce});
+            const headersMiBanco = HeadersR4({ dataToHash, tokenCommerce });
             const miBanco = await axios.post(`${urlMibanco2}`, postData, { headers: headersMiBanco });
             return miBanco.data;
         } catch (error) {
@@ -197,7 +193,7 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
     const handleConsulta = async (id) => {
         try {
             const dataToHash = `${id}`;
-            const headersMiBanco = HeadersR4({dataToHash, tokenCommerce});
+            const headersMiBanco = HeadersR4({ dataToHash, tokenCommerce });
             const data = { id: `${id}` };
             const miBancoConsulta = await axios.post(`${urlMibancoConsulta}`, data, { headers: headersMiBanco });
             return miBancoConsulta.data;
