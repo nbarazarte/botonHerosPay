@@ -4,13 +4,13 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import Lottie from "lottie-react";
-import loadingLottie from "../assets/LottieFiles/Animation - 1737389234353.json";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
 import ErrorApiR4 from './ErrorApiR4';
 import Success from './Success';
 import Form1 from './Form1';
 import Form2 from './Form2';
 import { HeadersR4, obtenerFechaValor } from './utils';
+import Loading from './Loading';
 import {
     setSO,
     setMensajeApis,
@@ -37,10 +37,8 @@ const DebitoInmediato = () => {
         mensajeApis,
         errorApiR4,
         loading,
-        loadingBankWait,
         error,
         token,
-        bankOptions,
         showOtpForm1,
         showOtpForm2,
     } = useSelector((state) => state.debitoInmediato);
@@ -119,10 +117,9 @@ const DebitoInmediato = () => {
                 <div className="flex flex-1 w-screen h-screen justify-center items-start justify-items-center">
                     <div className="w-64 rounded-3xl mx-auto overflow-hidden">
                         <div className="bg-white pb-0 rounded-tr-4xl">
+
                             {loading ? (
-                                <div className={`flex justify-center items-center ${loadingBankWait ? 'pt-24' : ''}`}>
-                                    <Lottie animationData={loadingLottie} loop={true} style={{ width: '100px', height: '100px' }} />
-                                </div>
+                                <Loading />
                             ) : (
                                 <>
                                     <div className="flex justify-center items-center pt-3">
@@ -135,42 +132,33 @@ const DebitoInmediato = () => {
                                                 : (<h1 className="text-lg font-medium">Pago Débito Inmediato</h1>)}
                                         </div>
                                     </div>
-
                                     {token && (<Success />)}
                                 </>
                             )}
 
-                            {!bankOptions.length == 0 ? (
-                                <>
-                                    {showOtpForm1 === true && (
-                                        <Form1
-                                            so={so}
-                                            url={url}
-                                            urlMibanco3={urlMibanco3}
-                                            tokenCommerce={tokenCommerce}
-                                            headers={headers}
-                                        />
-                                    )}
+                            {showOtpForm1 === true && (
+                                <Form1
+                                    so={so}
+                                    url={url}
+                                    urlMibanco3={urlMibanco3}
+                                    tokenCommerce={tokenCommerce}
+                                    headers={headers}
+                                />
+                            )}
 
-                                    {showOtpForm2 && (
-                                        <Form2
-                                            so={so}
-                                            tokenCommerce={tokenCommerce}
-                                            urlMibanco2={urlMibanco2}
-                                            urlMibancoConsulta={urlMibancoConsulta}
-                                            url={url}
-                                            headers={headers}
-                                        />
-                                    )}
-                                </>
-                            ) : (
-                                <div className="flex flex-1 h-full justify-center items-center">
-                                    <Lottie animationData={loadingLottie} loop={false} style={{ width: '100px', height: '100px' }} />
-                                </div>
+                            {showOtpForm2 && (
+                                <Form2
+                                    so={so}
+                                    tokenCommerce={tokenCommerce}
+                                    urlMibanco2={urlMibanco2}
+                                    urlMibancoConsulta={urlMibancoConsulta}
+                                    url={url}
+                                    headers={headers}
+                                />
                             )}
                         </div>
                     </div>
-                </div>
+                </div >
             )}
         </>
     );

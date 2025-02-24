@@ -2,7 +2,6 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import FormFields from './FormFields';
 import Lottie from "lottie-react";
-import bankWait from "../assets/LottieFiles/Animation - 1738285370531.json";
 import sms from "../assets/LottieFiles/Animation - 1738195342163.json";
 import axios from 'axios';
 import { HeadersR4 } from './utils';
@@ -16,7 +15,8 @@ import {
     setPagoExitoso,
     setErrorApiR4,
     setNumeroFactura,
-    setToken
+    setToken,
+    setShowOtpForm2
 } from '../store/debitoInmediatoSlice';
 
 const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers }) => {
@@ -25,7 +25,6 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
     // Seleccionar estados desde Redux
     const {
         pagoExitoso,
-        loading,
         vieneForm1,
         so,
         msjOtp,
@@ -75,6 +74,7 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
             dispatch(setIsVisible(false));
             dispatch(setLoading(true));
             dispatch(setLoadingBankWait(true));
+            dispatch(setShowOtpForm2(false));
 
             let postData = {};
 
@@ -159,10 +159,12 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
                 } else {
                     dispatch(setError(data2.message));
                     dispatch(setErrorPago(data2.code));
+                    dispatch(setShowOtpForm2(true));
                     return;
                 }
             } else {
                 dispatch(setError('La longitud del campo OTP recibida es incorrecta'));
+                dispatch(setShowOtpForm2(true));
                 dispatch(setIsVisible(true));
                 return;
             }
@@ -171,6 +173,7 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
             dispatch(setToken(null));
         } finally {
             dispatch(setLoading(false));
+            dispatch(setLoadingBankWait(false));
             dispatch(setLoadingBankWait(false));
             dispatch(setIsVisible(true));
         }
@@ -209,31 +212,22 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
             {!pagoExitoso && (
                 <div className="flex flex-1 h-full justify-center items-center">
                     <form className="mt-1" onSubmit={handleSubmitConOtp}>
-                        {loading ? (
-                            <>
-                                <p className='text-lg text-center font-semibold'>Por favor espere mientras el banco procesa la solicitud.</p>
-                                <div className="flex flex-1 justify-center items-center">
-                                    <Lottie animationData={bankWait} loop={true} style={{ width: '150px', height: '150px' }} />
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                {(vieneForm1 === true || so !== 'iOS') && (
-                                    <>
-                                        <p className='text-sm text-center font-semibold'>{msjOtp}</p>
-                                        <p className='text-sm text-center'>
-                                            {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
-                                        </p>
-                                        {(timeLeft === 0 || error) && <RefreshButton />}
-                                        <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                            <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
-                                        </div>
-                                    </>
-                                )}
+                        <>
+                            {(vieneForm1 === true || so !== 'iOS') && (
+                                <>
+                                    <p className='text-sm text-center font-semibold'>{msjOtp}</p>
+                                    <p className='text-sm text-center'>
+                                        {!msjOtp2 ? (<> Si no recibe el mensaje, verifique sus datos ingresados, e intente nuevamente en {timeLeft} segundos. </>) : (msjOtp2)}
+                                    </p>
+                                    {(timeLeft === 0 || error) && <RefreshButton />}
+                                    <div className="mt-8 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                        <Lottie animationData={sms} loop={true} style={{ width: '150px', height: '150px' }} />
+                                    </div>
+                                </>
+                            )}
 
-                                {(vieneForm1 === false && so === 'iOS') && <FormFields />}
-                            </>
-                        )}
+                            {(vieneForm1 === false && so === 'iOS') && <FormFields />}
+                        </>
 
                         <div className='pb-2'>
                             {isVisible && (

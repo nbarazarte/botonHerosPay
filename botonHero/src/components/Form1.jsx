@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import FormFields from './FormFields';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,7 +31,8 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
         numTelefono,
         nacionalidadCedula,
         concepto,
-        so
+        so,
+        bankOptions
     } = useSelector(state => state.debitoInmediato);
 
     let timerId;
@@ -114,12 +115,17 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
     return (
         <div className="pt-2 flex flex-1 h-full justify-center items-center">
             <form className="mt-1" onSubmit={handleSubmitSinOtp}>
+
                 <FormFields />
-                <div className='pb-2'>
-                    <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
-                        ENVIAR DATOS DE PAGO
-                    </button>
-                </div>
+                {bankOptions?.length != 0 && (
+                    <>
+                        <div className='pb-2'>
+                            <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
+                                ENVIAR DATOS DE PAGO
+                            </button>
+                        </div>
+                    </>
+                )}
 
                 {so === 'iOS' && (
                     <div className='pb-2'>
