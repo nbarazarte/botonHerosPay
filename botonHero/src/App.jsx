@@ -1,4 +1,6 @@
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link, Navigate, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import './styles.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas as solidIcons } from '@fortawesome/free-solid-svg-icons';
@@ -12,13 +14,27 @@ import Login from './components/Login';
 import Register from './components/Register';
 library.add(solidIcons, brandIcons, regularIcons); // Añade conjuntos de íconos
 
+// Inicializa Google Analytics con tu ID de medición
+ReactGA.initialize('G-00X1GBLSQH');
+
+const RouteChangeTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    ReactGA.pageview(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+};
+
 function App() {
   const token = localStorage.getItem('token');
 
   return (
     <Router basename="/">
+      <RouteChangeTracker />  {/* Este componente rastrea los cambios de ruta */}
       <div className=''>
-        {/*         <nav className='flex w-full justify-center'>
+        {/* <nav className='flex w-full justify-center'>
           <ul className="menu flex justify-center">
             <li className='bg-naranjaMove text-white p-2 m-2 rounded-lg'>
               <Link to="/debito-inmediato">Débito Inmediato</Link>
