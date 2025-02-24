@@ -15,7 +15,7 @@ import Register from './components/Register';
 library.add(solidIcons, brandIcons, regularIcons); // Añade conjuntos de íconos
 
 // Inicializa Google Analytics con tu ID de medición
-ReactGA.initialize('G-00X1GBLSQH');
+ReactGA.initialize(import.meta.env.REACT_APP_URL_GOOGLE_ANALITICS);
 
 const RouteChangeTracker = () => {
   const location = useLocation();
