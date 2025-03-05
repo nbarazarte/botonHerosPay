@@ -184,13 +184,25 @@ router.post('/cliente_tokens', async (req, res) => {
     }
 });
 
+// Buscar en cliente_tokens
+router.get('/cliente_tokens', async (req, res) => {
+    try {
+        const { id } = req.query;
+        const result = await pool.query('SELECT tr.cliente_token_id as id FROM public.tokens as t join cliente_tokens as ct on ct.token_id = t.id join transac as tr on tr.cliente_token_id = ct.id where tr.id = $1', [id]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
 // Insertar en transac
 router.post('/crear_transac', async (req, res) => {
     try {
-        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo } = req.body;
+        const { cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo, id_transc } = req.body;
         const result = await pool.query(
-            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP) RETURNING *',
-            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo]
+            'INSERT INTO public.transac (cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo, id_transc, fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CURRENT_TIMESTAMP) RETURNING *',
+            [cliente_token_id, telefono, banco_id, monto, referencia, descripcion, pasarela_id, sitio_id, sistema_operativo, id_transc]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -199,10 +211,22 @@ router.post('/crear_transac', async (req, res) => {
     }
 });
 
-// Buscar transaacciones
+// Buscar transacciones
 router.get('/buscar_transacciones', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM public.view_transacciones order by fecha_creacion desc');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Buscar transacciones por id
+router.get('/buscar_transacciones/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('SELECT * FROM public.view_transacciones WHERE id = $1 ORDER BY fecha_creacion DESC', [id]);
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
