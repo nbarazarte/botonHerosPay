@@ -48,7 +48,8 @@ const CreditoInmediato = () => {
         bankOptions,
         loading,
         so,
-        transactionId
+        transactionId,
+        pagoExitoso
     } = useSelector(state => state.creditoInmediato);
 
     const nacionalidad = ['V', 'E', 'J'];
@@ -318,7 +319,7 @@ const CreditoInmediato = () => {
                                     </div>
                                 )}
 
-                                {token && (
+                                {pagoExitoso && (
 
                                     <div className="flex justify-center items-center">
                                         <div className="bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 px-4 py-1 shadow-md w-60" role="alert">

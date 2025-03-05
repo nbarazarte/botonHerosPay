@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { DataGrid } from '@mui/x-data-grid';
-import { accordionActionsClasses, Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Tooltip } from '@mui/material';
 import * as XLSX from 'xlsx';
 import Layout from './Layout';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faWindows, faAndroid, faApple } from '@fortawesome/free-brands-svg-icons';
 
 const DataTable = () => {
     const headerBoxStyle = {
@@ -76,9 +78,9 @@ const DataTable = () => {
         },
         {
             field: 'id_transc',
-            headerName: 'ID TRANSC',
-            flex: 0.9,
-            renderHeader: renderHeaderField('ID TRANSC')
+            headerName: 'ID DÉBITO',
+            flex: 0.8,
+            renderHeader: renderHeaderField('ID DÉBITO')
         },
         {
             field: 'token',
@@ -136,15 +138,39 @@ const DataTable = () => {
         },
         {
             field: 'identificador',
-            headerName: 'ID AP',
+            headerName: 'AP',
             flex: 0.8,
-            renderHeader: renderHeaderField('ID AP')
+            renderHeader: renderHeaderField('AP')
         },
         {
             field: 'sistema_operativo',
             headerName: 'S.O.',
             flex: 1,
-            renderHeader: renderHeaderField('S.O.')
+            renderHeader: renderHeaderField('S.O.'),
+            renderCell: (params) => {
+                let icon, color;
+                switch (params.row.sistema_operativo) {
+                    case 'Windows':
+                        icon = faWindows;
+                        color = '#0078D6';
+                        break;
+                    case 'Android':
+                        icon = faAndroid;
+                        color = '#3DDC84';
+                        break;
+                    case 'iOS':
+                        icon = faApple;
+                        color = '#000000';
+                        break;
+                    default:
+                        return <b>'N/A'</b>;
+                }
+                return (
+                    <Tooltip title={params.row.sistema_operativo}>
+                        <FontAwesomeIcon style={{ color, fontSize: '1.5rem' }} icon={icon} />
+                    </Tooltip>
+                );
+            }
         },
         {
             field: 'accion',
@@ -154,17 +180,18 @@ const DataTable = () => {
             renderCell: (params) => {
                 if (params.row.tipo !== 'CI') {
                     return (
-                        <Link
-                            to={`/credito-inmediato/${params.row.id}`}
-                            className="text-blue-600 hover:text-blue-800"
-                        >
-                            Crédito Inmediato
-                        </Link>
+                        <Tooltip title="Crédito Inmediato">
+                            <Link
+                                to={`/credito-inmediato/${params.row.id}`}
+                                className="text-blue-600 hover:text-blue-800"
+                            >
+                                <b>Dar Vuelto</b>
+                            </Link>
+                        </Tooltip>
                     );
-                }else{
-                    return 'N/A'
+                } else {
+                    return 'N/A';
                 }
-                return null;
             }
         },
     ];
@@ -237,6 +264,14 @@ const DataTable = () => {
                     disableColumnSelector
                     disableColumnFilter
                     sortingMode="none"
+                    getRowClassName={(params) => {
+                        if (params.row.tipo === 'CI') {
+                            return 'bg-orange-100 hover:bg-orange-400';
+                        } else if (params.row.tipo === 'DI') {
+                            return 'bg-green-100 hover:bg-green-400';
+                        }
+                        return '';
+                    }}
                     sx={{
                         border: 'none',
                         '& .MuiDataGrid-main': {
@@ -252,7 +287,7 @@ const DataTable = () => {
                                 outline: 'none',
                             },
                         },
-                        '& .MuiDataGrid-row': {
+                        /* '& .MuiDataGrid-row': {
                             minHeight: '32px !important',
                             maxHeight: '42px !important',
                             '&:nth-of-type(even)': {
@@ -261,6 +296,18 @@ const DataTable = () => {
                             '&:hover': {
                                 backgroundColor: '#f5f5f5',
                                 transition: 'background-color 0.2s',
+                            },
+                        }, */
+                        '& .row-ci': {
+                            backgroundColor: '#FFA500', // naranja
+                            '&:hover': {
+                                backgroundColor: '#FF8C00', // naranja oscuro
+                            },
+                        },
+                        '& .row-di': {
+                            backgroundColor: '#32CD32', // verde
+                            '&:hover': {
+                                backgroundColor: '#228B22', // verde oscuro
                             },
                         },
                         '& .MuiDataGrid-virtualScrollerRenderZone': {
