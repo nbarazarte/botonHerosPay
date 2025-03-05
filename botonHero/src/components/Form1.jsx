@@ -17,7 +17,7 @@ import {
     decrementTimeLeft
 } from '../store/debitoInmediatoSlice';
 
-const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
+const Form1 = ({ url, urlMibanco3, tokenCommerce, headers, plan }) => {
     const dispatch = useDispatch();
 
     // Seleccionar estados desde Redux
@@ -53,7 +53,8 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers }) => {
         e.preventDefault();
 
         try {
-            const token = await axios.get(`${url}buscar_token`, { headers });
+            //const token = await axios.get(`${url}buscar_token`, { headers });
+            const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
             if (!token.data) { dispatch(setError(`No hay tokens disponibles, \n intente luego.`)); return; }
             if (!selectedBank) { dispatch(setError('Seleccione un Banco')); return; }
             if (!selectedNacionalidad || !cedula) { dispatch(setError('Indique Cédula o RIF')); return; }

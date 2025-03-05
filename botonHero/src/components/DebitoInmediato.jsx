@@ -143,6 +143,7 @@ const DebitoInmediato = () => {
                                     urlMibanco3={urlMibanco3}
                                     tokenCommerce={tokenCommerce}
                                     headers={headers}
+                                    plan={plan}
                                 />
                             )}
 
@@ -154,6 +155,7 @@ const DebitoInmediato = () => {
                                     urlMibancoConsulta={urlMibancoConsulta}
                                     url={url}
                                     headers={headers}
+                                    plan={plan}
                                 />
                             )}
                         </div>

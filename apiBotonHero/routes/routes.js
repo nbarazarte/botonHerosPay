@@ -116,9 +116,20 @@ router.get('/buscar_banco', async (req, res) => {
 });
 
 // Obtener un token
-router.get('/buscar_token', async (req, res) => {
+/* router.get('/buscar_token', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM tokens WHERE used = false ORDER BY id DESC LIMIT 1');
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+}); */
+
+router.get('/buscar_token', async (req, res) => {
+    try {
+        const { plan } = req.query;
+        const result = await pool.query('SELECT * FROM tokens WHERE used = false and plan = $1 ORDER BY id DESC LIMIT 1', [plan]);
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);

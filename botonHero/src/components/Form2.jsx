@@ -19,7 +19,7 @@ import {
     setShowOtpForm2
 } from '../store/debitoInmediatoSlice';
 
-const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers }) => {
+const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers, plan }) => {
     const dispatch = useDispatch();
 
     // Seleccionar estados desde Redux
@@ -82,7 +82,9 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
                 const { Banco, Cedula, Telefono, Monto, Concepto } = dataForm;
                 postData = { Banco, Monto, Telefono, Cedula, Concepto, Otp: otp };
             } else {
-                const token = await axios.get(`${url}buscar_token`, { headers });
+                //const token = await axios.get(`${url}buscar_token`, { headers });
+                const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
+
                 if (!token.data) { dispatch(setError('No hay tokens disponibles, intente luego.')); return; }
                 if (!selectedBank) { dispatch(setError('Seleccione un Banco')); return; }
                 if (!selectedNacionalidad || !cedula) { dispatch(setError('Indique Cédula o RIF')); return; }
@@ -120,7 +122,8 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers })
                 await retryConsulta(data1.id);
 
                 if (data2.code === 'ACCP') {
-                    const token = await axios.get(`${url}buscar_token`, { headers });
+                    //const token = await axios.get(`${url}buscar_token`, { headers });
+                    const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
                     if (!token.data) {
                         dispatch(setError('No hay tokens disponibles'));
                         return;
