@@ -270,9 +270,9 @@ const DataTable = () => {
                     disableColumnFilter
                     sortingMode="none"
                     getRowClassName={(params) => {
-                        if (params.row.tipo === 'CI') {
+                        if (params.row.tipo === 'Crédito') {
                             return 'bg-orange-100 hover:bg-orange-400';
-                        } else if (params.row.tipo === 'DI') {
+                        } else if (params.row.tipo === 'Débito') {
                             return 'bg-green-100 hover:bg-green-400';
                         }
                         return '';
