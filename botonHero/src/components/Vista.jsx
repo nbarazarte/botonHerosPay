@@ -42,9 +42,8 @@ const DataTable = () => {
                     const date = new Date(item.fecha_creacion);
                     return {
                         ...item,
-                        fecha: date.toLocaleDateString(),
-                        hora: date.toLocaleTimeString(),
-                        //accion: 'Vuelto',
+                        //fecha: date.toLocaleDateString(),
+                        //hora: date.toLocaleTimeString(),
                     };
                 });
                 setData(modifiedData);
@@ -77,7 +76,7 @@ const DataTable = () => {
             renderHeader: renderHeaderField('TIPO')
         },
         {
-            field: 'id_transc',
+            field: 'id debito',
             headerName: 'ID DÉBITO',
             flex: 0.8,
             renderHeader: renderHeaderField('ID DÉBITO')
@@ -131,13 +130,13 @@ const DataTable = () => {
             renderHeader: renderHeaderField('HORA')
         },
         {
-            field: 'nombre',
-            headerName: 'NOMBRE',
+            field: 'sitio',
+            headerName: 'SITIO',
             flex: 1.5,
             renderHeader: renderHeaderField('SITIO')
         },
         {
-            field: 'identificador',
+            field: 'ap',
             headerName: 'AP',
             flex: 0.8,
             renderHeader: renderHeaderField('AP')
@@ -208,7 +207,7 @@ const DataTable = () => {
         const worksheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-        XLSX.writeFile(workbook, "data_filtrada.xlsx");
+        XLSX.writeFile(workbook, "pasarelaHerosPay.xlsx");
     };
 
     return (

@@ -225,7 +225,7 @@ router.post('/crear_transac', async (req, res) => {
 // Buscar transacciones
 router.get('/buscar_transacciones', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM public.view_transacciones order by fecha_creacion desc');
+        const result = await pool.query('SELECT * FROM public.view_transacciones order by fecha desc, hora desc');
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
