@@ -136,10 +136,10 @@ const DataTable = () => {
             renderHeader: renderHeaderField('SITIO')
         },
         {
-            field: 'ap',
-            headerName: 'AP',
+            field: 'id sitio',
+            headerName: 'id sitio',
             flex: 0.8,
-            renderHeader: renderHeaderField('AP')
+            renderHeader: renderHeaderField('ID SITIO')
         },
         {
             field: 'sistema_operativo',
