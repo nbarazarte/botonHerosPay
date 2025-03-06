@@ -237,7 +237,7 @@ router.get('/buscar_transacciones', async (req, res) => {
 router.get('/buscar_transacciones/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await pool.query('SELECT * FROM public.view_transacciones WHERE id = $1 ORDER BY fecha_creacion DESC', [id]);
+        const result = await pool.query('SELECT * FROM public.view_transacciones WHERE id = $1 ORDER BY fecha desc, hora desc', [id]);
         res.json(result.rows);
     } catch (err) {
         console.error(err.message);
