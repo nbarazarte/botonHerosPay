@@ -82,6 +82,12 @@ const DataTable = () => {
             renderHeader: renderHeaderField('ID DÉBITO')
         },
         {
+            field: 'plan',
+            headerName: 'PLAN',
+            flex: 0.8,
+            renderHeader: renderHeaderField('PLAN')
+        },        
+        {
             field: 'token',
             headerName: 'TOKEN',
             flex: 0.8,
