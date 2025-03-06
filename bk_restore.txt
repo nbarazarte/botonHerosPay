@@ -1,4 +1,4 @@
-############### Nueva BD #########################
+############### BD LOCALHOST #########################
 
 # Backup
 pg_dump -U postgres -h localhost -F c -b -v -f ./herostokendb.backup herostokendb
@@ -6,3 +6,15 @@ pg_dump -U postgres -h localhost -F c -b -v -f ./herostokendb.backup herostokend
 # Restore
 pg_restore -U postgres -h localhost -d herostokendb -v ./herostokendb.backup
 /usr/lib/postgresql/16/bin/pg_restore -U postgres -h localhost -d herostokendb -v ./herostokendb.backup
+
+
+############### BD RENDER #########################
+
+# Backup
+pg_dump -U herostokendb_2mek_user -h dpg-cumh3gpu0jms73bhhfq0-a.oregon-postgres.render.com -F c -b -v -f ./herostokendb.backup herostokendb_2mek
+
+# Restore
+pg_restore -U herostokendb_2mek_user -h dpg-cumh3gpu0jms73bhhfq0-a.oregon-postgres.render.com -d herostokendb_2mek -v ./herostokendb.backup
+
+IYRUZWpmHVpFCJpKMGjMDbUpBlCG8k4K
+

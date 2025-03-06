@@ -83,8 +83,10 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers, p
                 postData = { Banco, Monto, Telefono, Cedula, Concepto, Otp: otp };
             } else {
                 //const token = await axios.get(`${url}buscar_token`, { headers });
-                const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
+                //const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
+                //console.log(identificadorAp);
 
+                const token = await axios.get(`${url}buscar_token?plan=${plan}&sitio=${identificadorAp}`, { headers });
                 if (!token.data) { dispatch(setError('No hay tokens disponibles, intente luego.')); return; }
                 if (!selectedBank) { dispatch(setError('Seleccione un Banco')); return; }
                 if (!selectedNacionalidad || !cedula) { dispatch(setError('Indique Cédula o RIF')); return; }
@@ -123,7 +125,9 @@ const Form2 = ({ url, urlMibanco2, urlMibancoConsulta, tokenCommerce, headers, p
 
                 if (data2.code === 'ACCP') {
                     //const token = await axios.get(`${url}buscar_token`, { headers });
-                    const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
+                    //const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
+                    //console.log(identificadorAp);
+                    const token = await axios.get(`${url}buscar_token?plan=${plan}&sitio=${identificadorAp}`, { headers });
                     if (!token.data) {
                         dispatch(setError('No hay tokens disponibles'));
                         return;

@@ -32,7 +32,8 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers, plan }) => {
         nacionalidadCedula,
         concepto,
         so,
-        bankOptions
+        bankOptions,
+        identificadorAp
     } = useSelector(state => state.debitoInmediato);
 
     let timerId;
@@ -53,8 +54,11 @@ const Form1 = ({ url, urlMibanco3, tokenCommerce, headers, plan }) => {
         e.preventDefault();
 
         try {
+            //console.log(identificadorAp);
             //const token = await axios.get(`${url}buscar_token`, { headers });
-            const token = await axios.get(`${url}buscar_token?plan=${plan}`, { headers });
+            const token = await axios.get(`${url}buscar_token?plan=${plan}&sitio=${identificadorAp}`, { headers });
+
+
             if (!token.data) { dispatch(setError(`No hay tokens disponibles, \n intente luego.`)); return; }
             if (!selectedBank) { dispatch(setError('Seleccione un Banco')); return; }
             if (!selectedNacionalidad || !cedula) { dispatch(setError('Indique Cédula o RIF')); return; }

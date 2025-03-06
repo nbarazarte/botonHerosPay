@@ -128,8 +128,8 @@ router.get('/buscar_banco', async (req, res) => {
 
 router.get('/buscar_token', async (req, res) => {
     try {
-        const { plan } = req.query;
-        const result = await pool.query('SELECT * FROM tokens WHERE used = false and plan = $1 ORDER BY id DESC LIMIT 1', [plan]);
+        const { plan, sitio } = req.query;
+        const result = await pool.query('SELECT * FROM tokens WHERE used = false and plan = $1 and id_sitio = $2 ORDER BY id DESC LIMIT 1', [plan, sitio]);
         res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
