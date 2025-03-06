@@ -18,3 +18,4 @@ pg_restore -U herostokendb_2mek_user -h dpg-cumh3gpu0jms73bhhfq0-a.oregon-postgr
 
 IYRUZWpmHVpFCJpKMGjMDbUpBlCG8k4K
 
+ALTER DATABASE herostokendb_2mek SET timezone = 'America/Caracas';
