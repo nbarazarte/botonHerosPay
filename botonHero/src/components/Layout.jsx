@@ -23,6 +23,7 @@ const Layout = () => {
     const navigation = [
         { name: 'Transacciones', href: '/vista', onclick: '' },
         { name: 'Logs', href: '/logs', onclick: '' },
+        { name: 'Crear Sitio', href: '/crear-sitio', onclick: '' },
     ]
 
     const userNavigation = [

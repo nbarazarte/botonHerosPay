@@ -22,7 +22,7 @@ router.post('/register', async (req, res) => {
         const result = await pool.query('INSERT INTO usuarios (username, password, email) VALUES ($1, $2, $3) RETURNING *', [username, hashedPassword, email]);
         res.status(201).json(result.rows[0]);
     } catch (err) {
-        console.error(err.message);
+        console.error(err);
         res.status(500).send('Error en el servidor');
     }
 });
@@ -281,6 +281,22 @@ router.post('/error-logs', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('Error guardando log');
+    }
+});
+
+// Crear sitio
+router.post('/crear_sitio', async (req, res) => {
+    try {
+        //console.log(req.body);
+        const { nombre, descripcion, identificador } = req.body;
+        const result = await pool.query(
+            'INSERT INTO public.sitios (nombre, descripcion, identificador, fecha_creacion) VALUES ($1, $2, $3, CURRENT_TIMESTAMP) RETURNING *',
+            [nombre, descripcion, identificador]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
     }
 });
 
