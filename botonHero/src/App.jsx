@@ -13,6 +13,8 @@ import Logs from './components/Logs';
 import Login from './components/Login';
 import Register from './components/Register';
 import CrearSitio from './components/CrearSitio';
+import CargarTokens from './components/CargarTokens';
+
 library.add(solidIcons, brandIcons, regularIcons); // Añade conjuntos de íconos
 
 // Inicializa Google Analytics con tu ID de medición
@@ -61,6 +63,7 @@ function App() {
           <Route path="/vista" element={token ? <Vista /> : <Navigate to="/login" />} />
           <Route path="/logs" element={token ? <Logs /> : <Navigate to="/login" />} />
           <Route path="/crear-sitio" element={token ? <CrearSitio /> : <Navigate to="/login" />} />
+          <Route path="/cargar-tokens" element={token ? <CargarTokens /> : <Navigate to="/login" />} />
         </Routes>
       </div>
     </Router>

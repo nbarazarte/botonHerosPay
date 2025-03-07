@@ -48,6 +48,17 @@ router.post('/login', async (req, res) => {
 });
 
 // Buscar id del ap por identificador
+router.get('/todos_sitios', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM public.sitios ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Buscar id del ap por identificador
 router.get('/sitios', async (req, res) => {
     try {
         const { idAp } = req.query;

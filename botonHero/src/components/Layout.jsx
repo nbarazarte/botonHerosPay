@@ -24,6 +24,7 @@ const Layout = () => {
         { name: 'Transacciones', href: '/vista', onclick: '' },
         { name: 'Logs', href: '/logs', onclick: '' },
         { name: 'Crear Sitio', href: '/crear-sitio', onclick: '' },
+        { name: 'Cargar Tokens', href: '/cargar-tokens', onclick: '' },
     ]
 
     const userNavigation = [
