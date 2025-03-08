@@ -21,10 +21,10 @@ const Layout = () => {
         imageUrl: { avatar },
     }
     const navigation = [
-        { name: 'Transacciones', href: '/vista', onclick: '' },
-        { name: 'Logs', href: '/logs', onclick: '' },
+        { name: 'Transacciones', href: '/vista', onclick: '' },        
         { name: 'Crear Sitio', href: '/crear-sitio', onclick: '' },
         { name: 'Cargar Tokens', href: '/cargar-tokens', onclick: '' },
+        { name: 'Logs', href: '/logs', onclick: '' },
     ]
 
     const userNavigation = [

@@ -47,6 +47,9 @@ const CrearSitio = () => {
         try {
             await axios.post(`${url}crear_sitio`, postData, { headers });
             setExito(true);
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
         } catch (err) {
             setError('Error al crear el sitio. Intente nuevamente.');
             console.error(err);
@@ -152,11 +155,14 @@ const CrearSitio = () => {
                                     </div>
                                 </div>
 
-                                <div className='pb-2'>
-                                    <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                        GUARDAR
-                                    </button>
-                                </div>
+                                {!exito && (
+                                    <div className='pb-2'>
+                                        <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
+                                            GUARDAR
+                                        </button>
+                                    </div>
+                                )}
+
                             </form>
                         </div>
                     </div>

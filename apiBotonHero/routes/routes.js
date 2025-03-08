@@ -311,6 +311,22 @@ router.post('/crear_sitio', async (req, res) => {
     }
 });
 
+// Cargar tokens
+router.post('/cargar_tokens', async (req, res) => {
+    try {
+        //console.log(req.body);
+        const { token, plan, id_sitio } = req.body;
+        const result = await pool.query(
+            'INSERT INTO public.tokens (token, used, fecha_creacion, plan, id_sitio) VALUES ($1, false, CURRENT_TIMESTAMP, $2, $3) RETURNING *',
+            [token, plan, id_sitio]
+        );
+        res.status(201).json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
 // ########################## PARA R4 ################################
 
 router.post('/MBconsulta', async (req, res) => {

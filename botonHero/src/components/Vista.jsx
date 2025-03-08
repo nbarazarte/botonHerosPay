@@ -183,7 +183,7 @@ const DataTable = () => {
             flex: 1,
             renderHeader: renderHeaderField('ACCIÓN'),
             renderCell: (params) => {
-                if (params.row.tipo !== 'CI') {
+                if (params.row.tipo !== 'Crédito') {
                     return (
                         <Tooltip title="Crédito Inmediato">
                             <Link

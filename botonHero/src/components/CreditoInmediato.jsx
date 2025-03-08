@@ -66,6 +66,8 @@ const CreditoInmediato = () => {
 
     useEffect(() => {
         const soInfo = platform.os.family;
+        //console.log(soInfo);
+
         dispatch(setSO(soInfo));
         dispatch(setTransactionId(id));
 
@@ -207,6 +209,9 @@ const CreditoInmediato = () => {
 
                         await handleTransactionProcess(postData, banco, cliente_token, data2.reference, transactionId);
                         dispatch(setPagoExitoso(true));
+                        setTimeout(() => {
+                            window.location.href = '/vista';
+                        }, 5000);
                     } catch (err) {
                         dispatch(setError("Ha ocurrido un error con el token"));
                         dispatch(setToken(null));
@@ -329,7 +334,7 @@ const CreditoInmediato = () => {
 
                                                     <div className="flex flex-row justify-center items-center gap-1">
                                                         <Lottie animationData={paySuccess} loop={false} style={{ width: '20px', height: '20px' }} />
-                                                        <p className="text-sm">¡Crédito Realizado!</p>
+                                                        <p className="text-sm">¡Pago Realizado!</p>
                                                     </div>
 
                                                 </div>
@@ -465,10 +470,10 @@ const CreditoInmediato = () => {
                     <label htmlFor="concepto" className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Concepto</label>
                 </div> */}
 
-                                    {(!token || loading) && (
+                                    {(!pagoExitoso) && (
                                         <div className='pb-2'>
                                             <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                                ENVIAR DATOS DE PAGO
+                                                ENVIAR VUELTO
                                             </button>
                                         </div>
                                     )}

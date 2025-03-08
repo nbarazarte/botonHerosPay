@@ -59,16 +59,28 @@ const CargarTokens = () => {
         if (!plan) { setError(`Ingrese el nombre del plan`); return; }
         if (!tokens) { setError(`Ingrese la lista de tokens`); return; }
 
-        const postData = { token: tokens, plan: plan, id_sitio: selectedSitio };
-        console.log(postData);
-        
-        return;
+        //const postData = { token: tokens, plan: plan, id_sitio: selectedSitio };
+        const tokensArray = tokens.split(',').map(token => token.trim());
+
+        //console.log(postData);
+        //console.log(tokensArray);            
+        //return;
 
         try {
-            await axios.post(`${url}crear_sitio`, postData, { headers });
+
+            for (const token of tokensArray) {
+                const postData = { token: token, plan: plan, id_sitio: selectedSitio };
+                //console.log(postData);
+                await axios.post(`${url}cargar_tokens`, postData, { headers });
+            }
+
             setExito(true);
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+
         } catch (err) {
-            setError('Error al crear el sitio. Intente nuevamente.');
+            setError('Error al cargar los tokens.');
             console.error(err);
         }
     }
@@ -149,25 +161,6 @@ const CargarTokens = () => {
                                     </div>
                                 </div>
 
-                                {/*                                 <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
-                                    <div className="relative flex-1 flex items-center">
-                                        <input
-                                            id="descripcion"
-                                            type="text"
-                                            value={descripcion}
-                                            placeholder=""
-                                            onChange={handleChangeDescripcion}
-                                            className="text-lg w-60 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
-                                        />
-                                        <label
-                                            htmlFor="descripcion"
-                                            className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
-                                        >
-                                            Descripción del Sitio
-                                        </label>
-                                    </div>
-                                </div> */}
-
                                 <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
                                     <div className="relative flex-1 flex items-center">
                                         <textarea
@@ -181,15 +174,19 @@ const CargarTokens = () => {
                                             htmlFor="tokens"
                                             className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
                                         >
-                                            Tokens
+                                            Tokens: ABCDE, EDCBA, QWERT
                                         </label>
                                     </div>
                                 </div>
-                                <div className='pb-2'>
-                                    <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
-                                        GUARDAR
-                                    </button>
-                                </div>
+
+                                {!exito && (
+                                    <div className='pb-2'>
+                                        <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-semibold text-center block w-full cursor-pointer">
+                                            CARGAR TOKENS
+                                        </button>
+                                    </div>
+                                )}
+
                             </form>
                         </div>
                     </div>
