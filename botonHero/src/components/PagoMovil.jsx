@@ -6,18 +6,9 @@ import ErrorApiR4 from './ErrorApiR4';
 import Success from './Success';
 import { HeadersR4, obtenerFechaValor } from './utils';
 import Loading from './Loading';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-    setSelectedCodigoArea,
-    setTelefono,
-    setNumTelefono,
-    setMonto,
-    setError,
-    setReferencia,
-} from '../store/pagoMovilSlice';
 
 const PagoMovil = () => {
-    const dispatch = useDispatch();
+
     // URLs desde variables de entorno
     const url = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
     const urlMibanco2 = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
@@ -27,46 +18,53 @@ const PagoMovil = () => {
     const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
     const headers = { 'Authorization': `Bearer ${import.meta.env.REACT_APP_TOKEN}` };
 
-
-
     // Constantes
     const nacionalidad = ['V', 'E', 'J'];
     const codigosArea = ['0412', '0416', '0426', '0414', '0424'];
 
-    // Seleccionar estados desde Redux
-    const {
-        token,
-        selectedCodigoArea,
-        telefono,
-        referencia,
-        monto,
-        error,
-        errorApiR4,
-        loading
-    } = useSelector(state => state.debitoInmediato);
+    const [errorApiR4, setErrorApiR4] = useState('');
+    const [loading, setLoading] = useState('');
+    const [error, setError] = useState('');
+    const [token, setToken] = useState('');
+    const [selectedCodigoArea, setSelectedCodigoArea] = useState('');
+    const [telefono, setTelefono] = useState('');
+    const [numTelefono, setNumTelefono] = useState('');
+    const [referencia, setReferencia] = useState('');
+    const [mensajeApis, setMensajeApis] = useState('');
 
     const handleSelectChangeCodigoArea = (e) => {
-        dispatch(setError(''));
-        dispatch(setSelectedCodigoArea(e.target.value));
-        dispatch(setNumTelefono(e.target.value + telefono));
+        //console.log(e.target.value);
+        setError('');
+        setSelectedCodigoArea(e.target.value);
+        setNumTelefono(e.target.value + telefono);
     };
 
     const handleChangeTelefono = (e) => {
-        dispatch(setError(''));
+        setError('');
         const value = e.target.value;
         // Permitir solo números (0-9)
         const onlyNumbers = value.replace(/[^0-9]/g, '');
-        dispatch(setTelefono(onlyNumbers));
-        dispatch(setNumTelefono(selectedCodigoArea + onlyNumbers));
+        setTelefono(onlyNumbers);
+        setNumTelefono(selectedCodigoArea + onlyNumbers);
     };
 
     const handleChangeReferencia = (e) => {
-        dispatch(setError(''));
+        setError('');
         const value = e.target.value;
         // Permitir solo números (0-9)
         const onlyNumbers = value.replace(/[^0-9]/g, '');
-        dispatch(setReferencia(onlyNumbers));
+        setReferencia(onlyNumbers);
     };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        console.log({ numTelefono, referencia });
+
+
+
+        return;
+    }
 
     return (
         <>
@@ -96,69 +94,80 @@ const PagoMovil = () => {
                             )}
 
 
-                            <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
-                                <div className="relative flex-1 flex items-center">
-                                    <label htmlFor="codigosArea" className="block">
-                                        <select
-                                            value={selectedCodigoArea}
-                                            onChange={handleSelectChangeCodigoArea}
-                                            className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
-                                            id="codigosArea"
-                                        >
-                                            <option value="" className="text-center">04**</option>
-                                            {codigosArea.map((codigoArea, index) => (
-                                                <option key={index} value={codigoArea} className="text-center">
-                                                    {codigoArea}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </label>
-                                </div>
+                            <div className="pt-2 flex flex-1 h-full justify-center items-center">
+                                <form className="mt-1" onSubmit={handleSubmit}>
 
-                                <div className="relative flex-1 flex items-center">
-                                    <input
-                                        id="telefono"
-                                        type="number"
-                                        value={telefono}
-                                        placeholder="Teléfono"
-                                        onChange={handleChangeTelefono}
-                                        onInput={(e) => {
-                                            e.target.value = e.target.value.slice(0, 7);
-                                        }}
-                                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
-                                    />
-                                    <label
-                                        htmlFor="telefono"
-                                        className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
-                                    >
-                                        Teléfono
-                                    </label>
-                                </div>
-                            </div>
+                                    <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+                                        <div className="relative flex-1 flex items-center">
+                                            <label htmlFor="codigosArea" className="block">
+                                                <select
+                                                    value={selectedCodigoArea}
+                                                    onChange={handleSelectChangeCodigoArea}
+                                                    className="text-lg bg-white pl-1 pr-1 w-20 px-0.5 border-0 border-b-1 border-azulMove focus:ring-0 focus:border-naranjaMove"
+                                                    id="codigosArea"
+                                                >
+                                                    <option value="" className="text-center">04**</option>
+                                                    {codigosArea.map((codigoArea, index) => (
+                                                        <option key={index} value={codigoArea} className="text-center">
+                                                            {codigoArea}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </label>
+                                        </div>
 
-                            <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+                                        <div className="relative flex-1 flex items-center">
+                                            <input
+                                                id="telefono"
+                                                type="number"
+                                                value={telefono}
+                                                placeholder="Teléfono"
+                                                onChange={handleChangeTelefono}
+                                                onInput={(e) => {
+                                                    e.target.value = e.target.value.slice(0, 7);
+                                                }}
+                                                className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
+                                            />
+                                            <label
+                                                htmlFor="telefono"
+                                                className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                                            >
+                                                Teléfono
+                                            </label>
+                                        </div>
+                                    </div>
 
+                                    <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
 
-                                <div className="relative flex-1 flex items-center">
-                                    <input
-                                        id="referencia"
-                                        type="number"
-                                        value={referencia}
-                                        placeholder="Referencia"
-                                        onChange={handleChangeReferencia}
-                                        onInput={(e) => {
-                                            const maxLength = selectedNacionalidad === 'J' ? 9 : 8;
-                                            e.target.value = e.target.value.slice(0, maxLength);
-                                        }}
-                                        className="text-lg w-36 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
-                                    />
-                                    <label
-                                        htmlFor="cedula"
-                                        className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
-                                    >
-                                        Cédula/RIF.
-                                    </label>
-                                </div>
+                                        <div className="relative flex-1 flex items-center">
+                                            <input
+                                                id="referencia"
+                                                type="number"
+                                                value={referencia}
+                                                placeholder="Referencia"
+                                                onChange={handleChangeReferencia}
+                                                onInput={(e) => {
+                                                    const maxLength = 9;
+                                                    e.target.value = e.target.value.slice(0, maxLength);
+                                                }}
+                                                className="text-lg w-60 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
+                                            />
+                                            <label
+                                                htmlFor="referencia"
+                                                className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
+                                            >
+                                                Referencia
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div className='pb-2'>
+                                        <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
+                                            NOTIFICAR PAGO
+                                        </button>
+                                    </div>
+
+                                </form>
                             </div>
 
                         </div>
