@@ -385,9 +385,9 @@ router.post('/MBnotifica', async (req, res) => {
 
         // Manejar la respuesta de la petición
         if (code === "00") {
-            res.json({ abono: true, mensaje: message });
+            res.json({ abono: true }); //, mensaje: message 
         } else {
-            res.json({ abono: false, mensaje: message });
+            res.json({ abono: false });//, mensaje: message 
         }
 
     } catch (err) {

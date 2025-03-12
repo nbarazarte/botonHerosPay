@@ -14,6 +14,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import CrearSitio from './components/CrearSitio';
 import CargarTokens from './components/CargarTokens';
+import PagoMovil from './components/PagoMovil';
 
 library.add(solidIcons, brandIcons, regularIcons); // Añade conjuntos de íconos
 
@@ -58,6 +59,7 @@ function App() {
           <Route path="/" element={<DebitoInmediato />} />
           <Route path="/credito-inmediato/:id" element={<CreditoInmediato />} />
           <Route path="/debito-inmediato/:idSitio/:plan/:montoPlan" element={<DebitoInmediato />} />
+          <Route path="/pago-movil" element={<PagoMovil />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/vista" element={token ? <Vista /> : <Navigate to="/login" />} />
