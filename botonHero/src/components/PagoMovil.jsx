@@ -11,11 +11,6 @@ const PagoMovil = () => {
 
     // URLs desde variables de entorno
     const url = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
-    const urlMibanco2 = import.meta.env.REACT_APP_URL_API_MIBANCO_DEBITOINMEDIATO;
-    const urlMibanco3 = import.meta.env.REACT_APP_URL_API_MIBANCO_GENERAROTP;
-    const urlMibancoConsulta = import.meta.env.REACT_APP_URL_API_MIBANCO_CONSULTA;
-    const urlMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
-    const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
     const headers = { 'Authorization': `Bearer ${import.meta.env.REACT_APP_TOKEN}` };
 
     // Constantes
@@ -59,9 +54,31 @@ const PagoMovil = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        console.log({ numTelefono, referencia });
+        let notificacion = {};
+        const maxRetries = 20;
+        const delay = 1000;
+        let attempts = 0;
 
+        const retryConsulta = async () => {
+            while (attempts < maxRetries) {
+                attempts++;
+                console.log(`Attempt number: ${attempts}`); // Log the number of attempts
+                notificacion = await axios.get(`${url}buscar_notificacion?numTelefono=${numTelefono}&referencia=${referencia}`, { headers });
 
+                if (notificacion.data) {
+                    break;
+                }
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        };
+
+        await retryConsulta();
+
+        if (attempts === maxRetries) { setError('No se ha podido validar el Pago'); return; }
+
+        if (notificacion.data) {
+            console.log(notificacion.data);
+        }
 
         return;
     }
@@ -92,7 +109,6 @@ const PagoMovil = () => {
                                     {token && (<Success />)}
                                 </>
                             )}
-
 
                             <div className="pt-2 flex flex-1 h-full justify-center items-center">
                                 <form className="mt-1" onSubmit={handleSubmit}>

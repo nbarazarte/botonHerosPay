@@ -375,113 +375,15 @@ router.post('/MBnotifica', async (req, res) => {
             'Commerce': `${tokenCommerce}`
         };
 
-        // Realizar petición a la URL proporcionada
-        const response = await axios.post('https://r4conecta.mibanco.com.ve/MBconsulta_pm', {
-            referencia: Referencia,
-            telefono_origen: TelefonoEmisor
-        }, { headers: headersMiBanco });
 
-        const { code, message } = response.data;
 
-        // Manejar la respuesta de la petición
-        if (code === "00") {
-            res.json({ abono: true }); //, mensaje: message 
-        } else {
-            res.json({ abono: false });//, mensaje: message 
-        }
-
-    } catch (err) {
-        console.error('Error en el servidor:', err.message);
-        res.status(500).send('Error en el servidor');
-    }
-});
-
-/* router.get('/MBconsulta', async (req, res) => {
-    try {
-        const { idCliente, Monto, TelefonoComercio } = req.query;
-        //console.log({ idCliente, Monto, TelefonoComercio });
-
-        if (!idCliente) {
-            return res.status(400).send('idCliente es requerido');
-        }
-
-        if (!Monto) {
-            return res.status(400).send('Monto es requerido');
-        }
-
-        if (!TelefonoComercio) {
-            return res.status(400).send('TelefonoComercio es requerido');
-        }
-
-        const result = await pool.query('SELECT * FROM clientes WHERE cedula = $1 ORDER BY id DESC LIMIT 1', [`V${idCliente}`]);//nota
-
-        if (result.rows.length === 0) {
-            res.json({ status: false });
-        } else {
-            try {
-                const montosResult = await pool.query(`SELECT monto FROM public.montos where tipo = 'pago movil'`);
-
-                if (montosResult.rows[0].monto === Monto) {
-
-                    //console.log(process.env.TELEFONOCOMERCIO);
-
-                    if (TelefonoComercio === process.env.TELEFONOCOMERCIO) {
-                        //res.json({ status: true, cliente: result.rows[0], montos: montosResult.rows });
-                        res.json({ status: true });
-                    } else {
-                        res.json({ status: false });
-                    }
-
-                } else {
-                    res.json({ status: false });
-                }
-
-            } catch (err) {
-                console.error(err.message);
-                return res.status(500).send('Error en el servidor al obtener los montos');
-            }
-        }
-
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Error en el servidor');
-    }
-});
-
-router.post('/MBconsulta', async (req, res) => {
-    try {
-        const { IdCliente, Monto, TelefonoComercio } = req.body;
-
-        // Validación de campos requeridos
-        if (!IdCliente || !Monto || !TelefonoComercio) {
-            return res.status(400).send('Todos los campos requeridos deben ser proporcionados');
-        }
-
-        // Inserción en la tabla MBconsulta
-        const result = await pool.query(`
-            INSERT INTO R4Consulta (IdCliente, Monto, TelefonoComercio)
-            VALUES ($1, $2, $3) RETURNING *
-        `, [IdCliente, Monto, TelefonoComercio]);
-
-        if (result.rowCount > 0) {
-            res.json({ status: true });
-        } else {
-            res.json({ status: false });
-        }
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Error en el servidor');
-    }
-});
-
-router.post('/MBnotifica', async (req, res) => {
-    try {
-        const { IdComercio, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed } = req.body;
-
-        // Validación de campos requeridos
-        if (!IdComercio || !TelefonoComercio || !TelefonoEmisor || !BancoEmisor || !Monto || !FechaHora || !Referencia || !CodigoRed) {
-            return res.status(400).send('Todos los campos requeridos deben ser proporcionados');
-        }
+        /*         // Realizar petición a la URL proporcionada
+                const response = await axios.post('https://r4conecta.mibanco.com.ve/MBconsulta_pm', {
+                    referencia: Referencia,
+                    telefono_origen: TelefonoEmisor
+                }, { headers: headersMiBanco });
+        
+                const { code, message } = response.data; */
 
         // Inserción en la tabla R4Notifica
         const result = await pool.query(`
@@ -494,10 +396,37 @@ router.post('/MBnotifica', async (req, res) => {
         } else {
             res.json({ abono: false });
         }
+        /*         if (code === "00") {
+                    res.json({ abono: false });//, mensaje: message 
+                } else {
+                    res.json({ abono: false });//, mensaje: message 
+                } */
+
+    } catch (err) {
+        console.error('Error en el servidor:', err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+//Consultamos la tabla de R4notifica:
+router.get('/buscar_notificacion', async (req, res) => {
+    try {
+        const { numTelefono, referencia } = req.query;
+
+        // Validación de campos requeridos
+        if (!numTelefono) return res.status(400).send('numTelefono es requerido');
+        if (!referencia) return res.status(400).send('referencia es requerida');
+
+        // Consulta en la tabla r4notifica
+        const result = await pool.query('SELECT * FROM r4notifica WHERE telefonoemisor = $1 and referencia = $2', [numTelefono, referencia]);
+        res.json(result.rows[0]);
+
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
     }
-}); */
+});
+
+
 
 module.exports = router;
