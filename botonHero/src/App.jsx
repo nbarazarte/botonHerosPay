@@ -59,7 +59,7 @@ function App() {
           <Route path="/" element={<DebitoInmediato />} />
           <Route path="/credito-inmediato/:id" element={<CreditoInmediato />} />
           <Route path="/debito-inmediato/:idSitio/:plan/:montoPlan" element={<DebitoInmediato />} />
-          <Route path="/pago-movil" element={<PagoMovil />} />
+          <Route path="/pago-movil/:idSitio/:plan/:montoPlan" element={<PagoMovil />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/vista" element={token ? <Vista /> : <Navigate to="/login" />} />

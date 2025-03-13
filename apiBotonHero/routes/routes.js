@@ -343,7 +343,7 @@ router.post('/MBconsulta', async (req, res) => {
         if (result.rows.length === 0) return res.json({ status: false });
 
         // Consulta en la tabla montos
-        const montosResult = await pool.query(`SELECT monto FROM public.montos WHERE tipo = 'pago movil'`);
+        const montosResult = await pool.query(`SELECT monto FROM public.montos WHERE tipo = 'pago movil' and monto = $1`, [Monto]);
         if (montosResult.rows[0].monto !== Monto || TelefonoComercio !== process.env.TELEFONOCOMERCIO) {
             return res.json({ status: false });
         }
@@ -411,14 +411,14 @@ router.post('/MBnotifica', async (req, res) => {
 //Consultamos la tabla de R4notifica:
 router.get('/buscar_notificacion', async (req, res) => {
     try {
-        const { numTelefono, referencia } = req.query;
+        const { monto, referencia } = req.query;
 
         // Validación de campos requeridos
-        if (!numTelefono) return res.status(400).send('numTelefono es requerido');
+        if (!monto) return res.status(400).send('monto es requerido');
         if (!referencia) return res.status(400).send('referencia es requerida');
 
         // Consulta en la tabla r4notifica
-        const result = await pool.query('SELECT * FROM r4notifica WHERE telefonoemisor = $1 and referencia = $2', [numTelefono, referencia]);
+        const result = await pool.query('SELECT * FROM r4notifica WHERE monto = $1 and referencia = $2', [monto, referencia]);
         res.json(result.rows[0]);
 
     } catch (err) {
@@ -426,7 +426,5 @@ router.get('/buscar_notificacion', async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
-
-
 
 module.exports = router;
