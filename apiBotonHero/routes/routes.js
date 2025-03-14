@@ -127,16 +127,6 @@ router.get('/buscar_banco', async (req, res) => {
 });
 
 // Obtener un token
-/* router.get('/buscar_token', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM tokens WHERE used = false ORDER BY id DESC LIMIT 1');
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Error en el servidor');
-    }
-}); */
-
 router.get('/buscar_token', async (req, res) => {
     try {
         const { plan, sitio } = req.query;
@@ -375,16 +365,6 @@ router.post('/MBnotifica', async (req, res) => {
             'Commerce': `${tokenCommerce}`
         };
 
-
-
-        /*         // Realizar petición a la URL proporcionada
-                const response = await axios.post('https://r4conecta.mibanco.com.ve/MBconsulta_pm', {
-                    referencia: Referencia,
-                    telefono_origen: TelefonoEmisor
-                }, { headers: headersMiBanco });
-        
-                const { code, message } = response.data; */
-
         // Inserción en la tabla R4Notifica
         const result = await pool.query(`
             INSERT INTO R4Notifica (IdComercio, TelefonoComercio, TelefonoEmisor, Concepto, BancoEmisor, Monto, FechaHora, Referencia, CodigoRed)
@@ -396,11 +376,6 @@ router.post('/MBnotifica', async (req, res) => {
         } else {
             res.json({ abono: false });
         }
-        /*         if (code === "00") {
-                    res.json({ abono: false });//, mensaje: message 
-                } else {
-                    res.json({ abono: false });//, mensaje: message 
-                } */
 
     } catch (err) {
         console.error('Error en el servidor:', err.message);

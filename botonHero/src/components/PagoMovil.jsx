@@ -1,83 +1,116 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { setErrorApiR4, setMensajeApis, setError, setLoading, setToken, setIdentificadorAp, setMonto, setSelectedNacionalidad, setNacionalidadCedula, setCedula, setReferencia, setIdCliente, setShowForm1, setShowForm2, setNumeroFactura, setSO } from '../store/pagoMovilSlice';
 import { useParams } from 'react-router-dom';
+import platform from 'platform';
 import axios from 'axios';
 import Lottie from "lottie-react";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
+import pagoMovil from "../assets/LottieFiles/Animation - 1741919011118.json";
 import ErrorApiR4 from './ErrorApiR4';
-import Success from './Success';
+import SuccessPagoMovil from './SuccessPagoMovil';
 import { HeadersR4, obtenerFechaValor } from './utils';
 import Loading from './Loading';
 
 const PagoMovil = () => {
+    const dispatch = useDispatch();
+    const {
+        error,
+        loading,
+        token,
+        errorApiR4,
+        referencia,
+        cedula,
+        selectedNacionalidad,
+        nacionalidadCedula,
+        monto,
+        showForm1,
+        showForm2,
+        identificadorAp,
+        idCliente,
+        so,
+        mensajeApis
+    } = useSelector((state) => state.pagoMovil);
+
     const { idSitio, plan, montoPlan } = useParams();
     const url = import.meta.env.REACT_APP_URL_API_BOTON_SERVIDOR_PUBLICO;
     const headers = { 'Authorization': `Bearer ${import.meta.env.REACT_APP_TOKEN}` };
     const telefonoComercio = import.meta.env.REACT_APP_TELEFONOCOMERCIO;
     const urlMiBancoBcv = import.meta.env.REACT_APP_URL_API_MIBANCO_BCV;
     const tokenCommerce = import.meta.env.REACT_APP_TOKEN_COMMERCE;
-
     const nacionalidad = ['V', 'E', 'J'];
-    const [errorApiR4, setErrorApiR4] = useState('');
-    const [loading, setLoading] = useState('');
-    const [error, setError] = useState('');
-    const [token, setToken] = useState('');
-    const [referencia, setReferencia] = useState('');
-    const [mensajeApis, setMensajeApis] = useState('');
-    const [cedula, setCedula] = useState('');
-    const [selectedNacionalidad, setSelectedNacionalidad] = useState('V');
-    const [nacionalidadCedula, setNacionalidadCedula] = useState('');
-    const [monto, setMonto] = useState(montoPlan);
-    const [showForm1, setShowForm1] = useState(true);
-    const [showForm2, setShowForm2] = useState(false);
 
     useEffect(() => {
+        const fetchSitioMonto = async () => {
+            try {
+                const soInfo = platform.os.family;
+                dispatch(setSO(soInfo));
 
-        const fetchMonto = async () => {
+                const sitio = await axios.get(`${url}sitios?idAp=${idSitio}`, { headers });
+                dispatch(setIdentificadorAp(sitio.data.id));
 
-            const fechaValor = obtenerFechaValor();
-            const dataToHash = `${fechaValor}USD`;
-            const headersMiBanco = HeadersR4({ dataToHash, tokenCommerce });
-            const postData = { Moneda: "USD", Fechavalor: fechaValor };
-            const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
-            setMonto((Number(montoPlan) * tasaBcv.data.tipocambio).toFixed(2));
+                const fechaValor = obtenerFechaValor();
+                const dataToHash = `${fechaValor}USD`;
+                const headersMiBanco = HeadersR4({ dataToHash, tokenCommerce });
+                const postData = { Moneda: "USD", Fechavalor: fechaValor };
+                const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
+                dispatch(setMonto((Number(montoPlan) * tasaBcv.data.tipocambio).toFixed(2)));
+            } catch (error) {
+
+                //console.log(error.config.url.includes('r4conecta'));            
+                const API = error.config.url.includes('r4conecta') ? "R4" : "Heros";
+                let mensaje = '';
+                let mensajeApis = '';
+
+                if (API == 'Heros') {
+                    mensajeApis = 'Falla de conexión con el Servidor';
+                    mensaje = 'En estos momentos, el servidor no está disponible. Por favor, intente más tarde.';
+                } else {
+                    mensajeApis = 'Falla de conexión con el Banco';
+                    mensaje = 'En estos momentos, la plataforma bancaria no está disponible. Por favor, intente más tarde.';
+                }
+
+                dispatch(setMensajeApis(mensajeApis));
+                dispatch(setError(mensaje));
+                dispatch(setErrorApiR4(mensaje));
+                return null;
+            }
         };
 
-        fetchMonto();
-
-    }, [])
+        fetchSitioMonto();
+    }, [idSitio, montoPlan, url, headers, tokenCommerce, dispatch]);
 
     const handleSelectChangeNacionalidad = (e) => {
-        setError('');
-        setSelectedNacionalidad(e.target.value);
-        setNacionalidadCedula(e.target.value + cedula);
+        dispatch(setError(''));
+        dispatch(setSelectedNacionalidad(e.target.value));
+        dispatch(setNacionalidadCedula(e.target.value + cedula));
 
         if (e.target.value === 'V' || e.target.value === 'E' || e.target.value === 'J') {
-            setCedula('');
+            dispatch(setCedula(''));
         }
     };
 
     const handleChangeCedula = (e) => {
-        setError('');
+        dispatch(setError(''));
         const value = e.target.value;
         const onlyNumbers = value.replace(/[^0-9]/g, '');
-        setCedula(onlyNumbers);
-        setNacionalidadCedula(selectedNacionalidad + onlyNumbers);
+        dispatch(setCedula(onlyNumbers));
+        dispatch(setNacionalidadCedula(selectedNacionalidad + onlyNumbers));
     };
 
     const handleChangeReferencia = (e) => {
-        setError('');
+        dispatch(setError(''));
         const value = e.target.value;
         const onlyNumbers = value.replace(/[^0-9]/g, '');
-        setReferencia(onlyNumbers);
+        dispatch(setReferencia(onlyNumbers));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!selectedNacionalidad || !cedula) { setError('Indique Cédula o RIF'); return; }
+        if (!selectedNacionalidad || !cedula) { dispatch(setError('Indique Cédula o RIF')); return; }
 
-        let postData = {};
-        postData = { Cedula: nacionalidadCedula };
+        let postData = { Cedula: nacionalidadCedula };
 
         let cliente = await axios.get(`${url}buscar_cliente?cedula=${postData.Cedula}`, { headers });
 
@@ -85,35 +118,51 @@ const PagoMovil = () => {
             cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
         }
 
-        //console.log(cliente.data.id);
-        setShowForm1(false);
-        setShowForm2(true);
+        dispatch(setIdCliente(cliente.data.id));
+        dispatch(setShowForm1(false));
+        dispatch(setShowForm2(true));
     }
 
     const handleSubmit2 = async (e) => {
         e.preventDefault();
 
-        if (!referencia) { setError('Indique la referencia'); return; }
-        //console.log({ referencia, monto });
+        if (!referencia) { dispatch(setError('Indique la referencia')); return; }
 
-        let postData = {};
-        let notificacion = {};
-        postData = { Referencia: referencia, Monto: monto };
+        let postData = { Referencia: referencia, Monto: monto };
 
-        try {
-            notificacion = await axios.get(`${url}buscar_notificacion?referencia=${postData.Referencia}&monto=1.00`, { headers });
-            //notificacion = await axios.get(`${url}buscar_notificacion?referencia=${postData.Referencia}&monto=${monto}`, { headers });
-        } catch (error) {
-            console.log(error);
+        let notificacion = await axios.get(`${url}buscar_notificacion?referencia=${postData.Referencia}&monto=${monto}`, { headers });
+        const codigoBanco = `0${notificacion.data.bancoemisor}`;
+
+        if (!notificacion.data.referencia) {
+            dispatch(setError('Verifique el número de referencia y el monto.')); return;
         }
 
-        if (!notificacion.data.id) {
-            setError('Verifique el número de referencia y el monto.');
-            return;
-        }
+        const token = await axios.get(`${url}buscar_token?plan=${plan}&sitio=${identificadorAp}`, { headers });
 
-        console.log(notificacion);
+        if (!token.data) { dispatch(setError('No hay tokens disponibles')); return; }
+        dispatch(setToken(token.data));
 
+        await axios.put(`${url}${token.data.id}`, { used: true }, { headers });
+        const banco = await axios.get(`${url}buscar_banco?codigo=${codigoBanco}`, { headers });
+
+        const cliente_token = await axios.post(`${url}cliente_tokens`, {
+            cliente_id: idCliente,
+            token_id: token.data.id
+        }, { headers });
+
+        const transac = await axios.post(`${url}crear_transac`, {
+            cliente_token_id: cliente_token.data.id,
+            telefono: notificacion.data.telefonoemisor,
+            banco_id: banco.data.id,
+            monto: monto,
+            referencia: referencia,
+            descripcion: '',
+            pasarela_id: 3,
+            sitio_id: identificadorAp,
+            sistema_operativo: so
+        }, { headers });
+
+        dispatch(setNumeroFactura(transac.data.id.toString().padStart(5, '0')));
     }
 
     return (
@@ -139,7 +188,7 @@ const PagoMovil = () => {
                                                 : (<><h1 className="text-lg font-medium">Pago Móvil</h1> </>)}
                                         </div>
                                     </div>
-                                    {token && (<Success />)}
+                                    {token && (<SuccessPagoMovil />)}
                                 </>
                             )}
 
@@ -199,7 +248,10 @@ const PagoMovil = () => {
                                 {showForm2 === true && (
                                     <form className="mt-1" onSubmit={handleSubmit2}>
 
-                                        <h1 className=' text-center pb-4'>Paso 2 de 2</h1>
+                                        <h1 className=' text-center pb-0'>Paso 2 de 2</h1>
+                                        <div className="mt-0 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                            <Lottie animationData={pagoMovil} loop={true} style={{ width: '200px', height: '200px' }} />
+                                        </div>
 
                                         <ol>
                                             <li>1. Abra su aplicación de Pago Móvil.</li>
@@ -233,7 +285,6 @@ const PagoMovil = () => {
                                             </div>
                                         </div>
 
-
                                         <div className='pb-2'>
                                             <button type="submit" className="mt-10 px-4 py-2 rounded-xl bg-azulMove text-white font-sans font-semibold text-sm text-center block w-full cursor-pointer">
                                                 REPORTAR PAGO MOVIL
@@ -244,10 +295,9 @@ const PagoMovil = () => {
                                 )}
 
                             </div>
-
                         </div>
                     </div>
-                </div >
+                </div>
             )}
         </>
     );
