@@ -249,9 +249,6 @@ const PagoMovil = () => {
                                     <form className="mt-1" onSubmit={handleSubmit2}>
 
                                         <h1 className=' text-center pb-0'>Paso 2 de 2</h1>
-                                        <div className="mt-0 relative flex flex-row pl-1 pr-1 justify-center items-center">
-                                            <Lottie animationData={pagoMovil} loop={true} style={{ width: '200px', height: '200px' }} />
-                                        </div>
 
                                         <ol>
                                             <li>1. Abra su aplicación de Pago Móvil.</li>
@@ -260,6 +257,9 @@ const PagoMovil = () => {
                                             <li>4. Monto: <span className='font-semibold'>{`Bs.${monto}`}</span></li>
                                             <li>5. Ingrese el número de referencia.</li>
                                         </ol>
+                                        <div className="mt-0 relative flex flex-row pl-1 pr-1 justify-center items-center">
+                                            <Lottie animationData={pagoMovil} loop={true} style={{ width: '200px', height: '200px' }} />
+                                        </div>
 
                                         <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
 

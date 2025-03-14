@@ -353,10 +353,10 @@ router.post('/MBconsulta', async (req, res) => {
         const montoDolares = (Monto / cambio).toFixed(0);
         const montoDolaresACambio = (Monto / montoDolares).toFixed(4)
 
-        /* console.log(cambio);
+        console.log(cambio);
         console.log(montoDolares);
         console.log(Monto);
-        console.log(montoDolaresACambio); */
+        console.log(montoDolaresACambio);
 
         if (cambio.toString() !== montoDolaresACambio) return res.status(400).send('El monto enviado por el cliente es diferente al monto esperado');
 
