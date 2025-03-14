@@ -325,16 +325,45 @@ router.post('/MBconsulta', async (req, res) => {
 
         // Validación de campos requeridos
         if (!IdCliente) return res.status(400).send('IdCliente es requerido');
-        if (!Monto) return res.status(400).send('Monto es requerido');
         if (!TelefonoComercio) return res.status(400).send('TelefonoComercio es requerido');
+        if (!Monto) return res.status(400).send('Monto es requerido');
 
         // Consulta en la tabla clientes
         const result = await pool.query('SELECT * FROM clientes WHERE cedula = $1 ORDER BY id DESC LIMIT 1', [`V${IdCliente}`]);
         if (result.rows.length === 0) return res.json({ status: false });
 
+        //Consultamos la tasa BCV del dia:
+        const fechaValor = obtenerFechaValor();
+        const tokenCommerce = process.env.TOKEN_COMMERCE;
+        const dataToHash = `${fechaValor}USD`;
+        const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
+        const hmac = hash.toString(CryptoJS.enc.Hex);
+
+        const headersMiBanco = {
+            'Content-Type': 'application/json',
+            'Authorization': `${hmac}`,
+            'Commerce': `${tokenCommerce}`
+        };
+
+        const postData = { Moneda: "USD", Fechavalor: fechaValor };
+
+        // Realizar petición a la URL proporcionada
+        const tasaBcv = await axios.post(process.env.R4_BCV, postData, { headers: headersMiBanco });
+        const cambio = tasaBcv.data.tipocambio;
+        const montoDolares = (Monto / cambio).toFixed(0);
+        const montoDolaresACambio = (Monto / montoDolares).toFixed(4)
+
+        /* console.log(cambio);
+        console.log(montoDolares);
+        console.log(Monto);
+        console.log(montoDolaresACambio); */
+
+        if (cambio.toString() !== montoDolaresACambio) return res.status(400).send('El monto enviado por el cliente es diferente al monto esperado');
+
         // Consulta en la tabla montos
-        const montosResult = await pool.query(`SELECT monto FROM public.montos WHERE tipo = 'pago movil' and monto = $1`, [Monto]);
-        if (montosResult.rows[0].monto !== Monto || TelefonoComercio !== process.env.TELEFONOCOMERCIO) {
+        const montosResult = await pool.query(`SELECT monto FROM public.montos WHERE tipo = 'pago movil' and monto = $1`, [(Monto / cambio).toFixed(0).toString()]);
+
+        if (!montosResult.rows[0] || montosResult.rows[0].monto !== montoDolares || TelefonoComercio !== process.env.TELEFONOCOMERCIO) {
             return res.json({ status: false });
         }
 
@@ -353,17 +382,6 @@ router.post('/MBnotifica', async (req, res) => {
         if (!IdComercio || !TelefonoComercio || !TelefonoEmisor || !BancoEmisor || !Monto || !FechaHora || !Referencia || !CodigoRed) {
             return res.status(400).send('Todos los campos requeridos deben ser proporcionados');
         }
-
-        const tokenCommerce = process.env.TOKEN_COMMERCE;
-        const dataToHash = Referencia + TelefonoEmisor;
-        const hash = CryptoJS.HmacSHA256(dataToHash, tokenCommerce);
-        const hmac = hash.toString(CryptoJS.enc.Hex);
-
-        const headersMiBanco = {
-            'Content-Type': 'application/json',
-            'Authorization': `${hmac}`,
-            'Commerce': `${tokenCommerce}`
-        };
 
         // Inserción en la tabla R4Notifica
         const result = await pool.query(`
@@ -401,5 +419,13 @@ router.get('/buscar_notificacion', async (req, res) => {
         res.status(500).send('Error en el servidor');
     }
 });
+
+const obtenerFechaValor = () => {
+    const fechaActual = new Date();
+    const año = fechaActual.getFullYear();
+    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+    const dia = String(fechaActual.getDate()).padStart(2, '0');
+    return `${año}-${mes}-${dia}`;
+}
 
 module.exports = router;
