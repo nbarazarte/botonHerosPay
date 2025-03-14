@@ -346,28 +346,35 @@ router.post('/MBconsulta', async (req, res) => {
         };
 
         const postData = { Moneda: "USD", Fechavalor: fechaValor };
-
         // Realizar petición a la URL proporcionada
         const tasaBcv = await axios.post(process.env.R4_BCV, postData, { headers: headersMiBanco });
-        const cambio = tasaBcv.data.tipocambio;
-        const montoDolares = (Monto / cambio).toFixed(0);
-        const montoDolaresACambio = (Monto / montoDolares).toFixed(4)
+        const tasaCambio = Number((tasaBcv.data.tipocambio).toFixed(2))
+        const montoCliente = Number(Monto);
 
-        console.log(cambio);
-        console.log(montoDolares);
-        console.log(Monto);
-        console.log(montoDolaresACambio);
+        //console.log(tasaCambio);
+        //console.log(montoCliente);
+        const validacion = montoCliente / tasaCambio
+        //console.log(validacion);
 
-        if (cambio.toString() !== montoDolaresACambio) return res.status(400).send('El monto enviado por el cliente es diferente al monto esperado');
+        let montosResult = {}
+        try {
+            montosResult = await pool.query('SELECT monto FROM public.montos WHERE tipo = $1 AND monto = $2', ['pago movil', validacion.toString()]);
+            if (montosResult.rows.length === 0) {
+                //console.log('El monto enviado por el cliente es diferente al monto esperado');
+                return res.json({ status: false });
+            }
+            //console.log(montosResult.rows[0].monto);
 
-        // Consulta en la tabla montos
-        const montosResult = await pool.query(`SELECT monto FROM public.montos WHERE tipo = 'pago movil' and monto = $1`, [(Monto / cambio).toFixed(0).toString()]);
+        } catch (error) {
+            console.log(error);
+            return res.json({ status: false });
+        }
+        res.json({ status: true });
 
-        if (!montosResult.rows[0] || montosResult.rows[0].monto !== montoDolares || TelefonoComercio !== process.env.TELEFONOCOMERCIO) {
+        if (TelefonoComercio !== process.env.TELEFONOCOMERCIO) {
             return res.json({ status: false });
         }
 
-        res.json({ status: true });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');
