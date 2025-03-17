@@ -351,10 +351,10 @@ router.post('/MBconsulta', async (req, res) => {
         const tasaCambio = Number(Math.round(tasaBcv.data.tipocambio * 100) / 100)
         const montoCliente = Number(Math.round(Monto * 100) / 100)
 
-        console.log(tasaCambio);
-        console.log(montoCliente);
+        //console.log(tasaCambio);
+        //console.log(montoCliente);
         const validacion = montoCliente / tasaCambio
-        console.log(Number(Math.round(validacion * 100) / 100));
+        //console.log(Number(Math.round(validacion * 100) / 100));
 
         let montosResult = {}
         try {
