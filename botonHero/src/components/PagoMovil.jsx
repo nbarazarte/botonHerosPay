@@ -54,7 +54,11 @@ const PagoMovil = () => {
                 const headersMiBanco = HeadersR4({ dataToHash, tokenCommerce });
                 const postData = { Moneda: "USD", Fechavalor: fechaValor };
                 const tasaBcv = await axios.post(`${urlMiBancoBcv}`, postData, { headers: headersMiBanco });
-                dispatch(setMonto((Number(montoPlan) * tasaBcv.data.tipocambio).toFixed(2)));
+
+                //console.log(Number(Math.round(montoPlan * 100) / 100));
+                //console.log(Number(Math.round(tasaBcv.data.tipocambio * 100) / 100));
+
+                dispatch(setMonto((Number(Math.round(montoPlan * 100) / 100) *  Number(Math.round(tasaBcv.data.tipocambio * 100) / 100) )));
             } catch (error) {
 
                 //console.log(error.config.url.includes('r4conecta'));            

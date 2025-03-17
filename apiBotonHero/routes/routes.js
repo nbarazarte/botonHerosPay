@@ -348,17 +348,17 @@ router.post('/MBconsulta', async (req, res) => {
         const postData = { Moneda: "USD", Fechavalor: fechaValor };
         // Realizar petición a la URL proporcionada
         const tasaBcv = await axios.post(process.env.R4_BCV, postData, { headers: headersMiBanco });
-        const tasaCambio = Number((tasaBcv.data.tipocambio).toFixed(2))
-        const montoCliente = Number(Monto);
+        const tasaCambio = Number(Math.round(tasaBcv.data.tipocambio * 100) / 100)
+        const montoCliente = Number(Math.round(Monto * 100) / 100)
 
-        //console.log(tasaCambio);
-        //console.log(montoCliente);
+        console.log(tasaCambio);
+        console.log(montoCliente);
         const validacion = montoCliente / tasaCambio
-        //console.log(validacion);
+        console.log(Number(Math.round(validacion * 100) / 100));
 
         let montosResult = {}
         try {
-            montosResult = await pool.query('SELECT monto FROM public.montos WHERE tipo = $1 AND monto = $2', ['pago movil', validacion.toString()]);
+            montosResult = await pool.query('SELECT monto FROM public.montos WHERE tipo = $1 AND monto = $2', ['pago movil', validacion]);
             if (montosResult.rows.length === 0) {
                 //console.log('El monto enviado por el cliente es diferente al monto esperado');
                 return res.json({ status: false });
