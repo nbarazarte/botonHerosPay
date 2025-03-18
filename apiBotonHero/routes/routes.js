@@ -363,30 +363,37 @@ router.post('/MBconsulta', async (req, res) => {
         const montoClienteBs = Number(Math.round(Monto * 100) / 100)//redondeado a dos decimales
         const montoDolaresDecimales = montoClienteBs / tasaCambio
         const montoDolaresEntero = Math.floor(montoDolaresDecimales);//solo la parte entera
-        
-        //console.log(Monto);
-        //console.log(tasaCambio);
-        //console.log(montoClienteBs);
-        //console.log(montoDolaresDecimales);
-        //console.log(montoDolaresEntero);
+
+        /* console.log(Monto);
+        console.log(tasaCambio);
+        console.log(montoClienteBs);
+        console.log(montoDolaresDecimales);
+        console.log(montoDolaresEntero); */
 
         // Consulta en la tabla clientes_monto_pm
         const result = await pool.query(
-            `SELECT cliente_id, monto, MAX(cmpm.fecha_creacion) as fecha_creacion
-             FROM public.clientes_monto_pm cmpm
-             JOIN clientes c ON c.id = cmpm.cliente_id
-             WHERE c.cedula = $1 
-               AND monto = $2
-               AND DATE(cmpm.fecha_creacion) = CURRENT_DATE
-             GROUP BY cliente_id, monto`,
-            [`V${IdCliente}`, montoDolaresEntero]
+            `SELECT monto
+                FROM public.clientes_monto_pm cmpm
+                    JOIN clientes c ON c.id = cmpm.cliente_id
+                        WHERE c.cedula = $1
+                        AND DATE(cmpm.fecha_creacion) = CURRENT_DATE
+                        ORDER BY cmpm.fecha_creacion DESC
+                LIMIT 1;`,
+            [`V${IdCliente}`]
         );
+
+        //console.log("Parámetros:", [`V${IdCliente}`]);
 
         if (result.rows.length === 0) { return res.json({ status: false }); }
 
         //console.log(result.rows[0].monto);
+        //console.log(Monto);
 
-        res.json({ status: true });
+        if (Number(Monto) >= Number(result.rows[0].monto)) {
+            res.json({ status: true });
+        } else {
+            res.json({ status: false });
+        }
 
         if (TelefonoComercio !== process.env.TELEFONOCOMERCIO) {
             return res.json({ status: false });

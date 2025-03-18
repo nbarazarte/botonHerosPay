@@ -58,7 +58,10 @@ const PagoMovil = () => {
                 //console.log(Number(Math.round(montoPlan * 100) / 100));
                 //console.log(Number(Math.round(tasaBcv.data.tipocambio * 100) / 100));
 
-                dispatch(setMonto((Number(Math.round(montoPlan * 100) / 100) *  Number(Math.round(tasaBcv.data.tipocambio * 100) / 100) )));
+                //dispatch(setMonto((Number(Math.round(montoPlan * 100) / 100) *  Number(Math.round(tasaBcv.data.tipocambio * 100) / 100) )));
+
+
+                dispatch(setMonto((Number(montoPlan) * tasaBcv.data.tipocambio).toFixed(2)));
             } catch (error) {
 
                 //console.log(error.config.url.includes('r4conecta'));            
@@ -122,7 +125,7 @@ const PagoMovil = () => {
             cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
         }
 
-        await axios.post(`${url}crear_cliente_monto_pm`, { cliente_id: cliente.data.id, monto: montoPlan }, { headers });
+        await axios.post(`${url}crear_cliente_monto_pm`, { cliente_id: cliente.data.id, monto }, { headers });
 
         dispatch(setIdCliente(cliente.data.id));
         dispatch(setShowForm1(false));
