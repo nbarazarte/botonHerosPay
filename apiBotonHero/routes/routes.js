@@ -181,6 +181,18 @@ router.post('/crear_cliente', async (req, res) => {
     }
 });
 
+// Asociar cliente con monto y pago móvil
+router.post('/crear_cliente_monto_pm', async (req, res) => {
+    try {
+        const { cliente_id, monto } = req.body;
+        const result = await pool.query('INSERT INTO public.clientes_monto_pm(cliente_id, monto, fecha_creacion) values ($1, $2, CURRENT_TIMESTAMP) RETURNING *', [cliente_id, monto]);
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
 // Insertar en cliente_tokens
 router.post('/cliente_tokens', async (req, res) => {
     try {
@@ -324,13 +336,9 @@ router.post('/MBconsulta', async (req, res) => {
         const { IdCliente, Monto, TelefonoComercio } = req.body;
 
         // Validación de campos requeridos
-        if (!IdCliente) return res.status(400).send('IdCliente es requerido');
-        if (!TelefonoComercio) return res.status(400).send('TelefonoComercio es requerido');
-        if (!Monto) return res.status(400).send('Monto es requerido');
-
-        // Consulta en la tabla clientes
-        const result = await pool.query('SELECT * FROM clientes WHERE cedula = $1 ORDER BY id DESC LIMIT 1', [`V${IdCliente}`]);
-        if (result.rows.length === 0) return res.json({ status: false });
+        if (!IdCliente) return res.status(400).send('El campo IdCliente es requerido.');
+        if (!TelefonoComercio) return res.status(400).send('El campo TelefonoComercio es requerido.');
+        if (!Monto) return res.status(400).send('El campo Monto es requerido.');
 
         //Consultamos la tasa BCV del dia:
         const fechaValor = obtenerFechaValor();
@@ -347,28 +355,37 @@ router.post('/MBconsulta', async (req, res) => {
 
         const postData = { Moneda: "USD", Fechavalor: fechaValor };
         // Realizar petición a la URL proporcionada
-        const tasaBcv = await axios.post(process.env.R4_BCV, postData, { headers: headersMiBanco });
-        const tasaCambio = Number(Math.round(tasaBcv.data.tipocambio * 100) / 100)
-        const montoCliente = Number(Math.round(Monto * 100) / 100)
-
+        const tasaBcv = await axios.post(process.env.R4_BCV, postData, { headers: headersMiBanco }).catch(err => {
+            console.error('Error al obtener la tasa de cambio:', err.message);
+            return res.status(500).send('Error al obtener la tasa de cambio.');
+        });
+        const tasaCambio = Number(Math.round(tasaBcv.data.tipocambio * 100) / 100)//redondeado a dos decimales
+        const montoClienteBs = Number(Math.round(Monto * 100) / 100)//redondeado a dos decimales
+        const montoDolaresDecimales = montoClienteBs / tasaCambio
+        const montoDolaresEntero = Math.floor(montoDolaresDecimales);//solo la parte entera
+        
+        //console.log(Monto);
         //console.log(tasaCambio);
-        //console.log(montoCliente);
-        const validacion = montoCliente / tasaCambio
-        //console.log(Number(Math.round(validacion * 100) / 100));
+        //console.log(montoClienteBs);
+        //console.log(montoDolaresDecimales);
+        //console.log(montoDolaresEntero);
 
-        let montosResult = {}
-        try {
-            montosResult = await pool.query('SELECT monto FROM public.montos WHERE tipo = $1 AND monto = $2', ['pago movil', validacion]);
-            if (montosResult.rows.length === 0) {
-                //console.log('El monto enviado por el cliente es diferente al monto esperado');
-                return res.json({ status: false });
-            }
-            //console.log(montosResult.rows[0].monto);
+        // Consulta en la tabla clientes_monto_pm
+        const result = await pool.query(
+            `SELECT cliente_id, monto, MAX(cmpm.fecha_creacion) as fecha_creacion
+             FROM public.clientes_monto_pm cmpm
+             JOIN clientes c ON c.id = cmpm.cliente_id
+             WHERE c.cedula = $1 
+               AND monto = $2
+               AND DATE(cmpm.fecha_creacion) = CURRENT_DATE
+             GROUP BY cliente_id, monto`,
+            [`V${IdCliente}`, montoDolaresEntero]
+        );
 
-        } catch (error) {
-            console.log(error);
-            return res.json({ status: false });
-        }
+        if (result.rows.length === 0) { return res.json({ status: false }); }
+
+        //console.log(result.rows[0].monto);
+
         res.json({ status: true });
 
         if (TelefonoComercio !== process.env.TELEFONOCOMERCIO) {

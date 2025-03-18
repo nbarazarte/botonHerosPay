@@ -122,6 +122,8 @@ const PagoMovil = () => {
             cliente = await axios.post(`${url}crear_cliente`, { cedula: postData.Cedula }, { headers });
         }
 
+        await axios.post(`${url}crear_cliente_monto_pm`, { cliente_id: cliente.data.id, monto: montoPlan }, { headers });
+
         dispatch(setIdCliente(cliente.data.id));
         dispatch(setShowForm1(false));
         dispatch(setShowForm2(true));

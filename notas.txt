@@ -37,3 +37,13 @@ npm install
 
 Iniciar el servidor:
 npm start
+
+
+
+
+CREATE TABLE clientes_monto_pm (
+    id SERIAL PRIMARY KEY,
+    cliente_id INTEGER NOT NULL,
+    monto NUMERIC(10, 2) NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT NOW()
+);
