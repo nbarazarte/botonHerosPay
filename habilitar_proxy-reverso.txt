@@ -1,4 +1,9 @@
- cat /etc/apache2/sites-available/herospay.conf 
+# Modulos necesarios
+sudo a2enmod rewrite
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+sudo a2enmod alias
+
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot /var/www/html
@@ -10,17 +15,13 @@
     #RewriteCond %{HTTPS} off
     #RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    #Redirect permanent / https://herospay.heros-technology.com:18212/
+    #Redirect permanent / https://herospay.heros-technology.com:18213/
 
     ProxyRequests off
 
     # Primer ProxyPass para localhost:3000
     ProxyPass /apiBotonHero/ http://localhost:3000/
     ProxyPassReverse /apiBotonHero/ http://localhost:3000/
-
-    # Segundo ProxyPass para localhost:3001
-    ProxyPass /apiMiBanco/ http://localhost:3001/
-    ProxyPassReverse /apiMiBanco/ http://localhost:3001/
 
     <Proxy *>
         Require all granted
