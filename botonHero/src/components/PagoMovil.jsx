@@ -7,6 +7,7 @@ import axios from 'axios';
 import Lottie from "lottie-react";
 import formError from "../assets/LottieFiles/Animation - 1738074669174.json";
 import pagoMovil from "../assets/LottieFiles/Animation - 1741919011118.json";
+import card_id from "../assets/LottieFiles/card id bonito azul.json";
 import ErrorApiR4 from './ErrorApiR4';
 import SuccessPagoMovil from './SuccessPagoMovil';
 import { HeadersR4, obtenerFechaValor } from './utils';
@@ -215,7 +216,12 @@ const PagoMovil = () => {
                                 {showForm1 === true && (
                                     <form className="mt-1" onSubmit={handleSubmit}>
                                         <h1 className=' text-center'>Paso 1 de 2</h1>
-                                        <div className="mt-8 flex flex-row pl-1 pr-1 gap-1">
+
+                                        <div className=" relative flex flex-row justify-center items-center">
+                                            <Lottie animationData={card_id} loop={true} style={{ width: '250px', height: '250px' }} />
+                                        </div>
+
+                                        <div className="flex flex-row pl-1 pr-1 gap-1">
                                             <div className="relative flex-1 flex items-center">
                                                 <label htmlFor="nacionalidad" className="block">
                                                     <select
