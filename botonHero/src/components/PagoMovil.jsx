@@ -152,7 +152,7 @@ const PagoMovil = () => {
         const codigoBanco = `0${notificacion.data.bancoemisor}`;
 
         if (!notificacion.data.referencia) {
-            dispatch(setError('Verifique el número de referencia y el monto.')); return;
+            dispatch(setError('Verifique los datos del pago.')); return;
         }
 
         const token = await axios.get(`${url}buscar_token?plan=${plan}&sitio=${identificadorAp}`, { headers });
