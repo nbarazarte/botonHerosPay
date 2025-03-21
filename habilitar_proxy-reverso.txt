@@ -4,43 +4,71 @@ sudo a2enmod proxy
 sudo a2enmod proxy_http
 sudo a2enmod alias
 
+herospay.conf:
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html
+    DocumentRoot /var/www/html/dist
 
     ServerName herospay.heros-technology.com
     ServerAlias www.herospay.heros-technology.com
 
-    #RewriteEngine On
-    #RewriteCond %{HTTPS} off
-    #RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-    #Redirect permanent / https://herospay.heros-technology.com:18213/
+    # Redirigir tráfico HTTP a HTTPS
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}:18213%{REQUEST_URI} [L,R=301]
 
     ProxyRequests off
 
-    # Primer ProxyPass para localhost:3000
+    # Proxy para /apiBotonHero/
     ProxyPass /apiBotonHero/ http://localhost:3000/
     ProxyPassReverse /apiBotonHero/ http://localhost:3000/
 
-    <Proxy *>
-        Require all granted
-    </Proxy>
-
-    Alias /boton /var/www/html/dist
-
     <Directory /var/www/html/dist>
-        Options Indexes FollowSymLinks
+        Options FollowSymLinks
         AllowOverride All
         Require all granted
-    </Directory>
-
-    <Directory /var/www/html>
-        Options Indexes FollowSymLinks
-        AllowOverride All
-        Require all granted
+        DirectoryIndex index.html
     </Directory>
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
+
+herospay-ssl.conf:
+<VirtualHost *:18213>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html/dist
+
+    ServerName herospay.heros-technology.com
+    ServerAlias www.herospay.heros-technology.com
+
+    # Habilitar SSL
+    SSLEngine On
+    SSLCertificateFile /etc/ssl/certs/fullchain.pem
+    SSLCertificateKeyFile /etc/ssl/private/privkey.pem
+    SSLCertificateChainFile /etc/ssl/certs/chain.pem
+
+    ProxyRequests off
+
+    # Proxy para /apiBotonHero/
+    ProxyPass /apiBotonHero/ http://localhost:3000/
+    ProxyPassReverse /apiBotonHero/ http://localhost:3000/
+
+    <Directory /var/www/html/dist>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+        DirectoryIndex index.html
+
+        # Configuración para servir React correctamente
+        RewriteEngine On
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule ^ /index.html [L]
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/ssl_error.log
+    CustomLog ${APACHE_LOG_DIR}/ssl_access.log combined
+</VirtualHost>
+
+
