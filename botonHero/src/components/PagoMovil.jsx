@@ -87,6 +87,15 @@ const PagoMovil = () => {
         fetchSitioMonto();
     }, [idSitio, montoPlan, url, headers, tokenCommerce, dispatch]);
 
+    const RefreshButton = () => (
+        <a onClick={() => {
+            localStorage.clear();
+            window.location.reload();
+        }} className="text-blue-700 font-sans font-semibold text-xl text-center block cursor-pointer">
+            Ir al inicio
+        </a>
+    );
+
     const handleSelectChangeNacionalidad = (e) => {
         dispatch(setError(''));
         dispatch(setSelectedNacionalidad(e.target.value));
@@ -266,6 +275,10 @@ const PagoMovil = () => {
                                             <li>4. Banco: <span className='font-semibold'>0169 - R4 (MiBanco)</span></li>
                                             <li>5. Monto: <span className='font-semibold'>{`Bs.${monto}`}</span></li>
                                             <li>6. Ingrese el número de referencia.</li>
+
+                                            <div className='pt-0'>
+                                                <RefreshButton />
+                                            </div>
                                         </ol>
                                         <div className="mt-0 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                             <Lottie animationData={pagoMovil} loop={true} style={{ width: '200px', height: '200px' }} />
