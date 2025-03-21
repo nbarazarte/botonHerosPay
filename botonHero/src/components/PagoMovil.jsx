@@ -263,8 +263,9 @@ const PagoMovil = () => {
                                             <li>1. Abra su aplicación de Pago Móvil.</li>
                                             <li>2. Teléfono: <span className='font-semibold'>{telefonoComercio}</span></li>
                                             <li>3. CI/Rif Beneficiario: <span className='font-semibold'>{nacionalidadCedula.replace("V", "")}</span></li>
-                                            <li>4. Monto: <span className='font-semibold'>{`Bs.${monto}`}</span></li>
-                                            <li>5. Ingrese el número de referencia.</li>
+                                            <li>4. Banco: <span className='font-semibold'>0169 - R4 (MiBanco)</span></li>
+                                            <li>6. Monto: <span className='font-semibold'>{`Bs.${monto}`}</span></li>
+                                            <li>6. Ingrese el número de referencia.</li>
                                         </ol>
                                         <div className="mt-0 relative flex flex-row pl-1 pr-1 justify-center items-center">
                                             <Lottie animationData={pagoMovil} loop={true} style={{ width: '200px', height: '200px' }} />
