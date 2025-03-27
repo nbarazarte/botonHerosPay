@@ -300,7 +300,7 @@ const PagoMovil = () => {
                                                     placeholder="Referencia"
                                                     onChange={handleChangeReferencia}
                                                     onInput={(e) => {
-                                                        const maxLength = 9;
+                                                        const maxLength = 20;
                                                         e.target.value = e.target.value.slice(0, maxLength);
                                                     }}
                                                     className="text-lg w-60 peer border-b-1 border-azulMove text-gray-900 placeholder-transparent focus:outline-none focus:border-naranjaMove"
