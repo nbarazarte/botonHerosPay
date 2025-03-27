@@ -274,6 +274,8 @@ const DataTable = () => {
                             return 'bg-orange-100 hover:bg-orange-400';
                         } else if (params.row.tipo === 'Débito') {
                             return 'bg-green-100 hover:bg-green-400';
+                        }else if (params.row.tipo === 'Pago Móvil') {
+                            return 'bg-blue-100 hover:bg-blue-400';
                         }
                         return '';
                     }}

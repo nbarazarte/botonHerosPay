@@ -151,7 +151,7 @@ const PagoMovil = () => {
 
         let notificacion = await axios.get(`${url}buscar_notificacion?referencia=${postData.Referencia}&monto=${monto}`, { headers });
         const codigoBanco = `0${notificacion.data.bancoemisor}`;
-
+ 
         if (!notificacion.data.referencia) {
             dispatch(setError('Verifique los datos del pago.')); return;
         }

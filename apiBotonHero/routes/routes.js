@@ -118,6 +118,8 @@ router.get('/bancosDebitoInmediato', async (req, res) => {
 router.get('/buscar_banco', async (req, res) => {
     try {
         const { codigo } = req.query;
+        console.log(codigo);
+        
         const result = await pool.query('SELECT * FROM bancos WHERE codigo_banco = $1 ORDER BY id DESC LIMIT 1', [codigo]);
         res.json(result.rows[0]);
     } catch (err) {
