@@ -118,8 +118,7 @@ router.get('/bancosDebitoInmediato', async (req, res) => {
 router.get('/buscar_banco', async (req, res) => {
     try {
         const { codigo } = req.query;
-        console.log(codigo);
-        
+
         const result = await pool.query('SELECT * FROM bancos WHERE codigo_banco = $1 ORDER BY id DESC LIMIT 1', [codigo]);
         res.json(result.rows[0]);
     } catch (err) {
@@ -254,6 +253,18 @@ router.get('/buscar_transacciones/:id', async (req, res) => {
         const { id } = req.params;
         const result = await pool.query('SELECT * FROM public.view_transacciones WHERE id = $1 ORDER BY fecha desc, hora desc', [id]);
         res.json(result.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Error en el servidor');
+    }
+});
+
+// Buscar transacciones por referencia
+router.get('/buscar_transacc_ref', async (req, res) => {
+    try {
+        const { referencia } = req.query;
+        const result = await pool.query('SELECT * FROM public.view_transacciones WHERE referencia = $1 ORDER BY fecha desc, hora desc', [referencia]);
+        res.json(result.rows[0]);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Error en el servidor');

@@ -156,6 +156,10 @@ const PagoMovil = () => {
             dispatch(setError('Verifique los datos del pago.')); return;
         }
 
+        const transaccion_ref = await axios.get(`${url}buscar_transacc_ref?referencia=${referencia}`, { headers });
+
+        if (transaccion_ref.data) { dispatch(setError('Ya existe una transacción con la misma referencia.')); return; }
+
         const token = await axios.get(`${url}buscar_token?plan=${plan}&sitio=${identificadorAp}`, { headers });
 
         if (!token.data) { dispatch(setError('No hay tokens disponibles')); return; }
