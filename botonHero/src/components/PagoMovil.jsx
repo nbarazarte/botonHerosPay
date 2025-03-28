@@ -147,7 +147,7 @@ const PagoMovil = () => {
 
         if (!referencia) { dispatch(setError('Indique la referencia')); return; }
 
-        let postData = { Referencia: referencia.slice(3), Monto: monto };
+        let postData = { Referencia: referencia.slice(-9), Monto: monto };
 
         let notificacion = await axios.get(`${url}buscar_notificacion?referencia=${postData.Referencia}&monto=${monto}`, { headers });
         const codigoBanco = `0${notificacion.data.bancoemisor}`;
