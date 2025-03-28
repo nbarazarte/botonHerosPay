@@ -278,13 +278,12 @@ const PagoMovil = () => {
 
                                         <h1 className=' text-center pb-0'>Paso 2 de 2</h1>
 
-                                        <ol>
+                                        <ol className='text-sm'>
                                             <li>1. Abra su aplicación de Pago Móvil.</li>
                                             <li>2. Teléfono: <span className='font-semibold'>{telefonoComercio}</span></li>
                                             <li>3. CI/Rif Beneficiario: <span className='font-semibold'>{nacionalidadCedula.replace("V", "")}</span></li>
                                             <li>4. Banco: <span className='font-semibold'>0169 - R4 (MiBanco)</span></li>
-                                            <li>5. Monto: <span className='font-semibold'>{`Bs.${monto}`}</span></li>
-                                            <li>6. Ingrese el número de referencia.</li>
+                                            <li>5. Monto: <span className='font-semibold'>{`Bs.${monto}`}</span></li>                                            
 
                                             <div className='pt-0'>
                                                 <RefreshButton />
@@ -313,7 +312,7 @@ const PagoMovil = () => {
                                                     htmlFor="referencia"
                                                     className="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-lg peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-0 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm"
                                                 >
-                                                    Referencia
+                                                   Ingrese Nº de Referencia
                                                 </label>
                                             </div>
                                         </div>
